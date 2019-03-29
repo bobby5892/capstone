@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using System.ComponentModel.DataAnnotations;
 namespace PeerIt.Models
 {
     public class Comment
@@ -12,34 +12,19 @@ namespace PeerIt.Models
         #endregion Constructors
 
         #region Variables and Properties
-        public int CommentID { get; set; }
-        private string FK_AppUserID { get; set; }
-        private int FK_StudentAssignmentID { get; set; }
-        private DateTime TimeStampCreated { get; set; }
-        private string Contents { get; set; }
+        public int ID { get; set; }
+
+        [Required]
+        public AppUser FK_APP_USER { get; set; }
+        
+        [Required]        
+        public StudentAssignment FK_STUDENT_ASSIGNMENT { get; set; }
+
+        public DateTime TimestampCreated { get; set; }
+
+        [Required(ErrorMessage ="Content is a required field"),StringLength(1000, ErrorMessage = "Must be less than 1000 characters")]                    
+        public string Content { get; set; }
         #endregion Variables and Properties
-
-        #region Methods
-
-        // All methods currently return placeholders
-
-        public string GetStudent() 
-        {
-            return "name";
-        }
-        public int GetStudentAssignmentID() 
-        {
-            return -1;
-        }
-        // change return type to a date when ready to implement
-        public void GetTimeStamp() 
-        {
-            
-        }
-        public string GetContents() 
-        {
-            return "contents";
-        }
-        #endregion Methods
+        
     }
 }

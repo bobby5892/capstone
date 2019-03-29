@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace PeerIt.Models
 {
@@ -10,43 +11,24 @@ namespace PeerIt.Models
         #region Constructors
         public Event(string AppUserID, string Contents) 
         {
-
+            // Lookup User
         }
         #endregion Constructors
 
         #region Variables and Properties
-        public int EventID { get; set; }
-        public string FK_AppUserID { get; set; }
-        private string Content { get; set; }
-        private DateTime TimeStampCreated { get; set; }
-        private bool HasSeen { get; set; }
+        public int ID { get; set; }
+
+        [Required]        
+        public AppUser FK_AppUser { get; set; }
+
+        
+        [Required(ErrorMessage ="Content is a required field"),StringLength(5000, ErrorMessage = "Must be less than 5,000 characters")]            
+        public string Content { get; set; }
+        
+        public DateTime TimeStampCreated { get; set; }
+
+        [Required]        
+        public bool HasSeen { get; set; }
         #endregion Variables and Properties
-
-        #region Methods
-
-        // All methods are returning placeholders
-
-        public bool MarkSeen() 
-        {
-            return false;
-        }
-        public string GetUser() 
-        {
-            return "user";
-        }
-        public string GetContents() 
-        {
-            return "contents";
-        }
-        // change return type to a date when ready to implement
-        public void GetCreatedTimestamp() 
-        {
-            
-        }
-        public bool GetSeen() 
-        {
-            return false;
-        }
-        #endregion Methods
     }
 }

@@ -7,5 +7,6 @@ namespace PeerIt.Models
 {
     public class JsonResponse
     {
+ 
     }
 }

@@ -18,17 +18,45 @@ namespace PeerIt.Repositories
 
         public Event FindByID(int ID)
         {
-            throw new NotImplementedException();
+            // get event by event id out of list
+
+            foreach(Event e in Events)
+            {
+                if (e.ID == ID)
+                {
+                    return e;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            //throw new NotImplementedException();
         }
 
         public List<Event> GetAll()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            // return list
+            return Events;
+
         }
 
         public bool Edit(Event model)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            Event temp = FindByID(model.ID);
+
+            if (temp != null)
+            {
+                temp = model;
+                context.SaveChanges();
+                return true;
+            }
+            else
+                false;
+
         }
 
         public bool Delete(Event model)

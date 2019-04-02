@@ -9,6 +9,7 @@ namespace PeerIt.Models
     public class Event
     {
         #region Constructors
+        public Event() { }
         public Event(string AppUserID, string Contents) 
         {
             // Lookup User

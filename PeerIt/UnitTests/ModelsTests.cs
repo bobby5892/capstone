@@ -53,5 +53,11 @@ namespace UnitTests
         {
             Assert.True(true);
         }
+
+        //[Fact]
+        //public void TestCommentRepoFindById()
+        //{
+        //    Comment comment = new Comment() { i}
+        //}
     }
 }

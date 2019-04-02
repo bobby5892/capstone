@@ -15,3 +15,9 @@ C:\code\capstone\PeerIt\UnitTests\obj\Debug\netcoreapp2.2\UnitTests.AssemblyInfo
 C:\code\capstone\PeerIt\UnitTests\obj\Debug\netcoreapp2.2\UnitTests.csproj.CopyComplete
 C:\code\capstone\PeerIt\UnitTests\obj\Debug\netcoreapp2.2\UnitTests.dll
 C:\code\capstone\PeerIt\UnitTests\obj\Debug\netcoreapp2.2\UnitTests.pdb
+C:\wamp64\www\capstone\PeerIt\UnitTests\obj\Debug\netcoreapp2.2\UnitTests.csprojAssemblyReference.cache
+C:\wamp64\www\capstone\PeerIt\UnitTests\obj\Debug\netcoreapp2.2\UnitTests.csproj.CoreCompileInputs.cache
+C:\wamp64\www\capstone\PeerIt\UnitTests\obj\Debug\netcoreapp2.2\UnitTests.AssemblyInfoInputs.cache
+C:\wamp64\www\capstone\PeerIt\UnitTests\obj\Debug\netcoreapp2.2\UnitTests.AssemblyInfo.cs
+C:\wamp64\www\capstone\PeerIt\UnitTests\obj\Debug\netcoreapp2.2\UnitTests.dll
+C:\wamp64\www\capstone\PeerIt\UnitTests\obj\Debug\netcoreapp2.2\UnitTests.pdb

@@ -45,8 +45,8 @@ namespace PeerIt.Repositories
 
         public bool Delete(Comment model)
         {
-            Commment comment = FindByID(model.ID);
-            if(!comment == null)
+            Comment comment = FindByID(model.ID);
+            if(comment != null)
             {
                 Comments.Remove(comment);
                 return true;
@@ -56,13 +56,16 @@ namespace PeerIt.Repositories
 
         public Comment Add(Comment model)
         {
-            if(model.IsValid())
+            try
             {
                 Comments.Add(model);
                 context.SaveChanges();
-                return Comments[Comments.length];
+                return Comments[Comments.Count - 1];
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
     }
 }

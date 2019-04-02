@@ -8,6 +8,7 @@ namespace PeerIt.Models
 {
     public class ActiveReviewer : IGenericRepository<ActiveReviewer, int>
     {
+        public ActiveReviewer(){}
         public int ID { get; set; }
          [Required]
         public AppUser FK_APP_USER_VIEWER { get; set; }

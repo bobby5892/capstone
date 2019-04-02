@@ -12,3 +12,17 @@ C:\code\capstone\PeerIt\PeerIt\bin\Debug\netcoreapp2.2\PeerIt.pdb
 C:\code\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.RazorTargetAssemblyInfo.cache
 C:\code\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.dll
 C:\code\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.pdb
+C:\wamp64\www\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.csprojAssemblyReference.cache
+C:\wamp64\www\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.csproj.CoreCompileInputs.cache
+C:\wamp64\www\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.RazorAssemblyInfo.cache
+C:\wamp64\www\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.RazorAssemblyInfo.cs
+C:\wamp64\www\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.AssemblyInfoInputs.cache
+C:\wamp64\www\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.AssemblyInfo.cs
+C:\wamp64\www\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.dll
+C:\wamp64\www\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.pdb
+C:\wamp64\www\capstone\PeerIt\PeerIt\bin\Debug\netcoreapp2.2\PeerIt.deps.json
+C:\wamp64\www\capstone\PeerIt\PeerIt\bin\Debug\netcoreapp2.2\PeerIt.runtimeconfig.json
+C:\wamp64\www\capstone\PeerIt\PeerIt\bin\Debug\netcoreapp2.2\PeerIt.runtimeconfig.dev.json
+C:\wamp64\www\capstone\PeerIt\PeerIt\bin\Debug\netcoreapp2.2\PeerIt.dll
+C:\wamp64\www\capstone\PeerIt\PeerIt\bin\Debug\netcoreapp2.2\PeerIt.pdb
+C:\wamp64\www\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.RazorTargetAssemblyInfo.cache

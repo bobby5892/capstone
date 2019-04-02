@@ -20,18 +20,14 @@ namespace PeerIt.Repositories
         {
             // get event by event id out of list
 
-            foreach(Event e in Events)
+            foreach (Event e in Events)
             {
                 if (e.ID == ID)
                 {
                     return e;
                 }
-                else
-                {
-                    return null;
-                }
             }
-
+            return null;
             //throw new NotImplementedException();
         }
 
@@ -40,7 +36,6 @@ namespace PeerIt.Repositories
             //throw new NotImplementedException();
             // return list
             return Events;
-
         }
 
         public bool Edit(Event model)
@@ -50,23 +45,41 @@ namespace PeerIt.Repositories
 
             if (temp != null)
             {
-                temp = model;
+                context.Events.Update(model);
                 context.SaveChanges();
                 return true;
             }
-            else
-                false;
-
+            return false;
         }
 
         public bool Delete(Event model)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+
+            Event temp = FindByID(model.ID);
+            if (temp != null)
+            {
+                context.Events.Remove(model);
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public Event Add(Event model)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            Event temp = FindByID(model.ID);
+            if (temp == null)
+            {
+                context.Events.Add(model);
+                context.SaveChanges();
+                return model;
+            }
+            else
+            {
+                return model;
+            }
         }
     }
 }

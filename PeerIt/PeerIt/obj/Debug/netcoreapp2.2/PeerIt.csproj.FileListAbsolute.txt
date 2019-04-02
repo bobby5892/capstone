@@ -12,3 +12,4 @@ C:\code\capstone\PeerIt\PeerIt\bin\Debug\netcoreapp2.2\PeerIt.pdb
 C:\code\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.RazorTargetAssemblyInfo.cache
 C:\code\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.dll
 C:\code\capstone\PeerIt\PeerIt\obj\Debug\netcoreapp2.2\PeerIt.pdb
+C:\code\capstone\PeerIt\PeerIt\bin\Debug\netcoreapp2.2\PeerIt.xml

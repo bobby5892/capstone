@@ -25,6 +25,9 @@ namespace PeerIt.Models
         [Required(ErrorMessage ="Content is a required field"),StringLength(1000, ErrorMessage = "Must be less than 1000 characters")]                    
         public string Content { get; set; }
         #endregion Variables and Properties
-        
+        public Comment()
+        {
+
+        }
     }
 }

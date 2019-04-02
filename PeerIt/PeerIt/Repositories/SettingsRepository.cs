@@ -18,13 +18,14 @@ namespace PeerIt.Repositories
 
         public Setting FindByID(string ID)
         {
-            this.Settings.each( (setting) => {
-                if(setting.ID = ID)
+            Setting result = null; 
+            this.Settings.ForEach( (setting) => {
+                if(setting.ID == ID)
                 {
-                    return setting;
+                    result= setting;
                 }
             });
-            return null;
+            return result ;
         }
 
         public List<Setting> GetAll()
@@ -55,13 +56,11 @@ namespace PeerIt.Repositories
 
         public Setting Add(Setting model)
         {
-            if (model.IsValid())
-            {
-                context.Settings.Add(model);
-                context.SaveChanges();
-                return true;
-            }
-            return false;
+            
+            context.Settings.Add(model);
+            context.SaveChanges();
+            return model;
+          
         }
     }
 }

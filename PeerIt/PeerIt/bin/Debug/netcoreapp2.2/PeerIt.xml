@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PeerIt</name>
+    </assembly>
+    <members>
+        <member name="M:PeerIt.Interfaces.IGenericRepository`2.FindByID(`1)">
+            <summary>
+            Lookup a Model byID
+            </summary>
+            <param name="ID">Pass</param>
+            <returns></returns>
+        </member>
+        <member name="M:PeerIt.Interfaces.IGenericRepository`2.GetAll">
+            <summary>
+            Get a List of Models back
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:PeerIt.Interfaces.IGenericRepository`2.Edit(`0)">
+            <summary>
+            Edit a Model
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PeerIt.Interfaces.IGenericRepository`2.Delete(`0)">
+            <summary>
+            Delete a Model
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PeerIt.Interfaces.IGenericRepository`2.Add(`0)">
+            <summary>
+            Add a New Model and save
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="P:PeerIt.Repositories.ActiveReviewerRepository.ActiveReviewers">
+            <summary>
+            List of ActiveReviewers
+            </summary>
+        </member>
+        <member name="M:PeerIt.Repositories.ActiveReviewerRepository.#ctor(PeerIt.Repositories.AppDBContext)">
+            <summary>
+            Constructor that accepts the Database Context
+            </summary>
+            <param name="context"></param>
+        </member>
+    </members>
+</doc>

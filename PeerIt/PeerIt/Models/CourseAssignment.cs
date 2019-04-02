@@ -9,7 +9,10 @@ namespace PeerIt.Models
     public class CourseAssignment
     {
         #region Constructors
+        public CourseAssignment()
+        {
 
+        }
         public CourseAssignment(string name, int courseID) 
         {
             this.Name = name;

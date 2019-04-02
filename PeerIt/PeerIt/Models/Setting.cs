@@ -17,5 +17,9 @@ namespace PeerIt.Models
 
     	[StringLength(20, ErrorMessage = "Must be less than 20 characters")]                    
     	public int NumericValue{get;set;}
+        public Setting()
+        {
+
+        }
     }
 }

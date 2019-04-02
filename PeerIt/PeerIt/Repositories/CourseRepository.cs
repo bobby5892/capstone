@@ -18,27 +18,58 @@ namespace PeerIt.Repositories
 
         public Course FindByID(int ID)
         {
-            throw new NotImplementedException();
+            Course course = from c in context.Course
+                            where c.ID == ID
+                            select c;
+
+            return course;
         }
 
         public List<Course> GetAll()
         {
-            throw new NotImplementedException();
+            return this.Courses;
         }
 
         public bool Edit(Course model)
         {
-            throw new NotImplementedException();
+            Course course = FindByID(model.ID);
+
+            if (course != null)
+            {
+                course = model;
+                if (context.SaveChanges() > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool Delete(Course model)
         {
-            throw new NotImplementedException();
+            var course = FindByID(model.ID).SingleOrDefault();
+
+            if (course != null)
+            {
+                context.Remove(course);
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public Course Add(Course model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                context.Course.Add(model);
+                context.SaveChanges();
+                return FindByID(model.ID);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

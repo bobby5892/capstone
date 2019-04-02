@@ -18,17 +18,34 @@ namespace PeerIt.Repositories
 
         public Setting FindByID(string ID)
         {
-            throw new NotImplementedException();
+            this.Settings.each( (setting) => {
+                if(setting.ID = ID)
+                {
+                    return setting;
+                }
+            });
+            return null;
         }
 
         public List<Setting> GetAll()
         {
-            throw new NotImplementedException();
+            return Settings;
         }
 
         public bool Edit(Setting model)
         {
-            throw new NotImplementedException();
+         try { 
+               Setting setting = FindByID(model.ID);
+                // Need Replace
+                if (context.SaveChanges() > 0)
+                {
+                    return true;
+                }
+            }
+            catch(Exception e) {
+                return false;
+            }
+            return false;
         }
 
         public bool Delete(Setting model)
@@ -38,7 +55,13 @@ namespace PeerIt.Repositories
 
         public Setting Add(Setting model)
         {
-            throw new NotImplementedException();
+            if (model.IsValid())
+            {
+                context.Settings.Add(model);
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
     }
 }

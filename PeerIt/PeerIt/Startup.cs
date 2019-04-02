@@ -58,6 +58,7 @@ namespace PeerIt
             }
 
             app.UseMvc();
+             
         }
     }
 }

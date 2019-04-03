@@ -18,27 +18,60 @@ namespace PeerIt.Repositories
 
         public CourseAssignment FindByID(int ID)
         {
-            throw new NotImplementedException();
+            CourseAssignment cAssign = from a in context.CourseAssignments
+                                       where a.ID == ID
+                                       select a;
+
+            return cAssign;
         }
 
         public List<CourseAssignment> GetAll()
         {
-            throw new NotImplementedException();
+            return this.CourseAssignments;
         }
 
         public bool Edit(CourseAssignment model)
         {
-            throw new NotImplementedException();
+            var cAssign = FindByID(model.ID).SingleOrDefault();
+
+            if (cAssign != null)
+            {
+                cAssign = model;
+                if (context.SaveChanges() > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool Delete(CourseAssignment model)
         {
-            throw new NotImplementedException();
+            var cAssign = FindByID(model.ID).SingleOrDefault();
+
+            if (cAssign != null)
+            {
+                context.Delete(cAssign);
+                if (context.SaveChanges() > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public CourseAssignment Add(CourseAssignment model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                context.CourseAssignments.Add(model);
+                context.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

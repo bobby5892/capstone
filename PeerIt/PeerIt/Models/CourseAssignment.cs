@@ -16,6 +16,7 @@ namespace PeerIt.Models
             // Lookup Course
         }
         #endregion Constructors
+
         #region Variables and Properties
         public int ID { get; set; }
         

@@ -32,7 +32,7 @@ namespace PeerIt.Repositories
 
         public bool Edit(Course model)
         {
-            Course course = FindByID(model.ID);
+            var course = FindByID(model.ID).SingleOrDefault();
 
             if (course != null)
             {
@@ -52,8 +52,10 @@ namespace PeerIt.Repositories
             if (course != null)
             {
                 context.Remove(course);
-                context.SaveChanges();
-                return true;
+                if (context.SaveChanges() > 0)
+                {
+                    return true;
+                }
             }
             return false;
         }

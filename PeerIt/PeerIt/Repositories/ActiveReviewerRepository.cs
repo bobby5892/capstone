@@ -9,8 +9,14 @@ namespace PeerIt.Repositories
     public class ActiveReviewerRepository : IGenericRepository<ActiveReviewer, int>
     {
         AppDBContext context;
-
+        /// <summary>
+        /// List of ActiveReviewers
+        /// </summary>
         public List<ActiveReviewer> ActiveReviewers { get { return this.context.ActiveReviewers.ToList<ActiveReviewer>(); } }
+        /// <summary>
+        /// Constructor that accepts the Database Context
+        /// </summary>
+        /// <param name="context"></param>
         public ActiveReviewerRepository(AppDBContext context)
         {
             this.context = context;

@@ -11,7 +11,12 @@ namespace PeerIt.Models
     public class CourseGroup
     {
         #region Constructors
-        public CourseGroup() { }
+
+        public CourseGroup()
+        {
+
+        }
+
         public CourseGroup(int courseID, string AppUserID) 
         {
             // Lookup Course

@@ -30,7 +30,7 @@ namespace UnitTests
         public ReviewRepository ReviewRepo { get; set; }
         public SettingsRepository SettingsRepo { get; set; }
 
-        ModelsTests()
+        public ModelsTests()
         {
             /* Create a in Memory Database instead of using the SQL  - Destroyed after running*/
             var optionsBuilder = new DbContextOptionsBuilder<AppDBContext>()
@@ -54,10 +54,13 @@ namespace UnitTests
             Assert.True(true);
         }
 
-        //[Fact]
-        //public void TestCommentRepoFindById()
-        //{
-        //    Comment comment = new Comment() { i}
-        //}
+
+        [Fact]
+        public void SettingsAdd()
+        {
+            var SettingToAdd = new Setting() { ID = "TEST", StringValue = "TESTED" };
+            SettingsRepo.Add(SettingToAdd);
+            Assert.True(SettingToAdd.ID == SettingsRepo.FindByID("TEST").ID);
+        }
     }
 }

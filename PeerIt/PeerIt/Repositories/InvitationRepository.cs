@@ -15,30 +15,56 @@ namespace PeerIt.Repositories
         {
             this.context = context;
         }
-
         public Invitation FindByID(int ID)
         {
-            throw new NotImplementedException();
+            foreach (Invitation invitation in this.Invitations)
+            {
+                if (invitation.ID == ID)
+                    return invitation;
+            }
+            return null;
         }
 
         public List<Invitation> GetAll()
         {
-            throw new NotImplementedException();
+            return this.Invitations;
         }
 
         public bool Edit(Invitation model)
         {
-            throw new NotImplementedException();
+            Invitation invitation = FindByID(model.ID);
+            if (invitation != null)
+            {
+                invitation = model;
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool Delete(Invitation model)
         {
-            throw new NotImplementedException();
+            Invitation invitation = FindByID(model.ID);
+            if (invitation != null)
+            {
+                Invitations.Remove(invitation);
+                return true;
+            }
+            return false;
         }
 
         public Invitation Add(Invitation model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Invitations.Add(model);
+                context.SaveChanges();
+                return Invitations[Invitations.Count - 1];
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

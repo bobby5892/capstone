@@ -18,27 +18,54 @@ namespace PeerIt.Repositories
 
         public Comment FindByID(int ID)
         {
-            throw new NotImplementedException();
+            foreach(Comment comment in this.Comments)
+            {
+                if (comment.ID == ID)
+                    return comment;
+            }
+            return null;
         }
 
         public List<Comment> GetAll()
         {
-            throw new NotImplementedException();
+            return this.Comments;
         }
 
         public bool Edit(Comment model)
         {
-            throw new NotImplementedException();
+            Comment comment = FindByID(model.ID);
+            if(comment != null)
+            {
+                comment = model;
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool Delete(Comment model)
         {
-            throw new NotImplementedException();
+            Comment comment = FindByID(model.ID);
+            if(comment != null)
+            {
+                Comments.Remove(comment);
+                return true;
+            }
+            return false;
         }
 
         public Comment Add(Comment model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Comments.Add(model);
+                context.SaveChanges();
+                return Comments[Comments.Count - 1];
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

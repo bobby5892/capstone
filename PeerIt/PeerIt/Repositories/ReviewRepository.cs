@@ -18,27 +18,54 @@ namespace PeerIt.Repositories
 
         public Review FindByID(int ID)
         {
-            throw new NotImplementedException();
+            foreach (Review review in this.Reviews)
+            {
+                if (review.ID == ID)
+                    return review;
+            }
+            return null;
         }
 
         public List<Review> GetAll()
         {
-            throw new NotImplementedException();
+            return this.Reviews;
         }
 
         public bool Edit(Review model)
         {
-            throw new NotImplementedException();
+            Review review = FindByID(model.ID);
+            if (review != null)
+            {
+                review = model;
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool Delete(Review model)
         {
-            throw new NotImplementedException();
+            Review review = FindByID(model.ID);
+            if (review != null)
+            {
+                Reviews.Remove(review);
+                return true;
+            }
+            return false;
         }
 
         public Review Add(Review model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Reviews.Add(model);
+                context.SaveChanges();
+                return Reviews[Reviews.Count - 1];
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

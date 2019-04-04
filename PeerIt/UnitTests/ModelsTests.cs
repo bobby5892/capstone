@@ -54,6 +54,7 @@ namespace UnitTests
             Assert.True(true);
         }
 
+
         [Fact]
         public void SettingsAdd()
         {

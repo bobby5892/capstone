@@ -5,13 +5,18 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 namespace PeerIt.Models
 {
+    /* Course Group is a bridging entity that shows what individual user is
+     * in what individual Course. not to be confused with a Review Group.
+     */
     public class CourseGroup
     {
         #region Constructors
+
         public CourseGroup()
         {
 
         }
+
         public CourseGroup(int courseID, string AppUserID) 
         {
             // Lookup Course

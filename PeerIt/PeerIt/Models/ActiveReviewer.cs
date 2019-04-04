@@ -8,6 +8,7 @@ namespace PeerIt.Models
 {
     public class ActiveReviewer 
     {
+        public ActiveReviewer(){}
         public int ID { get; set; }
          [Required]
         public AppUser FK_APP_USER_VIEWER { get; set; }

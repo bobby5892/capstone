@@ -8,6 +8,7 @@ namespace PeerIt.Models
     public class Course
     {
         #region Constructors
+
         public Course()
         {
 
@@ -15,6 +16,7 @@ namespace PeerIt.Models
         public Course(string name, bool isActive, int InstructorID) 
         {
             this.Name = name;
+
             this.IsActive = isActive;
             // Lookup instructor
            

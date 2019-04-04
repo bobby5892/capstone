@@ -13,6 +13,7 @@ namespace PeerIt.Models
 
         }
         #region Constructors
+        public Event() { }
         public Event(string AppUserID, string Contents) 
         {
             // Lookup User

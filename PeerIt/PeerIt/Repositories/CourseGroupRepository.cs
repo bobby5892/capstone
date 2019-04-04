@@ -18,27 +18,60 @@ namespace PeerIt.Repositories
 
         public CourseGroup FindByID(int ID)
         {
-            throw new NotImplementedException();
+            CourseGroup cGroup = from g in context.CourseGroups
+                                 where g.ID = ID
+                                 select g;
+
+            return cGroup;
         }
 
         public List<CourseGroup> GetAll()
         {
-            throw new NotImplementedException();
+            return CourseGroups;
         }
 
         public bool Edit(CourseGroup model)
         {
-            throw new NotImplementedException();
+            var cGroup = FindByID(model.ID).SingleOrDefault();
+
+            if (cGroup != null)
+            {
+                cGroup = model;
+                if (context.SaveChanges() > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool Delete(CourseGroup model)
         {
-            throw new NotImplementedException();
+            var cGroup = FindByID(model.Id).SingleOrDefault();
+
+            if (cGroup != null)
+            {
+                context.Delete(cGroup);
+                if (context.SaveChanges() > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public CourseGroup Add(CourseGroup model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                context.CourseGroups.Add(model);
+                context.SaveChanges();
+                return FindByID(model.ID);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

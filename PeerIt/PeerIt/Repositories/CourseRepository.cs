@@ -10,29 +10,47 @@ namespace PeerIt.Repositories
     {
         AppDBContext context;
 
-        public List<Course> Courses { get { return this.context.Course.ToList<Course>(); } }
+        public List<Course> Courses { get { return this.context.Courses.ToList<Course>(); } }
+        /// <summary>
+        /// Overloaded Constructor for passing a context to Course Repository
+        /// </summary>
+        /// <param name="context"></param>
         public CourseRepository(AppDBContext context)
         {
             this.context = context;
         }
-
+        /// <summary>
+        /// Find Course by ID
+        /// </summary>
+        /// <param name="ID">int</param>
+        /// <returns></returns>
         public Course FindByID(int ID)
         {
-            Course course = from c in context.Course
-                            where c.ID == ID
-                            select c;
-
-            return course;
+            Course result = null;
+            this.Courses.ForEach((course) => {
+                if (course.ID == ID)
+                {
+                    result = course;
+                }
+            });
+            return result;
         }
-
+        /// <summary>
+        /// Get all courses
+        /// </summary>
+        /// <returns></returns>
         public List<Course> GetAll()
         {
             return this.Courses;
         }
-
+        /// <summary>
+        /// Edit a course
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public bool Edit(Course model)
         {
-            var course = FindByID(model.ID).SingleOrDefault();
+            var course = FindByID(model.ID);
 
             if (course != null)
             {
@@ -44,14 +62,18 @@ namespace PeerIt.Repositories
             }
             return false;
         }
-
+        /// <summary>
+        ///  Delete a course
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public bool Delete(Course model)
         {
-            var course = FindByID(model.ID).SingleOrDefault();
+            var course = FindByID(model.ID);
 
             if (course != null)
             {
-                context.Remove(course);
+                context.Courses.Remove(course);
                 if (context.SaveChanges() > 0)
                 {
                     return true;
@@ -59,12 +81,16 @@ namespace PeerIt.Repositories
             }
             return false;
         }
-
+        /// <summary>
+        ///  Add a Course
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public Course Add(Course model)
         {
             try
             {
-                context.Course.Add(model);
+                context.Courses.Add(model);
                 context.SaveChanges();
                 return FindByID(model.ID);
             }

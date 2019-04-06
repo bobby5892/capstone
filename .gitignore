@@ -4,3 +4,7 @@ bin/*
 */.vs/*
 */obj/*
 */bin/*
+PeerIt/PeerIt/bin/*
+PeerIt/PeerIt/obj/*
+PeerIt/UnitTests/obj/*
+PeerIt/UnitTests/bin/*

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PeerIt.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -172,7 +172,7 @@ namespace PeerIt.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Course",
+                name: "Courses",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
@@ -183,13 +183,13 @@ namespace PeerIt.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Course", x => x.ID);
+                    table.PrimaryKey("PK_Courses", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Course_AspNetUsers_FK_INSTRUCTORId",
+                        name: "FK_Courses_AspNetUsers_FK_INSTRUCTORId",
                         column: x => x.FK_INSTRUCTORId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -211,7 +211,7 @@ namespace PeerIt.Migrations
                         column: x => x.FK_AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -231,7 +231,7 @@ namespace PeerIt.Migrations
                         column: x => x.FK_APP_USERId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -251,11 +251,11 @@ namespace PeerIt.Migrations
                 {
                     table.PrimaryKey("PK_CourseAssignments", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_CourseAssignments_Course_FK_COURSEID",
+                        name: "FK_CourseAssignments_Courses_FK_COURSEID",
                         column: x => x.FK_COURSEID,
-                        principalTable: "Course",
+                        principalTable: "Courses",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -275,13 +275,13 @@ namespace PeerIt.Migrations
                         column: x => x.FK_AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_CourseGroups_Course_FK_CourseID",
+                        name: "FK_CourseGroups_Courses_FK_CourseID",
                         column: x => x.FK_CourseID,
-                        principalTable: "Course",
+                        principalTable: "Courses",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -303,19 +303,19 @@ namespace PeerIt.Migrations
                         column: x => x.FK_APP_USER_RECIPIENTId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Invitations_AspNetUsers_FK_APP_USER_SENDERId",
                         column: x => x.FK_APP_USER_SENDERId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Invitations_Course_FK_COURSEID",
+                        name: "FK_Invitations_Courses_FK_COURSEID",
                         column: x => x.FK_COURSEID,
-                        principalTable: "Course",
+                        principalTable: "Courses",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -339,13 +339,13 @@ namespace PeerIt.Migrations
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_StudentAssignments_CourseAssignments_CourseAssignmentID",
                         column: x => x.CourseAssignmentID,
                         principalTable: "CourseAssignments",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -365,13 +365,13 @@ namespace PeerIt.Migrations
                         column: x => x.FK_APP_USER_VIEWERId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ActiveReviewers_StudentAssignments_FK_STUDENT_ASSIGNMENTID",
                         column: x => x.FK_STUDENT_ASSIGNMENTID,
                         principalTable: "StudentAssignments",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -393,13 +393,13 @@ namespace PeerIt.Migrations
                         column: x => x.FK_APP_USERId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Comments_StudentAssignments_FK_STUDENT_ASSIGNMENTID",
                         column: x => x.FK_STUDENT_ASSIGNMENTID,
                         principalTable: "StudentAssignments",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -421,13 +421,13 @@ namespace PeerIt.Migrations
                         column: x => x.FK_APP_USERId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Reviews_StudentAssignments_FK_STUDENT_ASSIGNMENTID",
                         column: x => x.FK_STUDENT_ASSIGNMENTID,
                         principalTable: "StudentAssignments",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -490,11 +490,6 @@ namespace PeerIt.Migrations
                 column: "FK_STUDENT_ASSIGNMENTID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Course_FK_INSTRUCTORId",
-                table: "Course",
-                column: "FK_INSTRUCTORId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_CourseAssignments_FK_COURSEID",
                 table: "CourseAssignments",
                 column: "FK_COURSEID");
@@ -508,6 +503,11 @@ namespace PeerIt.Migrations
                 name: "IX_CourseGroups_FK_CourseID",
                 table: "CourseGroups",
                 column: "FK_CourseID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Courses_FK_INSTRUCTORId",
+                table: "Courses",
+                column: "FK_INSTRUCTORId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_FK_AppUserId",
@@ -606,7 +606,7 @@ namespace PeerIt.Migrations
                 name: "CourseAssignments");
 
             migrationBuilder.DropTable(
-                name: "Course");
+                name: "Courses");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -10,8 +10,8 @@ using PeerIt.Repositories;
 namespace PeerIt.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20190402213023_initial")]
-    partial class initial
+    [Migration("20190406184920_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -262,7 +262,7 @@ namespace PeerIt.Migrations
 
                     b.HasIndex("FK_INSTRUCTORId");
 
-                    b.ToTable("Course");
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("PeerIt.Models.CourseAssignment", b =>
@@ -511,12 +511,12 @@ namespace PeerIt.Migrations
                     b.HasOne("PeerIt.Models.AppUser", "FK_APP_USER_VIEWER")
                         .WithMany()
                         .HasForeignKey("FK_APP_USER_VIEWERId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PeerIt.Models.StudentAssignment", "FK_STUDENT_ASSIGNMENT")
                         .WithMany()
                         .HasForeignKey("FK_STUDENT_ASSIGNMENTID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("PeerIt.Models.Comment", b =>
@@ -524,12 +524,12 @@ namespace PeerIt.Migrations
                     b.HasOne("PeerIt.Models.AppUser", "FK_APP_USER")
                         .WithMany()
                         .HasForeignKey("FK_APP_USERId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PeerIt.Models.StudentAssignment", "FK_STUDENT_ASSIGNMENT")
                         .WithMany()
                         .HasForeignKey("FK_STUDENT_ASSIGNMENTID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("PeerIt.Models.Course", b =>
@@ -537,7 +537,7 @@ namespace PeerIt.Migrations
                     b.HasOne("PeerIt.Models.AppUser", "FK_INSTRUCTOR")
                         .WithMany()
                         .HasForeignKey("FK_INSTRUCTORId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("PeerIt.Models.CourseAssignment", b =>
@@ -545,7 +545,7 @@ namespace PeerIt.Migrations
                     b.HasOne("PeerIt.Models.Course", "FK_COURSE")
                         .WithMany()
                         .HasForeignKey("FK_COURSEID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("PeerIt.Models.CourseGroup", b =>
@@ -553,12 +553,12 @@ namespace PeerIt.Migrations
                     b.HasOne("PeerIt.Models.AppUser", "FK_AppUser")
                         .WithMany()
                         .HasForeignKey("FK_AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PeerIt.Models.Course", "FK_Course")
                         .WithMany()
                         .HasForeignKey("FK_CourseID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("PeerIt.Models.Event", b =>
@@ -566,7 +566,7 @@ namespace PeerIt.Migrations
                     b.HasOne("PeerIt.Models.AppUser", "FK_AppUser")
                         .WithMany()
                         .HasForeignKey("FK_AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("PeerIt.Models.ForgotPassword", b =>
@@ -574,7 +574,7 @@ namespace PeerIt.Migrations
                     b.HasOne("PeerIt.Models.AppUser", "FK_APP_USER")
                         .WithMany()
                         .HasForeignKey("FK_APP_USERId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("PeerIt.Models.Invitation", b =>
@@ -582,17 +582,17 @@ namespace PeerIt.Migrations
                     b.HasOne("PeerIt.Models.AppUser", "FK_APP_USER_RECIPIENT")
                         .WithMany()
                         .HasForeignKey("FK_APP_USER_RECIPIENTId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PeerIt.Models.AppUser", "FK_APP_USER_SENDER")
                         .WithMany()
                         .HasForeignKey("FK_APP_USER_SENDERId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PeerIt.Models.Course", "FK_COURSE")
                         .WithMany()
                         .HasForeignKey("FK_COURSEID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("PeerIt.Models.Review", b =>
@@ -600,12 +600,12 @@ namespace PeerIt.Migrations
                     b.HasOne("PeerIt.Models.AppUser", "FK_APP_USER")
                         .WithMany()
                         .HasForeignKey("FK_APP_USERId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PeerIt.Models.StudentAssignment", "FK_STUDENT_ASSIGNMENT")
                         .WithMany()
                         .HasForeignKey("FK_STUDENT_ASSIGNMENTID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("PeerIt.Models.StudentAssignment", b =>
@@ -613,12 +613,12 @@ namespace PeerIt.Migrations
                     b.HasOne("PeerIt.Models.AppUser", "AppUser")
                         .WithMany()
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PeerIt.Models.CourseAssignment", "CourseAssignment")
                         .WithMany()
                         .HasForeignKey("CourseAssignmentID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

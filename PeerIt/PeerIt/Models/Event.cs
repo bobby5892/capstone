@@ -8,17 +8,6 @@ namespace PeerIt.Models
 {
     public class Event
     {
-        public Event()
-        {
-
-        }
-        #region Constructors
-        public Event() { }
-        public Event(string AppUserID, string Contents) 
-        {
-            // Lookup User
-        }
-        #endregion Constructors
 
         #region Variables and Properties
         public int ID { get; set; }

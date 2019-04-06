@@ -12,13 +12,23 @@ namespace PeerIt
 {
     public class Program
     {
+        /// <summary>
+        /// Loads the webhost
+        /// </summary>
+        /// <param name="args"></param>
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
         }
-
+        /// <summary>
+        /// Configure the webhost
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+            .UseDefaultServiceProvider(options =>
+                    options.ValidateScopes = false);
     }
 }

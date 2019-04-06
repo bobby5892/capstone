@@ -8,18 +8,6 @@ namespace PeerIt.Models
 {
     public class CourseAssignment
     {
-        #region Constructors
-
-        public CourseAssignment()
-        {
-
-        }
-        public CourseAssignment(string name, int courseID) 
-        {
-            this.Name = name;
-            // Lookup Course
-        }
-        #endregion Constructors
 
         #region Variables and Properties
         public int ID { get; set; }

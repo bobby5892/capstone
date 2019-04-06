@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PeerIt.Interfaces
 {
-    interface IGenericRepository<T,J>
+    public interface IGenericRepository<T,J>
     {
         /// <summary>
         /// Lookup a Model byID

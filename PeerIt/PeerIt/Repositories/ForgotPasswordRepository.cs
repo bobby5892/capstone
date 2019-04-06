@@ -11,35 +11,97 @@ namespace PeerIt.Repositories
     {
         AppDBContext context;
 
+        /// <summary>
+        /// Returns all ForgotPassword objects in the dbcontext.
+        /// </summary>
+        /// <returns></returns>
         public List<ForgotPassword> ForgotPasswords { get { return this.context.ForgotPasswords.ToList<ForgotPassword>(); } }
+
+        /// <summary>
+        /// Overloaded Constructor
+        /// </summary>
+        /// <returns></returns>
         public ForgotPasswordRepository(AppDBContext context)
         {
             this.context = context;
         }
 
+        /// <summary>
+        /// Finds a ForgotPassword in the dbcontext by the ID
+        /// </summary>
+        /// <returns></returns>
         public ForgotPassword FindByID(int ID)
         {
-            throw new NotImplementedException();
+            ForgotPassword result = null;
+            this.ForgotPasswords.ForEach((forgotPassword) => {
+                if (forgotPassword.ID == ID)
+                {
+                    result = forgotPassword;
+                }
+            });
+            return result;
         }
 
+        /// <summary>
+        /// Returns all the ForgotPasswords in the dbcontext.
+        /// </summary>
+        /// <returns></returns>
         public List<ForgotPassword> GetAll()
         {
-            throw new NotImplementedException();
+            return ForgotPasswords;
         }
 
+        /// <summary>
+        /// Edits abstract ForgotPassword in the dbcontext and returns a bool
+        /// indicating if it is successful.
+        /// </summary>
+        /// <returns></returns>
         public bool Edit(ForgotPassword model)
         {
-            throw new NotImplementedException();
+            ForgotPassword forgotPassword = FindByID(model.ID);
+            if (forgotPassword != null)
+            {
+                forgotPassword = model;
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
+        /// <summary>
+        /// Deletes a ForgotPassword from the dbcontext, and returns a bool
+        /// indicating if it is successful.
+        /// </summary>
+        /// <returns></returns>
         public bool Delete(ForgotPassword model)
         {
-            throw new NotImplementedException();
+            ForgotPassword temp = FindByID(model.ID);
+            if (temp != null)
+            {
+                context.ForgotPasswords.Remove(model);
+                context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
+        /// <summary>
+        /// Adds a ForgotPassword to the dbcontext, and returns a copy if it
+        /// is successful.
+        /// </summary>
+        /// <returns></returns>
         public ForgotPassword Add(ForgotPassword model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                ForgotPasswords.Add(model);
+                context.SaveChanges();
+                return model;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

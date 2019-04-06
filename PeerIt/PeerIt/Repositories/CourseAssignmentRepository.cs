@@ -10,29 +10,47 @@ namespace PeerIt.Repositories
     {
         AppDBContext context;
 
+        /// <summary>
+        /// Returns all of the CourseAssignment objects in the dbcontext
+        /// </summary>
+        /// <returns></returns>
         public List<CourseAssignment> CourseAssignments { get { return this.context.CourseAssignments.ToList<CourseAssignment>(); } }
         public CourseAssignmentRepository(AppDBContext context)
         {
             this.context = context;
         }
 
+        /// <summary>
+        /// Finds a CouseAssignment object by it's ID
+        /// </summary>
+        /// <returns></returns>
         public CourseAssignment FindByID(int ID)
         {
-            CourseAssignment cAssign = from a in context.CourseAssignments
-                                       where a.ID == ID
-                                       select a;
-
-            return cAssign;
+            foreach (CourseAssignment courseAssignment in this.CourseAssignments)
+            {
+                if (courseAssignment.ID == ID)
+                    return courseAssignment;
+            }
+            return null;
         }
 
+        /// <summary>
+        /// Returns all of the CourseAssignments in the dbcontext
+        /// </summary>
+        /// <returns></returns>
         public List<CourseAssignment> GetAll()
         {
             return this.CourseAssignments;
         }
 
+        /// <summary>
+        /// Edits a CourseAssignment in the dbcontext and returns a bool
+        /// indicating if it is successful.
+        /// </summary>
+        /// <returns></returns>
         public bool Edit(CourseAssignment model)
         {
-            var cAssign = FindByID(model.ID).SingleOrDefault();
+            var cAssign = FindByID(model.ID);
 
             if (cAssign != null)
             {
@@ -45,13 +63,18 @@ namespace PeerIt.Repositories
             return false;
         }
 
+        /// <summary>
+        /// Deletes a CourseAssignment from he dbcontext, and returns a bool
+        /// indicating if it is successful
+        /// </summary>
+        /// <returns></returns>
         public bool Delete(CourseAssignment model)
         {
-            var cAssign = FindByID(model.ID).SingleOrDefault();
+            var cAssign = FindByID(model.ID);
 
             if (cAssign != null)
             {
-                context.Delete(cAssign);
+                context.CourseAssignments.Remove(cAssign);
                 if (context.SaveChanges() > 0)
                 {
                     return true;
@@ -60,13 +83,18 @@ namespace PeerIt.Repositories
             return false;
         }
 
+        /// <summary>
+        /// Adds a CourseAssignment to the dbcontext, and returns a copy
+        /// if it is successful.
+        /// </summary>
+        /// <returns></returns>
         public CourseAssignment Add(CourseAssignment model)
         {
             try
             {
                 context.CourseAssignments.Add(model);
                 context.SaveChanges();
-                return true;
+                return model;
             }
             catch
             {

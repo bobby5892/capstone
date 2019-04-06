@@ -9,13 +9,23 @@ namespace PeerIt.Repositories
     public class CommentRepository  : IGenericRepository<Comment, int>
     {
         AppDBContext context;
-
+        /// <summary>
+        /// Returns List of Comments
+        /// </summary>
         public List<Comment> Comments { get { return this.context.Comments.ToList<Comment>(); } }
+        /// <summary>
+        /// Overloaded Constructor that accepts an AppDBContext
+        /// </summary>
+        /// <param name="context"></param>
         public CommentRepository(AppDBContext context)
         {
             this.context = context;
         }
-
+        /// <summary>
+        /// Find a Comment by ID
+        /// </summary>
+        /// <param name="ID">int</param>
+        /// <returns></returns>
         public Comment FindByID(int ID)
         {
             foreach(Comment comment in this.Comments)
@@ -25,12 +35,19 @@ namespace PeerIt.Repositories
             }
             return null;
         }
-
+        /// <summary>
+        /// Get a list of all Comments
+        /// </summary>
+        /// <returns></returns>
         public List<Comment> GetAll()
         {
             return this.Comments;
         }
-
+        /// <summary>
+        /// Edit a comment
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public bool Edit(Comment model)
         {
             Comment comment = FindByID(model.ID);
@@ -42,7 +59,11 @@ namespace PeerIt.Repositories
             }
             return false;
         }
-
+        /// <summary>
+        /// Delete a comment
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public bool Delete(Comment model)
         {
             Comment comment = FindByID(model.ID);
@@ -53,7 +74,11 @@ namespace PeerIt.Repositories
             }
             return false;
         }
-
+        /// <summary>
+        /// Add a comment
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public Comment Add(Comment model)
         {
             try

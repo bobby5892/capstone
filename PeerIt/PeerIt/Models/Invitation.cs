@@ -21,13 +21,6 @@ namespace PeerIt.Models
 
         [Required]
         public string InvitationHash { get; set; }
-        public Invitation()
-        {
 
-        }
-        public bool CheckHash(string password)
-        {
-            return false;
-        }
     }
 }

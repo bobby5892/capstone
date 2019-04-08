@@ -6,11 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using PeerIt.Models;
 using PeerIt.Repositories;
 using PeerIt.Interfaces;
+using PeerIt.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace PeerIt.Controllers
 {
+    /// <summary>
+    /// A Controller that handles all generic account related activities.
+    /// </summary>
     public class AccountController : Controller
     {
         #region Private Repository Variables
@@ -42,10 +46,12 @@ namespace PeerIt.Controllers
         /// <param name="returnUrl"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl)
+        // Needs work!
+        public JsonResult Login(string returnUrl)
         {
+            JsonResponse<bool> response = new JsonResponse<bool>();
             ViewBag.returnUrl = returnUrl;
-            return View();
+            return Json(response);
         }
         /// <summary>
         /// Do Login
@@ -56,9 +62,11 @@ namespace PeerIt.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginModel details,
+        public async Task<JsonResult> Login(LoginModel details,
                 string returnUrl)
         {
+            JsonResponse<AppUser> response = new JsonResponse<AppUser>();
+
             if (ModelState.IsValid)
             {
                 AppUser user = await userManager.FindByEmailAsync(details.Email);
@@ -68,34 +76,42 @@ namespace PeerIt.Controllers
                     Microsoft.AspNetCore.Identity.SignInResult result =
                             await signInManager.PasswordSignInAsync(
                                 user, details.Password, false, false);
+                    
                     if (result.Succeeded)
                     {
-                        return Redirect(returnUrl ?? "/");
+                        response.Data.Add(user);
+                        return Json(response);
                     }
                 }
                 ModelState.AddModelError(nameof(LoginModel.Email),
                     "Invalid user or password");
             }
-            return View(details);
+
+            response.Error.Add(new Error("FailedLogin", "Invalid Username or Password"));
+
+            return Json(response);
         }
         /// <summary>
         /// Handle Logout
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        public async Task<IActionResult> Logout()
+        public async Task<JsonResult> Logout()
         {
+            JsonResponse<AppUser> response = new JsonResponse<AppUser>();
             await signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return Json(response);
         }
     /// <summary>
     ///  Show access Denied
     /// </summary>
     /// <returns></returns>
         [AllowAnonymous]
-        public IActionResult AccessDenied()
+        public JsonResult AccessDenied()
         {
-            return View();
+            JsonResponse<bool> response = new JsonResponse<bool>();
+            response.Error.Add(new Error("AccessDenied", "You are not allowed here Naive."));
+            return Json(response);
         }
 
         #endregion Constructors

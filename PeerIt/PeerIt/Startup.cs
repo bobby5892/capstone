@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using PeerIt.Models;
 using PeerIt.Repositories;
 using PeerIt.Interfaces;
+
 /*
  *  Requires .net core 2.2  - https://dotnet.microsoft.com/download/thank-you/dotnet-sdk-2.2.105-windows-x64-installer
  * 
@@ -59,7 +60,7 @@ namespace PeerIt
                 opts.Password.RequireUppercase = false;
                 opts.Password.RequireDigit = false;
             }).AddEntityFrameworkStores<AppDBContext>()
-        .AddDefaultTokenProviders();
+            .AddDefaultTokenProviders();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

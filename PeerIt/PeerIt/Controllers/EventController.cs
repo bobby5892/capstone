@@ -20,6 +20,11 @@ namespace PeerIt.Controllers
         private UserManager<AppUser> userManager;
         private EventRepository eventRepository;
 
+        /// <summary>
+        /// OverLoaded Constructor
+        /// </summary>
+        /// <param name="userMgr"></param>
+        /// <param name="eventRepo"></param>
         public EventController(UserManager<AppUser> userMgr,
             EventRepository eventRepo)
         {
@@ -31,6 +36,11 @@ namespace PeerIt.Controllers
 
         #region Methods that return Json
 
+        /// <summary>
+        /// Retrieves Events by the AppUser's ID.
+        /// </summary>
+        /// <param name="userID"></param>
+        /// <returns></returns>
         public async Task<JsonResult> GetEventsByUser(string userID)
         {
             JsonResponse<List<Event>> response = new JsonResponse<List<Event>>();

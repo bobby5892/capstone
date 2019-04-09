@@ -48,12 +48,24 @@ namespace UnitTests
             this.ReviewRepo = new ReviewRepository(this.Context);
             this.SettingsRepo = new SettingsRepository(this.Context);
         }
+
         [Fact]
         public void Test1()
         {
             Assert.True(true);
         }
 
+        #region Invitation Repo Tests
+
+        [Fact]
+        public void InviteAdd()
+        {
+
+        }
+
+        #endregion Invitation Repo Tests
+
+        #region Settings Repo Testing
 
         [Fact]
         public void SettingsAdd()
@@ -62,5 +74,20 @@ namespace UnitTests
             SettingsRepo.Add(SettingToAdd);
             Assert.True(SettingToAdd.ID == SettingsRepo.FindByID("TEST").ID);
         }
+
+        [Fact]
+        public void SettingsEdit()
+        {
+            Setting settingToEdit = new Setting() { ID = "EDIT TEST", StringValue = "NOT TESTED" };
+            SettingsRepo.Add(settingToEdit);
+            Assert.True(settingToEdit.StringValue == SettingsRepo.FindByID("EDIT TEST").StringValue);
+
+            Setting editSetting = SettingsRepo.FindByID("EDIT TEST");
+            editSetting.StringValue = "Tested";
+            SettingsRepo.Edit(editSetting);
+            Assert.True(SettingsRepo.FindByID("EDIT TEST").StringValue == editSetting.StringValue);
+        }
+
+        #endregion Settings Repo Testing
     }
 }

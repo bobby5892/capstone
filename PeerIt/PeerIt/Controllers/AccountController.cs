@@ -52,13 +52,14 @@ namespace PeerIt.Controllers
         /// <param name="returnUrl"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        // Needs work!
+        // We may not need this method - Javascript potentially can pull up webix form for login
         public JsonResult Login(string returnUrl)
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
             ViewBag.returnUrl = returnUrl;
             return Json(response);
         }
+
         /// <summary>
         /// Do Login
         /// </summary>
@@ -122,7 +123,7 @@ namespace PeerIt.Controllers
         }
 
         /// <summary>
-        /// Create a new account
+        /// Create a new account.
         /// </summary>
         /// <param name="firstName"></param>
         /// <param name="lastName"></param>

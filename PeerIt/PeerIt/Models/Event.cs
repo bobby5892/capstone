@@ -15,7 +15,6 @@ namespace PeerIt.Models
         [Required]        
         public AppUser FK_AppUser { get; set; }
 
-        
         [Required(ErrorMessage ="Content is a required field"),StringLength(5000, ErrorMessage = "Must be less than 5,000 characters")]            
         public string Content { get; set; }
         

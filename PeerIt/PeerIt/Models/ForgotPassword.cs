@@ -16,10 +16,5 @@ namespace PeerIt.Models
         [Required]        
         public string ResetHash { get; set; }
 
-
-        private string generateHash()
-        {
-            return "super secret password hash";
-        }
     }
 }

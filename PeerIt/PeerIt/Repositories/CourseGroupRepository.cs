@@ -11,28 +11,49 @@ namespace PeerIt.Repositories
         AppDBContext context;
 
         public List<CourseGroup> CourseGroups { get { return this.context.CourseGroups.ToList<CourseGroup>(); } }
+
+        /// <summary>
+        /// Overloaded Constructor
+        /// </summary>
+        /// <returns></returns>
         public CourseGroupRepository(AppDBContext context)
         {
             this.context = context;
         }
 
+        /// <summary>
+        /// Finds abstract CourseGroup Object by an ID
+        /// </summary>
+        /// <returns></returns>
         public CourseGroup FindByID(int ID)
         {
-            CourseGroup cGroup = from g in context.CourseGroups
-                                 where g.ID = ID
-                                 select g;
-
-            return cGroup;
+            CourseGroup result = null;
+            this.CourseGroups.ForEach((courseGroup) => {
+                if (courseGroup.ID == ID)
+                {
+                    result = courseGroup;
+                }
+            });
+            return result;
         }
 
+        /// <summary>
+        /// Returns all CourseGroup objects in the dbcontext
+        /// </summary>
+        /// <returns></returns>
         public List<CourseGroup> GetAll()
         {
             return CourseGroups;
         }
 
+        /// <summary>
+        /// Edits a CourseGroup object in the dbcontext, and returns a copy
+        /// if it is successful
+        /// </summary>
+        /// <returns></returns>
         public bool Edit(CourseGroup model)
         {
-            var cGroup = FindByID(model.ID).SingleOrDefault();
+            var cGroup = FindByID(model.ID);
 
             if (cGroup != null)
             {
@@ -45,13 +66,18 @@ namespace PeerIt.Repositories
             return false;
         }
 
+        /// <summary>
+        /// Deletes a CourseGroup object from the dbcontext, and returns a
+        /// copy if it is successful
+        /// </summary>
+        /// <returns></returns>
         public bool Delete(CourseGroup model)
         {
-            var cGroup = FindByID(model.Id).SingleOrDefault();
+            var cGroup = FindByID(model.ID);
 
             if (cGroup != null)
             {
-                context.Delete(cGroup);
+                context.CourseGroups.Remove(cGroup);
                 if (context.SaveChanges() > 0)
                 {
                     return true;
@@ -60,6 +86,11 @@ namespace PeerIt.Repositories
             return false;
         }
 
+        /// <summary>
+        /// Adds a CourseGroup to the dbcontext, and returns a copy if it is
+        /// successful
+        /// </summary>
+        /// <returns></returns>
         public CourseGroup Add(CourseGroup model)
         {
             try
@@ -73,5 +104,6 @@ namespace PeerIt.Repositories
                 return null;
             }
         }
+
     }
 }

@@ -33,9 +33,10 @@ namespace PeerIt
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            /* Enity Framework */
             services.AddDbContext<AppDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local"]));
-
+            
+            /* Add Repositories */
             services.AddTransient<IGenericRepository<ActiveReviewer,int>, ActiveReviewerRepository>();
             services.AddTransient<IGenericRepository<Comment, int>, CommentRepository>();
             services.AddTransient<IGenericRepository<CourseAssignment, int>, CourseAssignmentRepository>();
@@ -47,6 +48,20 @@ namespace PeerIt
             services.AddTransient<IGenericRepository<Invitation, int>, InvitationRepository>();
             services.AddTransient<IGenericRepository<Review, int>, ReviewRepository>();
             services.AddTransient<IGenericRepository<Setting, string>, SettingsRepository>();
+
+            /* Users */
+            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local"]));
+            services.AddIdentity<AppUser, IdentityRole>(opts => {
+                opts.User.RequireUniqueEmail = true;
+                opts.Password.RequiredLength = 6;
+                opts.Password.RequireNonAlphanumeric = false;
+                opts.Password.RequireLowercase = false;
+                opts.Password.RequireUppercase = false;
+                opts.Password.RequireDigit = false;
+            }).AddEntityFrameworkStores<AppDBContext>()
+        .AddDefaultTokenProviders();
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,8 +71,53 @@ namespace PeerIt
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+            }
+            // https://github.com/aspnet/Identity/issues/1065
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var signInManager = serviceScope.ServiceProvider.GetService<SignInManager<AppUser>>();
+                var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>();
+            }
 
-            app.UseMvc();
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
+            app.UseAuthentication();
+
+            //AppDBContext.CreateAdminAccount(app.ApplicationServices, Configuration).Wait();
+            app.UseMvc(routes =>
+            {
+                //Custom route for getting single complaint
+                /* routes.MapRoute(
+                    "GetComplaint",
+                    "Complaint/Get/{id}",
+                    new { controller = "Complaint", action = "GetComplaint" }
+                 );
+                 */
+                 routes.MapRoute(
+                    "GetSetting",
+                    "Setting/GetSetting/{id}",
+                    new { controller = "Settings", action = "GetSetting" }
+                 );
+                routes.MapRoute(
+                    "EditSetting",
+                    "Setting/EditSetting/{id}",
+                    new { controller = "Settings", action = "EditSetting" }
+                );
+                routes.MapRoute(
+                    "GetSettings",
+                    "Setting/",
+                    new { controller = "Settings", action = "GetSettings" }
+                );
+
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }

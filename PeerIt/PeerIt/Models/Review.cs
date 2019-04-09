@@ -21,6 +21,5 @@ namespace PeerIt.Models
     	public string Content {get; set;}
     	public DateTime TimestampCreated {get; set;}
 
-
     }
 }

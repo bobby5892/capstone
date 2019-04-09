@@ -7,16 +7,6 @@ namespace PeerIt.Models
 {
     public class Course
     {
-        #region Constructors
-        public Course() { }
-        public Course(string name, bool isActive, int InstructorID) 
-        {
-       //     this.CourseName = name;
-            this.IsActive = isActive;
-            // Lookup instructor
-           
-        }
-        #endregion Constructors
 
         #region Variables and Properties
         public int ID { get; set; }
@@ -30,6 +20,10 @@ namespace PeerIt.Models
         [Required]            
         public AppUser FK_INSTRUCTOR {get; set;}
 
+        /// <summary>
+        /// A list of the users in the class
+        /// </summary>
+       // public ICollection<AppUser> Students { get; set; }
         #endregion Variables and Properties
 
     }

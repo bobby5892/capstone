@@ -3,10 +3,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using PeerIt.Models;
+using PeerIt.Infrastructure;
+using PeerIt.ViewModels;
+using PeerIt.Interfaces;
 namespace PeerIt.Controllers
 {
     public class CourseController : Controller
     {
+        private UserManager<AppUser> usrMgr;
+        public IGenericRepository<Course, int> courseRepository;
+        public CourseController(IGenericRepository<Course, int> courseRepository, UserManager<AppUser> usrMgr)
+        {
+            this.courseRepository = courseRepository;
+            this.usrMgr = usrMgr;
+        }
+        /// <summary>
+        /// Get a List of courses
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        
+
+        [HttpGet]
+        public async Task<JsonResult>  getCourses() {
+            JsonResponse<Course> response = new JsonResponse<Course>();
+            //   response.Error.Add(new Error() { Name = "Course", Description = "No Course found by that ID" });
+            // An Instructor is only going to see courses they are teaching
+            // A student is only going to see courses they are in
+            // an admin is going to see all courses
+            courseRepository.GetAll().ForEach(course => {
+                response.Data.Add(course);
+            });
+            var isStudent = HttpContext.User.IsInRole("student");
+          //var roles = await usrMgr.GetRolesAsync(user); 
+            return Json(response);
+        }
+        //getCourse(int courseID)[any user]
+        //getStudents(int courseID) [instructor, admin]
+        //getStudents(int courseID) [instructor, admin]
+        //getStudentsUngraded(int courseID) [instructor, admin]
+        //getCoursesByUser(string userID) [any user]
+
+        /*GET +(LIST<COURSE>) getCourses() [anyUser] - Change results depending on role
+        GET +(COURSE) getCourse(int courseID) [anyUser]
+        GET + (LIST<APP_USER>) getStudents(int courseID) [instructor, admin]
+        GET + (LIST<APP_USER>) getStudentsUngraded(int courseID) [instructor, admin]
+        GET + (LIST<COURSE>) getCoursesByUser(string userID) [any user]
+        PATCH +(bool) toggleEnabled(int courseID) [instructor, admin]
+        PUT +(bool) setInstructor(int courseID, string userId)  [admin]
+        PUT +(bool) setName(int courseID, string name) [admin]
+        POST + (bool) createCourse(string courseName) [admin, instructor]
+        DELETE + (bool) deleteCourse(int courseID, string courseName) [admin, instructor]*/
+
     }
 }

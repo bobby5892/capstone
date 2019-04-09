@@ -52,7 +52,7 @@ namespace PeerIt.Controllers
         /// <param name="returnUrl"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        // We may not need this method - Javascript potentially can pull up webix form for login
+        // We may not need this method - Javascript potentially can pull up webix form for login.
         public JsonResult Login(string returnUrl)
         {
             JsonResponse<bool> response = new JsonResponse<bool>();

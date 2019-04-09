@@ -6,6 +6,9 @@ using PeerIt.Models;
 using PeerIt.Interfaces;
 namespace PeerIt.Repositories
 {
+    /// <summary>
+    /// Student assignment Repository
+    /// </summary>
     public class StudentAssignmentRepository : IGenericRepository<StudentAssignment, int>
     {
         AppDBContext context;

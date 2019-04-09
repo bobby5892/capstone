@@ -24,12 +24,21 @@ namespace PeerIt.Controllers
         private StudentAssignment studentAssignment;
         private UserManager<AppUser> userManager;
 
+        /// <summary>
+        /// Creates a review controller object and passes the user manager and repos
+        /// </summary>
+        /// <param name="userMgr"></param>
+        /// <param name="repo"></param>
         public ReviewController(UserManager<AppUser> userMgr,ReviewRepository repo)
         {
             userManager = userMgr;
             reviewRepo = repo;
         }
-
+        /// <summary>
+        /// Gets all the reviews with the passed assignment id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public JsonResult GetReviewsByAssignmentId(int id)
         {
             response = new JsonResponse<Review>();
@@ -50,6 +59,11 @@ namespace PeerIt.Controllers
             response.Error.Add(new Error() { Name = "No Reviews", Description = "No reviews found for that assignment" });
             return Json(response);
         }
+        /// <summary>
+        /// Gets the review at the passed id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public JsonResult GetReviewById(int id)
         {
             response = new JsonResponse<Review>();
@@ -61,6 +75,13 @@ namespace PeerIt.Controllers
             response.Error.Add(new Error() { Name = "No Review", Description = "No Review for that Id" });
             return Json(response);
         }
+        /// <summary>
+        /// Creates a new review and adds it to the database
+        /// </summary>
+        /// <param name="contents"></param>
+        /// <param name="userId"></param>
+        /// <param name="studentAssignmentId"></param>
+        /// <returns></returns>
         public async Task<JsonResult> CreateReview(string contents, string userId, int studentAssignmentId)
         {
             response = new JsonResponse<Review>();
@@ -73,6 +94,7 @@ namespace PeerIt.Controllers
             }
             try
             {
+                //if(ModelState.IsValid)
                 review = new Review() { Content = contents, FK_APP_USER = user, FK_STUDENT_ASSIGNMENT = studentAssignment };
                 reviewRepo.Add(review);
                 response.Data.Add(review);

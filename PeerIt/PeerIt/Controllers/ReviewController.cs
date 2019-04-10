@@ -37,16 +37,16 @@ namespace PeerIt.Controllers
         /// <summary>
         /// Gets all the reviews with the passed assignment id
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="assignmentId"></param>
         /// <returns></returns>
-        public JsonResult GetReviewsByAssignmentId(int id)
+        public JsonResult GetReviewsByAssignmentId(int assignmentId)
         {
             response = new JsonResponse<Review>();
             reviews = reviewRepo.GetAll();
 
             foreach (Review r in reviews)
             {
-                if (id == r.FK_STUDENT_ASSIGNMENT.ID)
+                if (assignmentId == r.FK_STUDENT_ASSIGNMENT.ID)
                 {
                     response.Data.Add(r);
                 }
@@ -87,6 +87,7 @@ namespace PeerIt.Controllers
             response = new JsonResponse<Review>();
             AppUser user = await GetCurrentUserById(userId);
             studentAssignment = studentAssignmentRepo.FindByID(studentAssignmentId);
+
             if(studentAssignment == null)
             {
                 response.Error.Add(new Error() {Name = "No Student Assignment", Description = "No student assignment for that id"});

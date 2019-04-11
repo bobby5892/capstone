@@ -68,7 +68,8 @@ namespace PeerIt.Controllers
         {
             response = new JsonResponse<Review>();
             review = reviewRepo.FindByID(id);
-            if(response.Success)
+            response.Data.Add(review);
+            if(response.TotalResults < 0)
             {
                 return Json(response);
             }
@@ -95,7 +96,6 @@ namespace PeerIt.Controllers
             }
             try
             {
-                //if(ModelState.IsValid)
                 review = new Review() { Content = contents, FK_APP_USER = user, FK_STUDENT_ASSIGNMENT = studentAssignment };
                 reviewRepo.Add(review);
                 response.Data.Add(review);

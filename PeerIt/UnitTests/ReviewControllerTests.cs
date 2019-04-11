@@ -27,7 +27,9 @@ namespace UnitTests
 
         private Microsoft.AspNetCore.Identity.UserManager<AppUser> userManager;
         private ReviewController reviewController;
+        private Review testReview;
         private JsonResult response;
+        private string jResponse;
 
         public ReviewControllerTests()
         {
@@ -55,10 +57,8 @@ namespace UnitTests
             Course course = new Course() { ID = 5, FK_INSTRUCTOR = testAppUser, IsActive = true };
             CourseAssignment courseAssignment = new CourseAssignment() { ID = 4, FK_COURSE = course, };
             StudentAssignment studentAssignment = new StudentAssignment() { ID = 2, AppUser = testAppUser, CourseAssignment = courseAssignment,};
-            Review review = new Review() { ID = 6, FK_APP_USER = testAppUser, FK_STUDENT_ASSIGNMENT = studentAssignment, Content = "Lots of content" };
+            testReview = new Review() { ID = 6, FK_APP_USER = testAppUser, FK_STUDENT_ASSIGNMENT = studentAssignment, Content = "Lots of content" };
 
-
-            //ReviewRepo.Add(review);
 
             #endregion
         }
@@ -66,22 +66,43 @@ namespace UnitTests
         [Fact]
         public void GetReviewByAssignmentIdTest()
         {
+            ReviewRepo.Add(testReview);
             int assignmentId = 2;
-            reviewController = new ReviewController(userManager, ReviewRepo);
             response = reviewController.GetReviewsByAssignmentId(assignmentId);
-            JsonResponse<Review> review = JsonConvert.DeserializeObject<JsonResponse<Review>>(response.ToString());
-            Assert.True(review.Data[0].ID == 6);
-          
+
+            jResponse = JsonConvert.SerializeObject(response.Value);
+            JsonResponse<Review> review = JsonConvert.DeserializeObject<JsonResponse<Review>>(jResponse);
+            Assert.True(review.Data[0].ID == 6);  
         }
         [Fact]
-        public void GetReviewByIdTest()
+        public void GetReviewByIdTestWithValidId()
         {
+            ReviewRepo.Add(testReview);
+            int reviewId = 6;
 
+            response = reviewController.GetReviewById(reviewId);
+            jResponse = JsonConvert.SerializeObject(response.Value);
+            JsonResponse<Review> review = JsonConvert.DeserializeObject<JsonResponse<Review>>(jResponse);
+
+            Assert.True(review.Data[0].FK_STUDENT_ASSIGNMENT.ID == 2);
         }
         [Fact]
-        public void CreateReviewTest()
+        public void GetReviewByIdTestWithInValidId()
         {
+            ReviewRepo.Add(testReview);
+            int reviewId = 5;
 
+            response = reviewController.GetReviewById(reviewId);
+            jResponse = JsonConvert.SerializeObject(response.Value);
+            JsonResponse<Review> review = JsonConvert.DeserializeObject<JsonResponse<Review>>(jResponse);
+
+            Assert.True(review.Error[0].Name == "No Review");
+        }
+        [Fact]
+        public async void CreateReviewTest()
+        {
+            await reviewController.CreateReview("TestReviewContents", "1", 2);
+            Assert.True(ReviewRepo.FindByID(0).Content == "TestReviewContents");
         }
     }
 }

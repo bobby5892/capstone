@@ -14,14 +14,17 @@ namespace PeerIt.Controllers
     public class CourseController : Controller
     {
         private UserManager<AppUser> usrMgr;
-        public IGenericRepository<Course, int> courseRepository;
-        public IGenericRepository<CourseGroup, int> courseGroupRepository;
+        private IGenericRepository<Course, int> courseRepository;
+        private IGenericRepository<CourseGroup, int> courseGroupRepository;
+        private IGenericRepository<CourseAssignment, int> courseAssignmentRepository;
         public CourseController(IGenericRepository<Course, int> courseRepository,
             IGenericRepository<CourseGroup, int> courseGroupRepository,
+            IGenericRepository<CourseAssignment, int> courseAssignmentRepository,
             UserManager<AppUser> usrMgr)
         {
             this.courseRepository = courseRepository;
             this.courseGroupRepository = courseGroupRepository;
+            this.courseAssignmentRepository = courseAssignmentRepository;
             this.usrMgr = usrMgr;
         }
         /// <summary>
@@ -111,13 +114,23 @@ namespace PeerIt.Controllers
         //[instructor, admin]
         public JsonResult getStudentsUngraded(int courseID)
         {
-            return null;
+            throw new NotImplementedException();
         }
         [HttpGet]
         //[any user]
-        public JsonResult getCoursesByUser(string userID)
+        public async Task<JsonResult> getCoursesByUser(string userID)
         {
-            return null;
+            AppUser user = await this.findAppUserbyID(userID);
+            JsonResponse<Course> response = new JsonResponse<Course>();
+            List<CourseGroup> courseGroups = courseGroupRepository.GetAll();
+            courseGroups.ForEach(courseGroup =>
+            {
+                if (courseGroup.FK_AppUser == user){
+                    response.Data.Add(courseGroup.FK_Course);
+                }
+            });
+
+            return Json(response);
         }
 
 
@@ -126,14 +139,21 @@ namespace PeerIt.Controllers
         GET + (LIST<APP_USER>) getStudents(int courseID) [instructor, admin]
         GET + (LIST<APP_USER>) getStudentsUngraded(int courseID) [instructor, admin]
         GET + (LIST<COURSE>) getCoursesByUser(string userID) [any user]
-        
-        
-        
+
+
+
         PATCH +(bool) toggleEnabled(int courseID) [instructor, admin]
         PUT +(bool) setInstructor(int courseID, string userId)  [admin]
         PUT +(bool) setName(int courseID, string name) [admin]
         POST + (bool) createCourse(string courseName) [admin, instructor]
         DELETE + (bool) deleteCourse(int courseID, string courseName) [admin, instructor]*/
+        private async Task<AppUser> findAppUserbyID(string userID)
+        {
+            AppUser user = await usrMgr.FindByIdAsync(userID);
+            return user;
+
+        }
+
 
     }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+//import logo from './logo.svg';
 import './App.css';
 import Portal from './containers/portal.js';
 import Login from './containers/Login.js';
@@ -12,16 +12,22 @@ constructor(props) {
     
     // Remember to use this.setState({currentUser : something}); 
   }
-	
  // / <Login  currentUser={this.state.currentUser}/>
+  renderPortal(){
+  	if(this.state.currentUser != null){
+  		return <Portal currentUser={this.state.currentUser}/>
+  	}
+  }
+  renderLogin(){
+  	if(this.state.currentUser == null){
+  		return <Login currentUser={this.state.currentUser}/>
+  	}
+  }
   render() {
    return (
-   <div className="container">
-      <div className="container">
-      
-       <Portal currentUser={this.state.currentUser}/>
-        
-      </div>
+   <div className="appContainer">
+      {this.renderLogin()}
+      {this.renderPortal()} 
     </div>
     );
   }

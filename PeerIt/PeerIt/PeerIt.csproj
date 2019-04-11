@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Infastructure\" />
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

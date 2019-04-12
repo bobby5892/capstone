@@ -41,12 +41,12 @@ namespace PeerIt.Controllers
         /// </summary>
         /// <param name="returnUrl"></param>
         /// <returns></returns>
-        [AllowAnonymous]
+       /*( [AllowAnonymous]
         public IActionResult Login(string returnUrl)
         {
             ViewBag.returnUrl = returnUrl;
             return View();
-        }
+        }*/
         /// <summary>
         /// Do Login
         /// </summary>

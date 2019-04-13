@@ -46,6 +46,21 @@ namespace PeerIt.Repositories
             return ActiveReviewers;
         }
 
+        public List<ActiveReviewer> GetByStudentAssignmentID(int assignmentID)
+        {
+            List<ActiveReviewer> activeReviewers = new List<ActiveReviewer>();
+
+            this.ActiveReviewers.ForEach((activeViewer) =>
+            {
+                if (activeViewer.FK_STUDENT_ASSIGNMENT.ID == assignmentID)
+                {
+                    activeReviewers.Add(activeViewer);
+                }
+            });
+
+            return activeReviewers;
+        }
+
         /// <summary>
         /// Edits an ActiveReviewer, and returns a bool indicating if it is
         /// successful.

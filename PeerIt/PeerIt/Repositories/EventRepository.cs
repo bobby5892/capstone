@@ -103,5 +103,24 @@ namespace PeerIt.Repositories
                 return model;
             }
         }
+
+        /// <summary>
+        /// Changes the HasSeen property to True
+        /// </summary>
+        /// <param name="eventID"></param>
+        /// <returns></returns>
+        public bool ToggleHasSeen(int eventID)
+        {
+            Event temp = FindByID(eventID);
+            if (temp != null)
+            {
+                temp.HasSeen = true;
+                if (context.SaveChanges() > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

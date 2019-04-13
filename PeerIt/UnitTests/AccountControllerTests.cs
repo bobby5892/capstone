@@ -1,22 +1,18 @@
-using System;
-using Xunit;
+﻿using Xunit;
 using PeerIt.Repositories;
+using PeerIt.Controllers;
 using PeerIt.Models;
-using Moq;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.InMemory;
-using System.Collections;
-using System.Linq;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using PeerIt.ViewModels;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace UnitTests
 {
-    public class ModelsTests
+    class AccountControllerTests
     {
         public AppDBContext Context { get; set; }
 
@@ -29,8 +25,15 @@ namespace UnitTests
         public InvitationRepository InvitationRepo { get; set; }
         public ReviewRepository ReviewRepo { get; set; }
         public SettingsRepository SettingsRepo { get; set; }
+        private UserManager<AppUser> userManager;
+        private SignInManager<AppUser> signInManager;
+        private RoleManager<IdentityRole> roleManager;
+        private AccountController accountController;
+        private AppUser appUser;
+        private JsonResult response;
+        private string jResponse;
 
-        public ModelsTests()
+        public AccountControllerTests()
         {
             /* Create a in Memory Database instead of using the SQL  - Destroyed after running*/
             var optionsBuilder = new DbContextOptionsBuilder<AppDBContext>()
@@ -47,47 +50,9 @@ namespace UnitTests
             this.InvitationRepo = new InvitationRepository(this.Context);
             this.ReviewRepo = new ReviewRepository(this.Context);
             this.SettingsRepo = new SettingsRepository(this.Context);
-        }
-
-        [Fact]
-        public void Test1()
-        {
-            Assert.True(true);
-        }
-
-        #region Invitation Repo Tests
-
-        [Fact]
-        public void InviteAdd()
-        {
+            this.accountController = new AccountController(userManager, signInManager, roleManager);
+            
 
         }
-
-        #endregion Invitation Repo Tests
-
-        #region Settings Repo Testing
-
-        [Fact]
-        public void SettingsAdd()
-        {
-            var SettingToAdd = new Setting() { ID = "TEST", StringValue = "TESTED" };
-            SettingsRepo.Add(SettingToAdd);
-            Assert.True(SettingToAdd.ID == SettingsRepo.FindByID("TEST").ID);
-        }
-
-        [Fact]
-        public void SettingsEdit()
-        {
-            Setting settingToEdit = new Setting() { ID = "EDIT TEST", StringValue = "NOT TESTED" };
-            SettingsRepo.Add(settingToEdit);
-            Assert.True(settingToEdit.StringValue == SettingsRepo.FindByID("EDIT TEST").StringValue);
-
-            Setting editSetting = SettingsRepo.FindByID("EDIT TEST");
-            editSetting.StringValue = "Tested";
-            SettingsRepo.Edit(editSetting);
-            Assert.True(SettingsRepo.FindByID("EDIT TEST").StringValue == editSetting.StringValue);
-        }
-
-        #endregion Settings Repo Testing
     }
 }

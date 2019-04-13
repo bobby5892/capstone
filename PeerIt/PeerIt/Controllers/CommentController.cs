@@ -8,5 +8,6 @@ namespace PeerIt.Controllers
 {
     public class CommentController : Controller
     {
+
     }
 }

@@ -4,15 +4,21 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Webix from '../webix';
-import LoginForm from '../widget/LoginForm';
+
  
 class Login extends Component {
 
   constructor(props) {
       super(props);
+      console.log(props);
       this.state = {
-        data : null
+        baseUrl : props.baseUrl,
+       
+        data : null,
       };
+      //grab the update Login method
+      this.updateLogin = props.handleLogin;
+       console.log(this.state);
 
     window.webix.protoUI({
       name:"react",
@@ -29,27 +35,60 @@ class Login extends Component {
       }
     }, window.webix.ui.view)
   }
+  clearError(){
+    console.log("clear error");
+     window.webix.$$("loginForm").elements.passwordErrorLabel.setValue("");
+  }
   doLogin(){
-    alert("do login");
+    let userName = window.webix.$$("loginForm").elements.emailAddress.getValue();
+    let password = window.webix.$$("loginForm").elements.password.getValue();
+    console.log("Username: " + userName + " Password: " + password + " baseUrl:" + this.state);
+   
+    fetch(this.state.baseUrl+"Account/Login?Email=" + userName + "&Password=" + password + "&returnUrl=", {
+      method: 'POST', // or 'PUT'
+     // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    }).then(res => res.json())
+    .then(response => {
+      console.log('Success:', JSON.stringify(response))
+      if(response.success){
+        this.updateLogin(response.data[0].emailAddress,response.data[0].role);
+      }else{
+        let errors = "";
+        response.error.forEach( error => {
+          console.log(error);
+          errors += error.description
+        }); 
+        window.webix.$$("loginForm").elements.passwordErrorLabel.setValue(errors);
+      }
+
+    })
+    .catch(error => console.error('Error:', error));
+
   }
   render(){
     let data = null;
     let ui = {
        type:"space",
        id:"a1",
-       height: window.innerHeight,
-       width:  window.innerWidth,
-       minWidth:500,
+       height: window.innerHeight-5,
+       width:  window.innerWidth-5,
+       minWidth:500,  
        minHeight:500,
       rows:
                 [{
                  type:"space", 
-                 padding:50, 
+                 padding:0, 
                  responsive:"a1", 
                  margin:0,
                 
                  cols:[
-                        { view:"form", 
+                        {},
+                        { 
+                            view:"form", 
+                            id:"loginForm",
                             elements:[
                                 { 
                                   type:"header",
@@ -63,33 +102,46 @@ class Login extends Component {
                                   label:"Email Address",
                                   validate:"isNotEmpty",
                                   validateEvent:"key",
-                                  value:"" ,
-                                  
+                                  value:"" 
                                 },
                                 { 
                                   view:"text", 
-                                  labelPosition:"top", 
+                                  labelPosition:"top",
+                                  type:"password", 
                                   name:"password", 
                                   label:"Password",
                                   validate:"isNotEmpty", 
                                   validateEvent:"key",
-                                  value:"" ,
+                                  value:"" 
+                                },
+                                { 
+                                  view:"label", 
+                                  name:"passwordErrorLabel", 
+                                  label:"" 
+                                },
 
-                                }, {}, { view:"button", label: 'login', click:this.doLogin }
-                          ]},
-
-                       ], 
-                       maxWidth:600,
-                       minWidth:300 
+                                 {}, { view:"button", label: 'login', click:this.doLogin.bind(this)}
+                          ],
+                            width:500,
+                            height:500,
+                            gravity:0.3
+                        },
+                        {}
+                       ]
                      }
                  ]};
+
+     
+
      return(
       <div>
         <Webix ui={ui} data={data}/>
       </div>
                
-             
+     
       );
+     
+
   }
 }
 

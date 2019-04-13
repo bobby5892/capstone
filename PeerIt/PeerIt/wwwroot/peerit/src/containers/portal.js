@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Webix from '../webix';
-import LoginForm from '../widget/LoginForm';
+
  
 class Portal extends Component {
 

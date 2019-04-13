@@ -39,17 +39,7 @@ namespace PeerIt.Controllers
             this.roleManager = roleManager;
         }
 
-        /// <summary>
-        /// Handle Login Redirection
-        /// </summary>
-        /// <param name="returnUrl"></param>
-        /// <returns></returns>
-       /*( [AllowAnonymous]
-        public IActionResult Login(string returnUrl)
-        {
-            ViewBag.returnUrl = returnUrl;
-            return View();
-        }*/
+        
         /// <summary>
         /// Do Login
         /// </summary>
@@ -94,6 +84,10 @@ namespace PeerIt.Controllers
                     response.Error.Add(new Error() { Name = "login", Description = "Invalid user name or password" });
                 }
             
+            }
+            else
+            {
+                response.Error.Add(new Error() { Name = "login", Description = "Invalid user name or password" });
             }
             return Json(response);
         }

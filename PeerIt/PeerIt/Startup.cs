@@ -60,7 +60,6 @@ namespace PeerIt
                 opts.Password.RequireDigit = false;
             }).AddEntityFrameworkStores<AppDBContext>()
         .AddDefaultTokenProviders();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -81,6 +80,8 @@ namespace PeerIt
             {
                 var signInManager = serviceScope.ServiceProvider.GetService<SignInManager<AppUser>>();
                 var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>();
+                //https://stackoverflow.com/questions/32459670/resolving-instances-with-asp-net-core-di
+                var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             }
 
             app.UseHttpsRedirection();

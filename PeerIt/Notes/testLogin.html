@@ -1,0 +1,25 @@
+<b>Robs Random Buttons To Test Stuff</b>
+<html>
+<form action="http://localhost:64072/Account/Login" method="post">
+	<input type="hidden" name="Email" value="admin@example.com">
+	<input type="hidden" name="Password" value="password">
+	<input type="hidden" name="returnUrl" value="bob">
+	<input type="submit" value="login as admin">
+</form>
+
+<form action="http://localhost:64072/Account/Login" method="post">
+	<input type="hidden" name="Email" value="admin@example.com">
+	<input type="hidden" name="Password" value="aerf">
+	<input type="hidden" name="returnUrl" value="bob">
+	<input type="submit" value="fail a login">
+</form>
+
+<form action="http://localhost:64072/Account/Logout" method="GET">
+	<input type="submit" value="logout">
+</form>
+<form action="http://localhost:64072/Account/GetRoles" method="GET">
+	<input type="submit" value="get roles">
+</form>
+<form action="http://localhost:64072/Account/GetCurrentUserRole" method="GET">
+	<input type="submit" value="get current users role">
+</form>

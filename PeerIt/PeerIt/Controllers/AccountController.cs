@@ -8,6 +8,7 @@ using PeerIt.Repositories;
 using PeerIt.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using PeerIt.ViewModels;
 
 namespace PeerIt.Controllers
 {
@@ -21,7 +22,7 @@ namespace PeerIt.Controllers
         #endregion Private Repository Variables
 
         #region Constructors
-
+        private RoleManager<IdentityRole> roleManager;
         private UserManager<AppUser> userManager;
         private SignInManager<AppUser> signInManager;
         /// <summary>
@@ -30,10 +31,12 @@ namespace PeerIt.Controllers
         /// <param name="userMgr"></param>
         /// <param name="signinMgr"></param>
         public AccountController(UserManager<AppUser> userMgr,
-                SignInManager<AppUser> signinMgr)
+                SignInManager<AppUser> signinMgr,
+                RoleManager<IdentityRole> roleManager)
         {
-            userManager = userMgr;
-            signInManager = signinMgr;
+            this.userManager = userMgr;
+            this.signInManager = signinMgr;
+            this.roleManager = roleManager;
         }
 
         /// <summary>
@@ -55,10 +58,11 @@ namespace PeerIt.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginModel details,
+        //[ValidateAntiForgeryToken]
+        public async Task<JsonResult> Login(LoginModel details,
                 string returnUrl)
         {
+            JsonResponse <LoginResponse> response = new JsonResponse<LoginResponse>();
             if (ModelState.IsValid)
             {
                 AppUser user = await userManager.FindByEmailAsync(details.Email);
@@ -68,34 +72,59 @@ namespace PeerIt.Controllers
                     Microsoft.AspNetCore.Identity.SignInResult result =
                             await signInManager.PasswordSignInAsync(
                                 user, details.Password, false, false);
+                    
                     if (result.Succeeded)
                     {
-                        return Redirect(returnUrl ?? "/");
+                        var RolesForUser = await userManager.GetRolesAsync(user);
+                        response.Data.Add(new LoginResponse()
+                        {
+                            EmailAddress = user.Email,
+                            Role = RolesForUser[0] // Only supporting 1 role per user - so its the first role
+                        
+                        });
+                    }
+                    else
+                    {
+                        //ModelState.AddModelError(nameof(LoginModel.Email),"Invalid user or password");
+                        response.Error.Add(new Error() { Name="login",Description="Invalid user name or password"});
                     }
                 }
-                ModelState.AddModelError(nameof(LoginModel.Email),
-                    "Invalid user or password");
+                else
+                {
+                    response.Error.Add(new Error() { Name = "login", Description = "Invalid user name or password" });
+                }
+            
             }
-            return View(details);
+            return Json(response);
         }
         /// <summary>
         /// Handle Logout
         /// </summary>
         /// <returns></returns>
-        [Authorize]
-        public async Task<IActionResult> Logout()
+        // [Authorize]
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<JsonResult> Logout()
         {
-            await signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+             await this.signInManager.SignOutAsync();
+            
+            JsonResponse<bool> response = new JsonResponse<bool>();
+            // Since no errors - the status will be true
+            return Json(response);
         }
     /// <summary>
     ///  Show access Denied
     /// </summary>
     /// <returns></returns>
         [AllowAnonymous]
-        public IActionResult AccessDenied()
+        public JsonResult AccessDenied()
         {
-            return View();
+            JsonResponse<bool> response = new JsonResponse<bool>();
+            response.Error.Add(new Error() {
+                Name="NoAccess",
+                Description="Access Denied"
+            });
+            return Json(response);
         }
 
         #endregion Constructors
@@ -163,8 +192,60 @@ namespace PeerIt.Controllers
         [HttpGet]
         public JsonResult GetRoles() 
         {
-            return Json(false);
+            JsonResponse<IdentityRole> response = new JsonResponse<IdentityRole>();
+            var role = this.roleManager.Roles.ToList<IdentityRole>();
+            response.Data = role;
+            return Json(response);
         }
+        /// <summary>
+        /// Get the role of the current user
+        /// </summary>
+        /// <returns></returns>
+        public async Task<JsonResult> GetCurrentUserRole()
+        {
+            JsonResponse<string> response = new JsonResponse<string>();
+            AppUser currentUser = await userManager.GetUserAsync(HttpContext.User);
+            if(currentUser == null)
+            {
+                response.Error.Add(new Error() { Name = "getRole", Description = "User not logged in" });
+            }
+            else { 
+                var roles = await userManager.GetRolesAsync(currentUser);
+                response.Data.Add(roles.FirstOrDefault());
+            }
+            return Json(response);
+        }
+        /// <summary>
+        /// Temp Dev Command
+        /// </summary>
+        /// <returns></returns>
+        /*[HttpGet]
+        public async Task<JsonResult> DevCreateUser()
+        {
+            AppUser admin = new AppUser()
+            {
+                Id = "8820ee66-681f-45b3-92ed-7d8dee5d4beb",
+                FirstName = "Admin",
+                LastName = "Admin",
+                SecurityStamp = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("eargFRergijdfoaij34g34")),
+                Email = "admin@example.com",
+                NormalizedEmail = "admin@example.com",
+                LockoutEnabled = false,
+                IsEnabled = true,
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
+                TwoFactorEnabled = false,
+                TimestampCreated = DateTime.Now
+            };
+           admin.PasswordHash = userManager.PasswordHasher.HashPassword(admin, "password");
+            var result = await userManager.UpdateAsync(admin);
+            if (!result.Succeeded)
+            {
+                //throw exception......
+            }
+            return Json("done");
+        }
+        */
 
 
         #endregion Methods that return Json

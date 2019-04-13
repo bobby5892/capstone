@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 
 namespace PeerIt.ViewModels
 {
+    /// View Model Used during login
     public class LoginResponse
     {
-        bool IsSuccess;
-        List<Error> Errors;
-        string Role;
-        string EmailAddress;
+       public string Role;
+       public string EmailAddress;
+
+
     }
 }

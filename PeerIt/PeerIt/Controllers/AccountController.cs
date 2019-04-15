@@ -120,7 +120,7 @@ namespace PeerIt.Controllers
             {
                 response.Error.Add(new Error() { Name = "login", Description = "Invalid user name or password" });
             }
-            response.Error.Add(new Error("FailedLogin", "Invalid Username or Password"));
+
             return Json(response);
         }
 

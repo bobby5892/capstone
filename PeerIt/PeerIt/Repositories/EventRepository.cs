@@ -38,6 +38,7 @@ namespace PeerIt.Repositories
             }
             return null;
         }
+
         /// <summary>
         /// Returns all Event Objects in the dbcontext
         /// </summary>
@@ -48,6 +49,21 @@ namespace PeerIt.Repositories
             // return list
             return Events;
         }
+
+        public List<Event> GetByUserID(string userID)
+        {
+            List<Event> events = new List<Event>();
+
+            foreach (Event e in Events)
+            {
+                if (e.FK_AppUser.Id == userID)
+                {
+                    events.Add(e);
+                }
+            }
+            return events;
+        }
+
         /// <summary>
         /// Edits an Event in the dbcontext, and returns a bool indicating
         /// if it is successful
@@ -102,6 +118,25 @@ namespace PeerIt.Repositories
             {
                 return model;
             }
+        }
+
+        /// <summary>
+        /// Changes the HasSeen property to True
+        /// </summary>
+        /// <param name="eventID"></param>
+        /// <returns></returns>
+        public bool ToggleHasSeen(int eventID)
+        {
+            Event temp = FindByID(eventID);
+            if (temp != null)
+            {
+                temp.HasSeen = true;
+                if (context.SaveChanges() > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

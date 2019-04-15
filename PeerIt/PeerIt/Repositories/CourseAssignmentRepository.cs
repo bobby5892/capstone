@@ -44,6 +44,25 @@ namespace PeerIt.Repositories
         }
 
         /// <summary>
+        /// Gets all Assignments by a courseID
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <returns></returns>
+        public List<CourseAssignment> GetByCourseID(int courseID)
+        {
+            List<CourseAssignment> courseAssignments = new List<CourseAssignment>();
+
+            foreach (CourseAssignment cA in this.CourseAssignments)
+            {
+                if (cA.FK_COURSE.ID == courseID)
+                {
+                    courseAssignments.Add(cA);
+                }
+            }
+            return courseAssignments;
+        }
+
+        /// <summary>
         /// Edits a CourseAssignment in the dbcontext and returns a bool
         /// indicating if it is successful.
         /// </summary>

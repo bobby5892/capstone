@@ -12,9 +12,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Cors;
 using PeerIt.Models;
 using PeerIt.Repositories;
 using PeerIt.Interfaces;
+
 /*
  *  Requires .net core 2.2  - https://dotnet.microsoft.com/download/thank-you/dotnet-sdk-2.2.105-windows-x64-installer
  * 
@@ -49,6 +51,9 @@ namespace PeerIt
             services.AddTransient<IGenericRepository<Review, int>, ReviewRepository>();
             services.AddTransient<IGenericRepository<Setting, string>, SettingsRepository>();
 
+            // Allow us to turn on and off cors - useful in development when building the react app - its dev env is on a different port then
+            // the kestrel server - so its a cors violation - this allows me to circumvent it during coding
+            services.AddCors();
             /* Users */
             services.AddDbContext<AppDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local"]));
             services.AddIdentity<AppUser, IdentityRole>(opts => {
@@ -59,18 +64,29 @@ namespace PeerIt
                 opts.Password.RequireUppercase = false;
                 opts.Password.RequireDigit = false;
             }).AddEntityFrameworkStores<AppDBContext>()
+
         .AddDefaultTokenProviders();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
    
         }
-
+     
+        
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+
            if (env.IsDevelopment())
+
             {
+                // Must not exist in production - this disables cross side js checks
+                app.UseCors(builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    );
                 app.UseDeveloperExceptionPage();
+                
             }
             else
             {
@@ -82,6 +98,8 @@ namespace PeerIt
             {
                 var signInManager = serviceScope.ServiceProvider.GetService<SignInManager<AppUser>>();
                 var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>();
+                //https://stackoverflow.com/questions/32459670/resolving-instances-with-asp-net-core-di
+                var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             }
 
             app.UseHttpsRedirection();

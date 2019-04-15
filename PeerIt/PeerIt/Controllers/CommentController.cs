@@ -15,6 +15,7 @@ namespace PeerIt.Controllers
     /// </summary>
     public class CommentController : Controller
     {
+
         private CommentRepository commentRepo;
         private JsonResponse<Comment> response;
         private UserManager<AppUser> userManager;
@@ -93,6 +94,7 @@ namespace PeerIt.Controllers
             AppUser user = await userManager.FindByIdAsync(userId);
             return user;
         }
+
     }
 
 }

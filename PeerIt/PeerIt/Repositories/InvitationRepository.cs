@@ -60,8 +60,10 @@ namespace PeerIt.Repositories
             if (invitation != null)
             {
                 invitation = model;
-                context.SaveChanges();
-                return true;
+                if (context.SaveChanges() > 0)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -77,7 +79,10 @@ namespace PeerIt.Repositories
             if (invitation != null)
             {
                 Invitations.Remove(invitation);
-                return true;
+                if (context.SaveChanges() > 0)
+                {
+                    return true;
+                }
             }
             return false;
         }

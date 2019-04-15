@@ -1,111 +1,60 @@
+// example of custom component with Webix UI inside
+// this one is a static view, not linked to the React data store
+
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import Webix from '../webix';
 
-import * as webix from "../webix/codebase/webix.js";
-
-
-//const webix = require("../webix/codebase/webix.js");
-//import ''
-import '../webix/codebase/webix.css';
-
-class Portal extends Component {
-  render() {
-    return (
-      <div ref="root"></div>
-    );
-  }
-
-  setWebixData(data){
-    const ui = this.ui;
-    if (ui.setValues)
-      ui.setValues(data);
-    else if (ui.parse)
-      ui.parse(data)
-    else if (ui.setValue)
-      ui.setValue(data); 
-  }
-
-  componentWillUnmount(){
-    this.ui.destructor();
-    this.ui = null;
-  }
-
-  componentWillUpdate(props){
-    if (props.data)
-      this.setWebixData(props.data);
-    if (props.select)
-      this.select(props.select);
-  }
-
-  componentDidMount(){
-  	this.ui = window.webix.ui(
-  	  this.props.ui, 
-  	  ReactDOM.findDOMNode(this.refs.root)
-	  );
-
-    this.componentWillUpdate(this.props);
-  }
-  
-}
-/* 
-class SliderView extends Component {
-  render() {
-    return (
-      <div ref="root"></div>
-    );
-  }
-
-  componentDidMount(){
-    this.ui = window.webix.ui({
-      view:"slider",
-      container:ReactDOM.findDOMNode(this.refs.root)
-    });
-  }
-
-  componentWillUnmount(){
-    this.ui.destructor();
-    this.ui = null;
-  }
-
-  shouldComponentUpdate(){
-    return false;
-  }
-}
-*/ 
-//class Portal extends Component {
-/* Does not work const ui = {
-    view:"slider"
-};
-const value = 123;
  
-const SliderView = () => (
-  <Webix ui={ui} data={value} />
-)
-*/
- /* Doesn't Work
- constructor(){
-    super();
-    this.state = {
+class Portal extends Component {
 
-    }
-    this.webix = this.loadWebix();
-  }
-  render() {
-    return(
-      <div id="chart">blarg</div>
-        
-      
-    );
-  }
-  loadWebix(){
-    const container = window.getElementById("chart");
-    let tableConfig = {
-       data: ['test','test']
-    }
-    tableConfig.view = "datatable";
-    this._table = webix.ui(tableConfig, container);
-  }
-  */
+  constructor(props) {
+      super(props);
+      this.state = {
+        data : null
+      };
 
-//}
+    window.webix.protoUI({
+      name:"react",
+      defaults:{
+        borderless:true
+      },
+      $init:function(config){
+        this.$ready.push(function(){    
+          ReactDOM.render(
+            this.config.app,
+            this.$view
+          );
+        });
+      }
+    }, window.webix.ui.view)
+  }
+
+  render(){
+    let data = null;
+    let ui = {type:"space", id:"a1", rows:[{
+                 type:"space", padding:0, responsive:"a1", cols:[
+                     { view:"list", data:["Users", "Reports", "Settings"],
+                       ready:function(){ this.select(this.getFirstId()); },
+                       select:true, scroll:false, width:200 },
+                     { template:"column 2", width:200 },
+                     { view:"datatable", select:true, columns:[
+                        { id:"title", fillspace:1 }, { id:"votes"}
+                       ], data:"data",
+                       minWidth:300 }
+                 ]}]};
+     return(
+      <div>
+        <Webix ui={ui} data={data}/>
+      </div>
+               
+             
+      );
+  }
+}
+
+//const Portal = ({ data, save }) => (
+  
+//)
 export default Portal;
+

@@ -47,6 +47,70 @@ namespace PeerIt.Repositories
         }
 
         /// <summary>
+        /// Returns all the Student Assignment Submissions by Course ID
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <returns></returns>
+        public List<StudentAssignment> GetByCourseID(int courseID)
+        {
+            List<StudentAssignment> sAssignments = new List<StudentAssignment>();
+
+            foreach (StudentAssignment sA in StudentAssignments)
+            {
+                if (sA.CourseAssignment.FK_COURSE.ID == courseID)
+                {
+                    sAssignments.Add(sA);
+                }
+            }
+
+            return sAssignments;
+        }
+
+        /// <summary>
+        /// Returns all the Student Assignment Submissions that are ungraded
+        /// by Course ID
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <returns></returns>
+        public List<StudentAssignment> GetByCourseIDUngraded(int courseID)
+        {
+            List<StudentAssignment> sAssignments = new List<StudentAssignment>();
+
+            foreach (StudentAssignment sA in StudentAssignments)
+            {
+                if (sA.CourseAssignment.FK_COURSE.ID == courseID &&
+                    sA.Score == -1)
+                {
+                    sAssignments.Add(sA);
+                }
+            }
+
+            return sAssignments;
+        }
+
+        /// <summary>
+        /// Returns a List of a user's StudentAssignments in a Course.
+        /// </summary>
+        /// <param name="userID"></param>
+        /// <param name="courseID"></param>
+        /// <returns></returns>
+        public List<StudentAssignment> getByUserInCourse(string userID, int courseID)
+        {
+            List<StudentAssignment> sAssignments = new List<StudentAssignment>();
+
+            foreach (StudentAssignment sA in StudentAssignments)
+            {
+                if (sA.CourseAssignment.FK_COURSE.ID == courseID &&
+                    sA.AppUser.Id == userID)
+                {
+                    sAssignments.Add(sA);
+                }
+            }
+
+            return sAssignments;
+        }
+
+        /// <summary>
         /// Edits a CourseAssignment in the dbcontext and returns a bool
         /// indicating if it is successful.
         /// </summary>

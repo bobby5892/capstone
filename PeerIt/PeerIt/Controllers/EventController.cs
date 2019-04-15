@@ -48,10 +48,14 @@ namespace PeerIt.Controllers
 
             if (user != null)
             {
-                
+                response.Data.Add(eventRepository.GetByUserID(userID));
+            }
+            else
+            {
+                response.Error.Add(new Error("NotFound", "User was not Found."));
             }
 
-            return Json(false);
+            return Json(response);
         }
 
         /// <summary>

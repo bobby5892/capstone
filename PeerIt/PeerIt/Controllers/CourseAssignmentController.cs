@@ -37,6 +37,17 @@ namespace PeerIt.Controllers
 
         #region Methods that return Json
 
+        /// <summary>
+        /// Creates an Assignment, and returns if successful.
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <param name="name"></param>
+        /// <param name="dueDate"></param>
+        /// <param name="instructions"></param>
+        /// <param name="instructionUrl"></param>
+        /// <param name="rubric"></param>
+        /// <param name="rubricUrl"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<JsonResult> CreateAssignment(int courseID, string name, 
                                            DateTime dueDate, 
@@ -74,6 +85,12 @@ namespace PeerIt.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Returns a List of CourseAssignments by a Course's ID
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <returns></returns>
+        [HttpGet]
         public JsonResult Assignments(int courseID)
         {
             JsonResponse<List<CourseAssignment>> response = new JsonResponse<List<CourseAssignment>>();
@@ -89,6 +106,14 @@ namespace PeerIt.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Returns a CourseAssignment by Assignment ID, using a Course ID to
+        /// validate.
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <param name="assignmentID"></param>
+        /// <returns></returns>
+        [HttpGet]
         public JsonResult Assignment(int courseID, int assignmentID)
         {
             JsonResponse<CourseAssignment> response = new JsonResponse<CourseAssignment>();
@@ -115,6 +140,14 @@ namespace PeerIt.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Sets the instructionText property of a CourseAssignment.
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <param name="assignmentID"></param>
+        /// <param name="instructions"></param>
+        /// <returns></returns>
+        [HttpPatch]
         public JsonResult SetAssignmentInstructions(int courseID, int assignmentID, string instructions)
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
@@ -144,6 +177,14 @@ namespace PeerIt.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Sets the instructionsUrl property of a CourseAssignment.
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <param name="assignmentID"></param>
+        /// <param name="instructionUrl"></param>
+        /// <returns></returns>
+        [HttpPatch]
         public JsonResult SetAssignmentInstructionUrl(int courseID, int assignmentID, string instructionUrl)
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
@@ -173,6 +214,14 @@ namespace PeerIt.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Sets the RubricText property of a CourseAssignment.
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <param name="assignmentID"></param>
+        /// <param name="rubric"></param>
+        /// <returns></returns>
+        [HttpPatch]
         public JsonResult SetAssignmentRubric(int courseID, int assignmentID, string rubric)
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
@@ -202,6 +251,14 @@ namespace PeerIt.Controllers
             return Json(response);
         }
 
+        /// <summary>
+        /// Sets the RubricUrl property of a CourseAssignment.
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <param name="assignmentID"></param>
+        /// <param name="rubricUrl"></param>
+        /// <returns></returns>
+        [HttpPatch]
         public JsonResult SetAssignmentRubricUrl(int courseID, int assignmentID, string rubricUrl)
         {
             JsonResponse<bool> response = new JsonResponse<bool>();

@@ -15,11 +15,13 @@ namespace UnitTests.Mock
 
     public class MockUserManager : Microsoft.AspNetCore.Identity.UserManager<AppUser>
     {
+
         /// <summary>
         /// Mock User Manager - So we can test things with a user manager
         /// Robert & Trevor made this in the lab from various sources
         /// </summary>
         public MockUserManager() : base(
+
                     new Mock<Microsoft.AspNetCore.Identity.IUserStore<AppUser>>().Object,
                     new Mock<IOptions<IdentityOptions>>().Object,
                     new Mock<IPasswordHasher<AppUser>>().Object,
@@ -29,6 +31,7 @@ namespace UnitTests.Mock
                     new Mock<IdentityErrorDescriber>().Object,
                     new Mock<IServiceProvider>().Object,
                     new Mock<ILogger<Microsoft.AspNetCore.Identity.UserManager<AppUser>>>().Object)
+
         { }
         /// <summary>
         /// This is a quick and dirty way to create an acceptable hashed password for a user
@@ -43,6 +46,7 @@ namespace UnitTests.Mock
             return hasher.HashPassword(user, clearTextPassword);
         }
         
+
         public override Task<AppUser> FindByEmailAsync(string email)
         {
             return Task.FromResult(new AppUser { Email = email });
@@ -57,6 +61,7 @@ namespace UnitTests.Mock
         {
             return Task.FromResult("---------------");
         }
+
         
 
     }

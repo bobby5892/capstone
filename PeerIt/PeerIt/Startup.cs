@@ -68,14 +68,16 @@ namespace PeerIt
         .AddDefaultTokenProviders();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+   
         }
      
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            var maybe = env.IsDevelopment();
-            if (env.IsDevelopment())
+
+           if (env.IsDevelopment())
+
             {
                 // Must not exist in production - this disables cross side js checks
                 app.UseCors(builder => builder

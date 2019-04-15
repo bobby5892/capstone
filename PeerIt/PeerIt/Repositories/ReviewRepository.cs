@@ -84,16 +84,12 @@ namespace PeerIt.Repositories
         /// <returns>Review</returns>
         public Review Add(Review model)
         {
-            try
+            context.Reviews.Add(model);
+            if (context.SaveChanges() > 0)
             {
-                Reviews.Add(model);
-                context.SaveChanges();
-                return Reviews[Reviews.Count - 1];
+                return model;
             }
-            catch
-            {
-                return null;
-            }
+            return null;
         }
     }
 }

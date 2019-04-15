@@ -6,6 +6,9 @@ using PeerIt.Interfaces;
 using PeerIt.Models;
 namespace PeerIt.Repositories
 {
+    /// <summary>
+    ///Review Repository Class
+    /// </summary>
     public class ReviewRepository : IGenericRepository<Review, int>
     {
         AppDBContext context;

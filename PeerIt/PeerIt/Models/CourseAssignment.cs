@@ -12,15 +12,12 @@ namespace PeerIt.Models
         #region Variables and Properties
         public int ID { get; set; }
         
-        
         [Required(ErrorMessage ="Name is a required field"),StringLength(60, ErrorMessage = "Must be less than 60 characters")]            
         public string Name { get; set; }
-
-
+        
         [Required]        
         public Course FK_COURSE { get; set; } 
-
-
+        
         [StringLength(100000, ErrorMessage = "Must be less than 100,000 characters")]            
         public string InstructionText { get; set; }
         

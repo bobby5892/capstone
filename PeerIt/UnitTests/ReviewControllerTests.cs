@@ -130,7 +130,6 @@ namespace UnitTests
         [Fact]
         public async void CreateReviewTest()
         {
-
             string id = testAppUser.Id;
             response = await reviewController.CreateReview("TestReviewContents", id, 2);
             Assert.True(ReviewRepo.FindByID(0).Content == "TestReviewContents");
@@ -138,10 +137,7 @@ namespace UnitTests
 
         internal async void CreateFakeUser()
         {
-           
             await userManager.CreateAsync(testAppUser);
-            var found = userManager.Users;
-        }
-       
+        }     
     }
 }

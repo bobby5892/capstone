@@ -29,7 +29,7 @@ namespace PeerIt.Controllers
         private RoleManager<IdentityRole> roleManager;
         private UserManager<AppUser> userManager;
         private SignInManager<AppUser> signInManager;
-        private RoleManager<IdentityRole> roleManager;
+      
         /// <summary>
         /// Account Controller - Constructor that accepts a userMgr and SigninMgr - Started via startup.cs
         /// </summary>

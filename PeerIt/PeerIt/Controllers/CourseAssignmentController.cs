@@ -62,7 +62,7 @@ namespace PeerIt.Controllers
             {
                 Course course = courseRepository.FindByID(courseID);
 
-                if (course != null && course.FK_INSTRUCTOR == await userManager.GetUserAsync(HttpContext.User)
+                if (course != null && course.FK_INSTRUCTOR == await userManager.GetUserAsync(HttpContext.User))
                 {
                     CourseAssignment newAssignment = new CourseAssignment
                     {

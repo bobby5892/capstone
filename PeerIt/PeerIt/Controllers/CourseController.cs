@@ -17,6 +17,7 @@ namespace PeerIt.Controllers
         private IGenericRepository<Course, int> courseRepository;
         private IGenericRepository<CourseGroup, int> courseGroupRepository;
         private IGenericRepository<CourseAssignment, int> courseAssignmentRepository;
+
         public CourseController(IGenericRepository<Course, int> courseRepository,
             IGenericRepository<CourseGroup, int> courseGroupRepository,
             IGenericRepository<CourseAssignment, int> courseAssignmentRepository,
@@ -35,80 +36,166 @@ namespace PeerIt.Controllers
 
 
         [HttpGet]
-        // An Instructor is only going to see courses they are teaching
-        // A student is only going to see courses they are in
-        // an admin is going to see all courses
-        public JsonResult getCourses()
+        public async Task<JsonResult> GetCourses()
         {
             JsonResponse<Course> response = new JsonResponse<Course>();
-            var result = courseRepository.GetAll();
-            if (result == null)
+            
+            bool isAdmin = HttpContext.User.IsInRole("Administrator");
+            bool isStudent = HttpContext.User.IsInRole("Student");
+            bool isTeacher = HttpContext.User.IsInRole("Instructor");
+
+            if (isAdmin)
             {
-                response.Error.Add(new Error() { Name = "Course", Description = "No Course found" });
-                return Json(response);
+                // Show all courses
+                response.Data = this.courseRepository.GetAll().ToList<Course>();
+
+            }
+            else if (isTeacher)
+            {
+                // Lookup the course the instructor is teaching
+                this.courseRepository.GetAll().ToList<Course>()
+                    .ForEach(async course =>
+                    {
+                        if (course.FK_INSTRUCTOR == await usrMgr.GetUserAsync(HttpContext.User))
+                        {
+                            response.Data.Add(course);
+                        }
+                    });
+            }
+            else if (isStudent)
+            {
+                // Look at Course Groups and add courses that the student is in
+                this.courseGroupRepository.GetAll().ToList<CourseGroup>().ForEach(
+                    async courseGroup =>
+                    {
+                        if (courseGroup.FK_AppUser == await usrMgr.GetUserAsync(HttpContext.User))
+                        {
+                            response.Data.Add(courseGroup.FK_Course);
+                        }
+                    });
             }
             else
             {
-                courseRepository.GetAll().ForEach(course =>
-                {
-                    response.Data.Add(course);
-                });
-                bool isAdmin = HttpContext.User.IsInRole("admin");
-                bool isStudent = HttpContext.User.IsInRole("student");
-                bool isTeacher = HttpContext.User.IsInRole("instuctor");
-                //var roles = await usrMgr.GetRolesAsync(user); 
-                return Json(response);
+                response.Error.Add(new Error() { Name = "Courses", Description = "Your in a role that cannot view courses" });
             }
+            return  Json(response);
         }
+        /// <summary>
+        /// getCourse
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <returns></returns>
         [HttpGet]
-        [Authorize]//[any user]
-        public JsonResult getCourse(int courseID)
+        [Authorize]
+        public async Task<JsonResult> getCourse(int courseID)
         {
             JsonResponse<Course> response = new JsonResponse<Course>();
-            var result = courseRepository.FindByID(courseID);
-            if (result == null)
+            bool isAdmin = HttpContext.User.IsInRole("Administrator");
+            bool isStudent = HttpContext.User.IsInRole("Student");
+            bool isTeacher = HttpContext.User.IsInRole("Instructor");
+
+            if (isAdmin)
             {
-                response.Error.Add(new Error() { Name = "Course", Description = "No Course found" });
-                return Json(response);
+                //If they are admin we don't need to check if they are in the course
+                response.Data.Add(this.courseRepository.FindByID(courseID));
             }
-            else
+            else if (isTeacher)
             {
-                response.Data.Add(result);
-                return Json(response);
+                //Lookup the course
+                Course courseLookup = this.courseRepository.FindByID(courseID);
+                /// Lets see if that course exists
+                if (courseLookup == null)
+                {
+                    response.Error.Add(new Error() { Description = "The course does not exist", Name = "Course" });
+                    return Json(response);
+                }
+                //Lets see if the instructor is teacing the course
+                if (courseLookup.FK_INSTRUCTOR == await usrMgr.GetUserAsync(HttpContext.User))
+                {
+                    response.Data.Add(courseLookup);
+                }
             }
+            else if (isStudent)
+            {
+                //Lets see if the student is in the course]
+               AppUser curentUser = await usrMgr.GetUserAsync(HttpContext.User);
+
+               response.Data.Add(this.courseGroupRepository.GetAll().ToList<CourseGroup>().Find(
+                    // Look for the user
+                     x =>
+                        {
+                            if ((x.FK_AppUser ==  curentUser) && 
+                                    (x.FK_Course == this.courseRepository.FindByID(courseID))) {
+                                return true;
+                            }
+                            else {
+                                return false;
+                            }
+                        }
+               ).FK_Course);
+  
+            }
+            // If we didn't find the course show error
+            if(response.Data.Count == 0)
+            {
+                response.Error.Add(new Error() { Name = "GetCourse", Description = "You have not been added to any courses" });
+            }
+            return Json(response);
+            
         }
         [HttpGet]
         //[instructor, admin]
         public JsonResult getStudents(int courseID)
         {
-            JsonResponse<Course> response = new JsonResponse<Course>();
-            JsonResponse<AppUser> responseAU = new JsonResponse<AppUser>();
-            var result = courseRepository.FindByID(courseID);
-            var resultG = courseGroupRepository.GetAll();
+            JsonResponse<AppUser> response = new JsonResponse<AppUser>();
+            bool isAdmin = HttpContext.User.IsInRole("Administrator");
+            bool isStudent = HttpContext.User.IsInRole("Student");
+            bool isTeacher = HttpContext.User.IsInRole("Instructor");
 
-            //what if there are no courses
-            if (result == null)
+            if (isAdmin)
             {
-                response.Error.Add(new Error() { Name = "Course", Description = "No Course found" });
-                return Json(response);
-            }
-            else
-            {
-                resultG.ForEach(group =>
-                {
-                    responseAU.Data.Add(group.FK_AppUser);
+                // This is a list of courseGroup - for that course / Could be optimized by adding a repo method
+             
+                List<CourseGroup> courseGroups;
+                // Go thru course groups - and grab all that are related to the course
+                this.courseGroupRepository.GetAll().ForEach( x => {
+                    if(x.FK_Course.ID == courseID)
+                    {
+                     // Continue Here   courseGroups.Add(x);
+                    }
                 });
+             
             }
-            if (responseAU == null)
-            {
-                response.Error.Add(new Error() { Name = "Students", Description = "No Students found" });
-                return Json(response);
-            }
-            else
-            {
-                return Json(responseAU);
-            }
-            //return null;
+
+            /*   JsonResponse<Course> response = new JsonResponse<Course>();
+               JsonResponse<AppUser> responseAU = new JsonResponse<AppUser>();
+               var result = courseRepository.FindByID(courseID);
+               var resultG = courseGroupRepository.GetAll();
+
+               //what if there are no courses
+               if (result == null)
+               {
+                   response.Error.Add(new Error() { Name = "Course", Description = "No Course found" });
+                   return Json(response);
+               }
+               else
+               {
+                   resultG.ForEach(group =>
+                   {
+                       responseAU.Data.Add(group.FK_AppUser);
+                   });
+               }
+               if (responseAU == null)
+               {
+                   response.Error.Add(new Error() { Name = "Students", Description = "No Students found" });
+                   return Json(response);
+               }
+               else
+               {
+                   return Json(responseAU);
+               }
+               //return null;
+               */
         }
         [HttpGet]
         //[instructor, admin]

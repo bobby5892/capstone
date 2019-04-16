@@ -6,15 +6,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using PeerIt.Models;
+using PeerIt.ViewModels;
+
 namespace PeerIt.Controllers
 {
+    /// <summary>
+    /// Admin Controller
+    /// </summary>
     public class AdminController : Controller
     {
         private UserManager<AppUser> userManager;
         private IUserValidator<AppUser> userValidator;
         private IPasswordValidator<AppUser> passwordValidator;
         private IPasswordHasher<AppUser> passwordHasher;
-
+        /// <summary>
+        /// Admin Controller
+        /// </summary>
+        /// <param name="usrMgr">UserManager</param>
+        /// <param name="userValid">UserValidator</param>
+        /// <param name="passValid">PasswordValidator</param>
+        /// <param name="passwordHash">PasswordHasher</param>
         public AdminController(UserManager<AppUser> usrMgr,
                 IUserValidator<AppUser> userValid,
                 IPasswordValidator<AppUser> passValid,
@@ -26,9 +37,13 @@ namespace PeerIt.Controllers
             passwordHasher = passwordHash;
         }
         [Authorize(Roles = "admin")]
-        public ViewResult Index() => View(userManager.Users);
-        [Authorize(Roles = "admin")]
-        public ViewResult Create() => View();
+       /// Return a list of admins
+        public JsonResult Index() {
+            JsonResponse<AppUser> response =  new JsonResponse<AppUser>();
+            response.Data = userManager.Users.ToList<AppUser>();
+            return Json(response);
+        }
+       
 
         [HttpPost]
         [Authorize(Roles = "admin")]

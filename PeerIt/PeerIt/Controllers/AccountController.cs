@@ -9,7 +9,7 @@ using PeerIt.Interfaces;
 using PeerIt.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using PeerIt.ViewModels;
+
 
 namespace PeerIt.Controllers
 {
@@ -33,8 +33,9 @@ namespace PeerIt.Controllers
         /// <summary>
         /// Account Controller - Constructor that accepts a userMgr and SigninMgr - Started via startup.cs
         /// </summary>
-        /// <param name="userMgr"></param>
-        /// <param name="signinMgr"></param>
+        /// <param name="userMgr">User Manager</param>
+        /// <param name="signinMgr">Sign in Manager</param>
+        /// <param name="roleManager">Role Manager</param>
         public AccountController(UserManager<AppUser> userMgr,
 
                 SignInManager<AppUser> signinMgr,
@@ -384,38 +385,7 @@ namespace PeerIt.Controllers
             }
             return Json(response);
         }
-        /// <summary>
-        /// Temp Dev Command
-        /// </summary>
-        /// <returns></returns>
-        /*[HttpGet]
-        public async Task<JsonResult> DevCreateUser()
-        {
-            AppUser admin = new AppUser()
-            {
-                Id = "8820ee66-681f-45b3-92ed-7d8dee5d4beb",
-                FirstName = "Admin",
-                LastName = "Admin",
-                SecurityStamp = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("eargFRergijdfoaij34g34")),
-                Email = "admin@example.com",
-                NormalizedEmail = "admin@example.com",
-                LockoutEnabled = false,
-                IsEnabled = true,
-                EmailConfirmed = true,
-                PhoneNumberConfirmed = true,
-                TwoFactorEnabled = false,
-                TimestampCreated = DateTime.Now
-            };
-           admin.PasswordHash = userManager.PasswordHasher.HashPassword(admin, "password");
-            var result = await userManager.UpdateAsync(admin);
-            if (!result.Succeeded)
-            {
-                //throw exception......
-            }
-            return Json("done");
-
-        }
-        */
+        
 
         #endregion Methods that return Json
     }

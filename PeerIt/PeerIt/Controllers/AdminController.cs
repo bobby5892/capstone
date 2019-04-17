@@ -78,44 +78,35 @@ namespace PeerIt.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(string id)
         {
+            JsonResponse<AppUser> response = new JsonResponse<AppUser>();
             AppUser user = await userManager.FindByIdAsync(id);
             if (user != null)
             {
                 IdentityResult result = await userManager.DeleteAsync(user);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index");
+                  
+                    return Json(response);
                 }
                 else
                 {
-                    AddErrorsFromResult(result);
+                    response.Error.Add(new Error() { Name = "Admin", Description = "Unable to delete user" });
+                    return Json(response);
                 }
             }
-            else
-            {
-                ModelState.AddModelError("", "User Not Found");
-            }
-            return View("Index", userManager.Users);
+           
+            response.Error.Add(new Error() { Name = "Admin", Description = "User Not Found" });
+            return Json(response);
         }
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Edit(string id)
-        {
-            AppUser user = await userManager.FindByIdAsync(id);
-            if (user != null)
-            {
-                return View(user);
-            }
-            else
-            {
-                return RedirectToAction("Index");
-            }
-        }
+      
 
         [HttpPost]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Edit(string id, string email,
+        public async Task<JsonResult> Edit(string id, string email,
                 string password)
         {
+            JsonResponse<AppUser> response = new JsonResponse<AppUser>();
+
             AppUser user = await userManager.FindByIdAsync(id);
             if (user != null)
             {
@@ -124,7 +115,8 @@ namespace PeerIt.Controllers
                     = await userValidator.ValidateAsync(userManager, user);
                 if (!validEmail.Succeeded)
                 {
-                    AddErrorsFromResult(validEmail);
+                    response.Error.Add(new Error() { Name = "Admin", Description ="Invalid Email Address" });
+                    return Json(response);
                 }
                 IdentityResult validPass = null;
                 if (!string.IsNullOrEmpty(password))
@@ -138,8 +130,10 @@ namespace PeerIt.Controllers
                     }
                     else
                     {
-                        AddErrorsFromResult(validPass);
+                        response.Error.Add(new Error() { Name = "Admin", Description = "Invalid Password" });
+                        return Json(response);
                     }
+                
                 }
                 if ((validEmail.Succeeded && validPass == null)
                         || (validEmail.Succeeded
@@ -148,28 +142,22 @@ namespace PeerIt.Controllers
                     IdentityResult result = await userManager.UpdateAsync(user);
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        AddErrorsFromResult(result);
+                        response.Data.Add(user);
+                        return Json(response);
                     }
                 }
+                else
+                {
+                    response.Error.Add(new Error() { Name = "Admin", Description = "Unable to Edit User" });
+                    return Json(response);
+                }
+                
             }
-            else
-            {
-                ModelState.AddModelError("", "User Not Found");
-            }
-            return View(user);
+            response.Error.Add(new Error() { Name = "Admin", Description = "Unable to find user" });
+            return Json(response);
         }
 
-        private void AddErrorsFromResult(IdentityResult result)
-        {
-            foreach (IdentityError error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
-        }
+      
 
         #region Methods that return Json
 

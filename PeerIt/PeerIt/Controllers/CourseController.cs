@@ -18,11 +18,18 @@ namespace PeerIt.Controllers
         private IGenericRepository<CourseGroup, int> courseGroupRepository;
         private IGenericRepository<CourseAssignment, int> courseAssignmentRepository;
 
+        private bool isAdmin;
+        private bool isInstructor;
+        private bool isStudent;
+
         public CourseController(IGenericRepository<Course, int> courseRepository,
             IGenericRepository<CourseGroup, int> courseGroupRepository,
             IGenericRepository<CourseAssignment, int> courseAssignmentRepository,
             UserManager<AppUser> usrMgr)
         {
+             this.isAdmin = HttpContext.User.IsInRole("Administrator");
+            this.isInstructor = HttpContext.User.IsInRole("Instructor");
+            this.isStudent = HttpContext.User.IsInRole("Student");
             this.courseRepository = courseRepository;
             this.courseGroupRepository = courseGroupRepository;
             this.courseAssignmentRepository = courseAssignmentRepository;
@@ -38,18 +45,15 @@ namespace PeerIt.Controllers
         public async Task<JsonResult> GetCourses()
         {
             JsonResponse<Course> response = new JsonResponse<Course>();
-            
-            bool isAdmin = HttpContext.User.IsInRole("Administrator");
-            bool isStudent = HttpContext.User.IsInRole("Student");
-            bool isTeacher = HttpContext.User.IsInRole("Instructor");
+          
 
-            if (isAdmin)
+            if (this.isAdmin)
             {
                 // Show all courses
                 response.Data = this.courseRepository.GetAll().ToList<Course>();
 
             }
-            else if (isTeacher)
+            else if (this.isInstructor)
             {
                 // Lookup the course the instructor is teaching
                 this.courseRepository.GetAll().ToList<Course>()
@@ -61,7 +65,7 @@ namespace PeerIt.Controllers
                         }
                     });
             }
-            else if (isStudent)
+            else if (this.isStudent)
             {
                 // Look at Course Groups and add courses that the student is in
                 this.courseGroupRepository.GetAll().ToList<CourseGroup>().ForEach(
@@ -86,14 +90,12 @@ namespace PeerIt.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize(Roles = "Administrator,Instructor,Student")]
-        public async Task<JsonResult> getCourse(int courseID)
+        public async Task<JsonResult> GetCourse(int courseID)
         {
             JsonResponse<Course> response = new JsonResponse<Course>();
-            bool isAdmin = HttpContext.User.IsInRole("Administrator");
-            bool isStudent = HttpContext.User.IsInRole("Student");
-            bool isInstructor = HttpContext.User.IsInRole("Instructor");
+ 
 
-            if (isAdmin)
+            if (this.isAdmin)
             {
                 //If they are admin we don't need to check if they are in the course
                 response.Data.Add(this.courseRepository.FindByID(courseID));
@@ -114,7 +116,7 @@ namespace PeerIt.Controllers
                     response.Data.Add(courseLookup);
                 }
             }
-            else if (isStudent)
+            else if (this.isStudent)
             {
                 //Lets see if the student is in the course]
                AppUser curentUser = await usrMgr.GetUserAsync(HttpContext.User);
@@ -144,19 +146,18 @@ namespace PeerIt.Controllers
         }
         [HttpGet]
         [Authorize(Roles = "Administrator,Instructor")]
-        public async Task<JsonResult> getStudents(int courseID)
+        public async Task<JsonResult> GetStudents(int courseID)
         {
             JsonResponse<AppUser> response = new JsonResponse<AppUser>();
-            bool isAdmin = HttpContext.User.IsInRole("Administrator");
-            bool isInstructor = HttpContext.User.IsInRole("Instructor");
+
             bool authorizedToSee = false;
-            if (isAdmin)
+            if (this.isAdmin)
             {
                 // This is a list of courseGroup - for that course / Could be optimized by adding a repo method
                 authorizedToSee = true;
                
             }
-            else if (isInstructor)
+            else if (this.isInstructor)
             {
                 //Lookup the course
                 Course courseLookup = this.courseRepository.FindByID(courseID);
@@ -191,20 +192,16 @@ namespace PeerIt.Controllers
         [HttpGet]
         [Authorize(Roles = "Administrator,Instructor")]
         //[instructor, admin]
-        public JsonResult getStudentsUngraded(int courseID)
+        public JsonResult GetStudentsUngraded(int courseID)
         {
             throw new NotImplementedException();
         }
         [HttpGet]
         [Authorize(Roles = "Administrator,Instructor,Student")]
-        public async Task<JsonResult> getCoursesByUser(string userID)
+        public async Task<JsonResult> GetCoursesByUser(string userID)
         {
             JsonResponse<Course> response = new JsonResponse<Course>();
-            bool isAdmin = HttpContext.User.IsInRole("Administrator");
-            bool isInstructor = HttpContext.User.IsInRole("Instructor");
-            bool isStudent = HttpContext.User.IsInRole("Student");
-          
-            AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
+              AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
 
             // Depending on who they are changes what is expected
             if (isAdmin)
@@ -243,11 +240,9 @@ namespace PeerIt.Controllers
         }
         [Authorize(Roles = "Administrator,Instructor")]
         [HttpPatch]
-        public async Task<JsonResult> toggleEnabled(int courseID)
+        public async Task<JsonResult> ToggleEnabled(int courseID)
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
-            bool isAdmin = HttpContext.User.IsInRole("Administrator");
-            bool isInstructor = HttpContext.User.IsInRole("Instructor");
             bool actionApproved = false;
 
             Course courseToChange = this.courseRepository.FindByID(courseID);
@@ -258,9 +253,9 @@ namespace PeerIt.Controllers
                 return Json(response);
             }
             // They are admin - ok
-            if (isAdmin) { actionApproved = true; }
+            if (this.isAdmin) { actionApproved = true; }
             // Check to see if its their course
-            else if ((isInstructor) && (courseToChange.FK_INSTRUCTOR == await usrMgr.GetUserAsync(HttpContext.User)))
+            else if ((this.isInstructor) && (courseToChange.FK_INSTRUCTOR == await usrMgr.GetUserAsync(HttpContext.User)))
             {
                  actionApproved = true;
             }
@@ -280,7 +275,7 @@ namespace PeerIt.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Administrator")]
-        async Task<JsonResult> setInstructor(int courseID, string userId) {
+        async Task<JsonResult> SetInstructor(int courseID, string userId) {
             JsonResponse<Course> response = new JsonResponse<Course>();
             Course lookupCourse = this.courseRepository.FindByID(courseID);
 
@@ -306,17 +301,77 @@ namespace PeerIt.Controllers
             response.Data.Add(lookupCourse);
             return Json(response);
         }
-        /*
-         To do
+        [HttpPut]
+        [Authorize(Roles = "Administrator")]
+        JsonResult SetName(int courseID, string name)
+        {
+            JsonResponse<Course> response = new JsonResponse<Course>();
+            Course lookupCourse = this.courseRepository.FindByID(courseID);
+            // Check if course exists
+            if (lookupCourse == null)
+            {
+                response.Error.Add(new Error() { Description="Course does not exist",Name="course"});
+                return Json(response);
+            }
+            //Change the name
+            lookupCourse.Name = name;
+            response.Data.Add(lookupCourse);
+            //save it
+            this.courseRepository.Edit(lookupCourse);
+            return Json(response);
+
+        }
+        [Authorize(Roles = "Administrator,Instructor")]
+        [HttpPost]
+        async Task<JsonResult> CreateCourse(string courseName)
+        {
+            Course newCourse = new Course() {Name=courseName,FK_INSTRUCTOR = await usrMgr.GetUserAsync(HttpContext.User) };
+            newCourse = this.courseRepository.Add(newCourse);
+            return Json(newCourse);
+        }
+        /// <summary>
+        /// Delete a course [admin/instructor]
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <param name="courseName"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Administrator,Instructor")]
+        [HttpPost]
+        async Task<JsonResult>  DeleteCourse(int courseID, string courseName)
+        {
+            JsonResponse<Course> response = new JsonResponse<Course>();
+            Course lookupCourse = this.courseRepository.FindByID(courseID);
+            if (lookupCourse == null)
+            {
+                response.Error.Add(new Error() {Name="deleteCourse",Description="Course Not Found" });
+                return Json(response);
+            }
+
+            if (this.isAdmin)
+            {
+                if (courseName == lookupCourse.Name)
+                {
+                    this.courseRepository.Delete(lookupCourse);
+                    return Json(response);
+                }
+                
+            }
+            else if (this.isInstructor)
+            {
+                // Check if instructor is teaching the course
+                if(
+                    (lookupCourse.FK_INSTRUCTOR == await usrMgr.GetUserAsync(HttpContext.User)) && (
+                    courseName == lookupCourse.Name)){
+                    this.courseRepository.Delete(lookupCourse);
+                    return Json(response);
+
+                }
+            }
+            response.Error.Add(new Error() { Name = "courseDelete", Description = "Course Name confirmation delete failed" });
+            return Json(response);
 
 
-      
-        
-        PUT +(bool) setName(int courseID, string name) [admin]
-        POST + (bool) createCourse(string courseName) [admin, instructor]
-        DELETE + (bool) deleteCourse(int courseID, string courseName) [admin, instructor]*/
-
-
+        }
 
     }
 }

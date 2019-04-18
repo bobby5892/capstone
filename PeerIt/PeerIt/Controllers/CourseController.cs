@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using PeerIt.Models;
-using PeerIt.Infrastructure;
+
 using PeerIt.ViewModels;
 using PeerIt.Interfaces;
 namespace PeerIt.Controllers

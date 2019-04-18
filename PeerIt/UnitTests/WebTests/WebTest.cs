@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Xml;
 
 namespace UnitTests.WebTests
 {
@@ -10,6 +11,19 @@ namespace UnitTests.WebTests
     {
         public string Request(string url,string requestType, string postData)
         {
+
+            if (requestType == "GET") {
+                WebRequest req = WebRequest.Create(url + "?"+  postData);
+                req.Method = "GET";
+                using (WebResponse resp = req.GetResponse())
+                {
+                    var encoding = ASCIIEncoding.ASCII;
+                    using (var reader = new System.IO.StreamReader(resp.GetResponseStream(), encoding))
+                    {
+                        return  reader.ReadToEnd();
+                    }
+                }
+            }
             // Create a request using a URL that can receive a post.   
             WebRequest request = WebRequest.Create(url);
             // Set the Method property of the request to POST.  
@@ -25,11 +39,13 @@ namespace UnitTests.WebTests
             request.ContentLength = byteArray.Length;
 
             // Get the request stream.  
-            Stream dataStream = request.GetRequestStream();
-            // Write the data to the request stream.  
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            // Close the Stream object.  
-            dataStream.Close();
+          
+                Stream dataStream = request.GetRequestStream();
+                // Write the data to the request stream.  
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                // Close the Stream object.  
+                dataStream.Close();
+            
 
             // Get the response.  
             WebResponse response = request.GetResponse();

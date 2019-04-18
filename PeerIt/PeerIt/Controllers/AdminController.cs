@@ -36,7 +36,7 @@ namespace PeerIt.Controllers
             passwordValidator = passValid;
             passwordHasher = passwordHash;
         }
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Administrator")]
        /// Return a list of admins
         public JsonResult Index() {
             JsonResponse<AppUser> response =  new JsonResponse<AppUser>();
@@ -46,7 +46,7 @@ namespace PeerIt.Controllers
        
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Create(CreateModel model)
         {
             if (ModelState.IsValid)
@@ -75,7 +75,7 @@ namespace PeerIt.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(string id)
         {
             JsonResponse<AppUser> response = new JsonResponse<AppUser>();
@@ -101,7 +101,7 @@ namespace PeerIt.Controllers
       
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Administrator")]
         public async Task<JsonResult> Edit(string id, string email,
                 string password)
         {

@@ -6,13 +6,15 @@ using UnitTests.WebTests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+
 namespace UnitTests
 {
     public class WebEndpoint : Controller
     {
-        public WebEndpoint()
+       public WebEndpoint()
         {
-
+            
         }
         #region AccountController
         [Fact]
@@ -43,5 +45,7 @@ namespace UnitTests
             Assert.Equal((bool)jsonObject.success, false);
         }
         #endregion
+
+
     }
 }

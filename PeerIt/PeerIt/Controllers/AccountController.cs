@@ -29,21 +29,26 @@ namespace PeerIt.Controllers
         private RoleManager<IdentityRole> roleManager;
         private UserManager<AppUser> userManager;
         private SignInManager<AppUser> signInManager;
-      
+        private bool isAdmin;
+        private bool isInstructor;
+        private bool isStudent;
         /// <summary>
         /// Account Controller - Constructor that accepts a userMgr and SigninMgr - Started via startup.cs
         /// </summary>
         /// <param name="userMgr">User Manager</param>
         /// <param name="signinMgr">Sign in Manager</param>
         /// <param name="roleManager">Role Manager</param>
-        public AccountController(UserManager<AppUser> userMgr,
-
+        public AccountController(
+                UserManager<AppUser> userMgr,
                 SignInManager<AppUser> signinMgr,
                 RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userMgr;
             this.signInManager = signinMgr;
             this.roleManager = roleManager;
+            //this.isAdmin = HttpContext.User.IsInRole("Administrator");
+            //this.isInstructor = HttpContext.User.IsInRole("Instructor");
+            //this.isStudent = HttpContext.User.IsInRole("Student");
         }
 
         
@@ -168,6 +173,7 @@ namespace PeerIt.Controllers
         /// <param name="password"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         public async Task<JsonResult> CreateAccount(string firstName, string lastName, 
                                         string emailAddress, string password)
         {
@@ -228,9 +234,11 @@ namespace PeerIt.Controllers
         /// <param name="userID"></param>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = "Administrator")]
         public async Task<JsonResult> GetAccount(string userID) 
         {
             JsonResponse<AppUser> response = new JsonResponse<AppUser>();
+
             AppUser appUser = await userManager.FindByIdAsync(userID);
 
             if (appUser != null)
@@ -249,11 +257,13 @@ namespace PeerIt.Controllers
         /// <param name="firstName"></param>
         /// <returns></returns>
         [HttpPut]
+        [Authorize(Roles = "Administrator")]
         public async Task<JsonResult> SetFirstName(string userID, string firstName) 
         {
             JsonResponse<AppUser> response = new JsonResponse<AppUser>();
             AppUser user = await userManager.FindByIdAsync(userID);
 
+            
             if (user != null)
             {
                 user.FirstName = firstName;
@@ -277,6 +287,7 @@ namespace PeerIt.Controllers
         /// <param name="lastName"></param>
         /// <returns></returns>
         [HttpPut]
+        [Authorize(Roles = "Administrator")]
         public async Task<JsonResult> SetLastName(string userID, string lastName) 
         {
             JsonResponse<AppUser> response = new JsonResponse<AppUser>();
@@ -305,6 +316,7 @@ namespace PeerIt.Controllers
         /// <param name="emailAddress"></param>
         /// <returns></returns>
         [HttpPut]
+        [Authorize(Roles = "Administrator")]
         public async Task<JsonResult> SetEmailAddress(string userID, string emailAddress) 
         {
             JsonResponse<AppUser> response = new JsonResponse<AppUser>();
@@ -332,11 +344,29 @@ namespace PeerIt.Controllers
         /// <param name="userID"></param>
         /// <param name="photo"></param>
         /// <returns></returns>
+        // Method incomplete - needs to store file
         [HttpPost]
+        [Authorize(Roles = "Administrator,Instructor,Student")]
         public async Task<JsonResult> UploadProfilePicture(string userID, string photo) 
         {
             JsonResponse<AppUser> response = new JsonResponse<AppUser>();
             AppUser user = await userManager.FindByIdAsync(userID);
+            bool hasAccess = false;
+            if (isAdmin)
+            {
+                hasAccess = true;
+            }
+            // If its them they can change it
+            if (userID == (await userManager.GetUserAsync(HttpContext.User)).Id)
+            {
+                hasAccess = true;
+            }
+            // No access
+            if (!hasAccess)
+            {
+                response.Error.Add(new Error() { Name = "UploadProfilePicture", Description = "No access to upload picture" });
+                return Json(response);
+            }
 
             if (user != null)
             {
@@ -359,6 +389,7 @@ namespace PeerIt.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = "Administrator,Instructor,Student")]
         public JsonResult GetRoles() 
         {
 
@@ -371,6 +402,7 @@ namespace PeerIt.Controllers
         /// Get the role of the current user
         /// </summary>
         /// <returns></returns>
+        [Authorize(Roles = "Administrator,Instructor,Student")]
         public async Task<JsonResult> GetCurrentUserRole()
         {
             JsonResponse<string> response = new JsonResponse<string>();

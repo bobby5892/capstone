@@ -27,9 +27,10 @@ namespace PeerIt.Controllers
             IGenericRepository<CourseAssignment, int> courseAssignmentRepository,
             UserManager<AppUser> usrMgr)
         {
-             this.isAdmin = HttpContext.User.IsInRole("Administrator");
+            this.isAdmin = HttpContext.User.IsInRole("Administrator");
             this.isInstructor = HttpContext.User.IsInRole("Instructor");
             this.isStudent = HttpContext.User.IsInRole("Student");
+
             this.courseRepository = courseRepository;
             this.courseGroupRepository = courseGroupRepository;
             this.courseAssignmentRepository = courseAssignmentRepository;

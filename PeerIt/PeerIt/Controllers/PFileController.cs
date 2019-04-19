@@ -19,33 +19,33 @@ namespace PeerIt.Controllers
     {
         private readonly IFileProvider _fileProvider;
         IHostingEnvironment _hostingEnvironment;
-        private PFileRepository _fileRepository;
+        private PFileRepository pFileRepo;
+        private List<PFile> pFiles;
         ///
-        public PFileController(IHostingEnvironment hostingEnvironment, IFileProvider fileProvider)
+        public PFileController(IHostingEnvironment hostingEnvironment, IFileProvider fileProvider, PFileRepository repo)
         {
             _fileProvider = fileProvider;
             _hostingEnvironment = hostingEnvironment;
-            //_fileRepository = fileRepository;
+            pFileRepo = repo;
         }
         ///
         [HttpPost]
         public async Task<IActionResult> Post(List<IFormFile> files)
-        {
-            _fileRepository = new PFileRepository();
+        { 
             PFile theFile;
             Stream stream;
-            DirectoryInfo dataFolder = new DirectoryInfo("Data/temp.png");
-      
             // full path to file in temp location
             var filePath = Path.GetTempFileName();
             //System.IO.File.Copy(filePath, destinationFolder);
             long size = files.Sum(f => f.Length);
             foreach (var formFile in files)
             {
-                string destinationFolder = "Data/" + formFile.FileName;
-             //
-
                 theFile = new PFile();
+                pFileRepo.Add(theFile);
+                pFiles = pFileRepo.GetAll();
+                PFile dbpFile = pFileRepo.FindByID(pFiles.Count);
+                string destinationFolder = "Data/" + dbpFile.ID.ToString();
+
 
                 if (formFile.Length > 0)
                 {
@@ -53,11 +53,7 @@ namespace PeerIt.Controllers
                     {
                         await formFile.CopyToAsync(stream);           
                     }
-                    //StreamWriter streamWriter = new StreamWriter()
-                    
-                    //StreamWriter outputFile = new StreamWriter()
-                }
-                
+                } 
             }
 
             // process uploaded files

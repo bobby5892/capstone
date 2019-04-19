@@ -9,7 +9,6 @@ using PeerIt.Interfaces;
 using PeerIt.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using PeerIt.ViewModels;
 
 namespace PeerIt.Controllers
 {

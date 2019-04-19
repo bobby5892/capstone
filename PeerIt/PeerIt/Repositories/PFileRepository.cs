@@ -12,7 +12,12 @@ namespace PeerIt.Repositories
     {
         AppDBContext context;
         ///
-        public List<PFile> Files { get { return context.PFiles.ToList<PFile>(); } }
+        public PFileRepository(AppDBContext context)
+        {
+            this.context = context;
+        }
+        ///
+        public List<PFile> PFiles { get { return context.PFiles.ToList<PFile>(); } }
 
         ///
         public PFile Add(PFile model)
@@ -40,10 +45,10 @@ namespace PeerIt.Repositories
         ///
         public PFile FindByID(int ID)
         {
-            foreach (PFile file in this.Files)
+            foreach (PFile file in this.PFiles)
             {
-                //if (file.ID == ID)
-                //    return file;
+                if (file.ID == ID)
+                    return file;
             }
             return null;
         }
@@ -51,7 +56,7 @@ namespace PeerIt.Repositories
         ///
         public List<PFile> GetAll()
         {
-            throw new NotImplementedException();
+            return this.PFiles;
         }
     }
 }

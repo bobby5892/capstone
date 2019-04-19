@@ -417,7 +417,24 @@ namespace PeerIt.Controllers
             }
             return Json(response);
         }
-        
+        [HttpGet]
+        public async Task<JsonResult> GetCurrentUserAndRole()
+        {
+            JsonResponse<LoginResponse> response = new JsonResponse<LoginResponse>();
+            AppUser currentUser = await userManager.GetUserAsync(HttpContext.User);
+            if (currentUser == null)
+            {
+                response.Error.Add(new Error() { Name = "getRole", Description = "User not logged in" });
+            }
+            else
+            {
+                var roles = await userManager.GetRolesAsync(currentUser);
+                
+                response.Data.Add(new LoginResponse() { EmailAddress=currentUser.Email,Role=roles[0]});
+            }
+            return Json(response);
+        }
+
 
         #endregion Methods that return Json
     }

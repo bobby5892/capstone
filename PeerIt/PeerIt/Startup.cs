@@ -49,7 +49,14 @@ namespace PeerIt
             services.AddTransient<IGenericRepository<CourseAssignment, int>, CourseAssignmentRepository>();
             services.AddTransient<IGenericRepository<Invitation, int>, InvitationRepository>();
             services.AddTransient<IGenericRepository<Review, int>, ReviewRepository>();
-            services.AddTransient<IGenericRepository<Setting, string>, SettingsRepository>();
+            services.AddTransient<IGenericRepository<Setting, string>, SettingsRepository>(); services.AddSession(options =>
+            {
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+                // Make the session cookie essential
+                options.Cookie.IsEssential = true;
+            });
 
             // Allow us to turn on and off cors - useful in development when building the react app - its dev env is on a different port then
             // the kestrel server - so its a cors violation - this allows me to circumvent it during coding
@@ -93,6 +100,7 @@ namespace PeerIt
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+            app.UseSession();
             // https://github.com/aspnet/Identity/issues/1065
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {

@@ -11,6 +11,8 @@ class Portal extends Component {
   constructor(props) {
       super(props);
       this.state = {
+        currentUser : props.currentUser,
+        role : props.role,
         data : null
       };
 
@@ -44,7 +46,7 @@ class Portal extends Component {
                        minWidth:300 }
                  ]}]};
      return(
-      <div>
+      <div>{this.state.currentUser}
         <Webix ui={ui} data={data}/>
       </div>
                

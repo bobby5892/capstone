@@ -13,15 +13,29 @@ constructor(props) {
     };
     // Bind handle Login
     this.handleLogin = this.updateLogin.bind(this);
-    
+    this.checkLogin();
     // Remember to use this.setState({currentUser : something}); 
   }
  // / <Login  currentUser={this.state.currentUser}/>
-  renderPortal(){
+ checkLogin(){
+
+      if (this.state.currentUser == null){
+      fetch(this.state.baseUrl + "Account/GetCurrentUserAndRole?" + (new Date).getTime()).then(res => {return res.json(); })
+      .then(response => {
+        console.log("CheckkingLogin: " + JSON.stringify(response));
+      });
+
+  }
+
+
+ } 
+ 
+ 
+ renderPortal(){
     
   	if(this.state.currentUser != null){
       console.log("render portal");
-  		return <Portal baseUrl={this.state.baseUrl}/>
+  		return <Portal baseUrl={this.state.baseUrl} currentUser={this.state.currentUser} role={this.state.role}/>
   	}
   }
   renderLogin(){

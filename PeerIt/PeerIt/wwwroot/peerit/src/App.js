@@ -13,10 +13,44 @@ constructor(props) {
     };
     // Bind handle Login
     this.handleLogin = this.updateLogin.bind(this);
-    
+    this.checkIfLoggedIn();
     // Remember to use this.setState({currentUser : something}); 
   }
  // / <Login  currentUser={this.state.currentUser}/>
+ checkIfLoggedIn(){
+   fetch(this.state.baseUrl+"Account/GetCurrentUserRole", {
+        method: 'GET' // or 'PUT'
+       // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
+        
+
+        
+
+
+      }).then(
+        res => {
+          let json = res.json();
+          console.log(res);
+          return json;
+        }
+      )
+      .then(response => {
+        //console.log('Success:', JSON.stringify(response))
+        if(response.success){
+          console.log("show me " +  JSON.stringify(response));
+        }else{
+          let errors = "";
+          response.error.forEach( error => {
+            console.log(error);
+            errors += error.description
+          }); 
+          
+        }
+
+      })
+      .catch(error => console.error('Error:', error));
+
+
+ }
   renderPortal(){
     
   	if(this.state.currentUser != null){
@@ -32,10 +66,7 @@ constructor(props) {
   	}
   }
   updateLogin(user,role){
-    console.log("state before: " + this.state.currentUser);
     this.setState({'currentUser':user,'role':role});
-    console.log("updated user login");
-    console.log("state after:" + this.state.currentUser);
   }
   render() {
    return (

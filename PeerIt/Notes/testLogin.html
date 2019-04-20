@@ -1,29 +1,79 @@
 <b>Robs Random Buttons To Test Stuff</b>
 <html>
-<form action="http://localhost:8080/Account/Login" method="post">
-	<input type="hidden" name="Email" value="admin@example.com">
-	<input type="hidden" name="Password" value="password">
-	<input type="hidden" name="returnUrl" value="bob">
-	<input type="submit" value="login as admin">
-</form>
 
-<form action="http://localhost:8080/Account/Login" method="post">
-	<input type="submit" value="bogus login test">
-</form>
+<table>
+	<tr>
+		<td valign="top"><h2>Account</h2></td>
+		<td>
+			<form action="http://localhost:8080/Account/Login" method="post" >
+				<input type="hidden" name="Email" value="admin@example.com">
+				<input type="hidden" name="Password" value="password">
+				<input type="hidden" name="returnUrl" value="bob">
+				<input type="submit" value="login as admin">
+			</form>
 
-<form action="http://localhost:8080/Account/Login" method="post">
-	<input type="hidden" name="Email" value="admin@example.com">
-	<input type="hidden" name="Password" value="aerf">
-	<input type="hidden" name="returnUrl" value="bob">
-	<input type="submit" value="fail a login">
-</form>
+			<form action="http://localhost:8080/Account/Login" method="post" >
+				<input type="submit" value="bogus login test">
+			</form>
 
-<form action="http://localhost:8080/Account/Logout" method="GET">
-	<input type="submit" value="logout">
-</form>
-<form action="http://localhost:8080/Account/GetRoles" method="GET">
-	<input type="submit" value="get roles">
-</form>
-<form action="http://localhost:8080/Account/GetCurrentUserRole" method="GET">
-	<input type="submit" value="get current users role">
-</form>
+			<form action="http://localhost:8080/Account/Login" method="post" >
+				<input type="hidden" name="Email" value="admin@example.com">
+				<input type="hidden" name="Password" value="aerf">
+				<input type="hidden" name="returnUrl" value="bob">
+				<input type="submit" value="fail a login">
+			</form>
+
+			<form action="http://localhost:8080/Account/Logout" method="GET" >
+				<input type="submit" value="logout">
+			</form>
+			<form action="http://localhost:8080/Account/GetRoles" method="GET" >
+				<input type="submit" value="get roles">
+			</form>
+			<form action="http://localhost:8080/Account/GetCurrentUserRole" method="GET" >
+				<input type="submit" value="get current users role">
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top"><h2>Admin User Mananger</h2></td>
+			<td><form action="http://localhost:8080/Admin/Create" method="POST">
+				<input type="hidden" name="FirstName" value="Jacob">
+				<input type="hidden" name="LastName" value="Tester">
+				<input type="hidden" name="Email" value="jacob@example.com">
+				<input type="hidden" name="Password" value="password">
+				<input type="submit" value="create new user Jacob">
+			</form>
+
+			<form action="http://localhost:8080/Account/Login" method="post" >
+				<input type="hidden" name="Email" value="jacob@example.com">
+				<input type="hidden" name="Password" value="aerf">
+				<input type="hidden" name="returnUrl" value="bob">
+				<input type="submit" value="Login as Jacob">
+			</form>
+			<form action="http://localhost:8080/Admin/SetRole" method="PATCH" >
+					<input type="text" name="userID" placeholder="userID">
+					<select name="role">
+						<option value="Instuctor">Instructor</option>
+						<option value="Student">Student</option>
+						<option value="Administrator">Administrator</option>
+						<option value="InvitedGuest">InvitedGuest</option>
+					</select>
+					<input type="submit" value="set Role to">
+			</form>
+			<form action="http://localhost:8080/Admin/Delete" method="DELETE" >
+				<input type="text" name="userID" placeholder="UserID">
+				<input type="submit" value="delete user by ID">
+			</form>
+			<form action="http://localhost:8080/Admin/GetStudents" method="GET" >
+				<input type="submit" value="Get All Students">
+			</form>
+			<form action="http://localhost:8080/Admin/GetInstructors" method="GET" >
+				<input type="submit" value="Get All Students">
+			</form>
+			<form action="http://localhost:8080/Admin/GetAdministrators" method="GET" >
+				<input type="submit" value="Get All Students">
+			</form>						
+		</td>
+	</tr>
+
+</table>

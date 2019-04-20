@@ -39,7 +39,7 @@ class Login extends Component {
     console.log("clear error");
      window.webix.$$("loginForm").elements.passwordErrorLabel.setValue("");
   }
-  doLogin(){
+ doLogin(){
     let userName = window.webix.$$("loginForm").elements.emailAddress.getValue();
     let password = window.webix.$$("loginForm").elements.password.getValue();
     console.log("Username: " + userName + " Password: " + password + " baseUrl:" + this.state);
@@ -49,7 +49,9 @@ class Login extends Component {
      // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
       headers:{
         'Content-Type': 'application/json'
-      }
+      },
+      credentials: "include",
+      mode:"cors"
     }).then(res => res.json())
     .then(response => {
       console.log('Success:', JSON.stringify(response))

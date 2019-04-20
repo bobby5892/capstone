@@ -17,10 +17,12 @@ namespace PeerIt.Models
     /// Name of User
     /// </summary>
         [Required]
-        public string Name { get; set; }
-/// <summary>
-/// Email address of user
-/// </summary>
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
+        /// <summary>
+        /// Email address of user
+        /// </summary>
         [Required]
         public string Email { get; set; }
 /// <summary>

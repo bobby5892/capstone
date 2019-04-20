@@ -405,7 +405,7 @@ namespace PeerIt.Controllers
         [Authorize(Roles = "Administrator,Instructor,Student")]
         public async Task<JsonResult> GetCurrentUserRole()
         {
-            JsonResponse<string> response = new JsonResponse<string>();
+            JsonResponse<LoginResponse> response = new JsonResponse<LoginResponse>();
             AppUser currentUser = await userManager.GetUserAsync(HttpContext.User);
             if(currentUser == null)
             {
@@ -413,7 +413,7 @@ namespace PeerIt.Controllers
             }
             else { 
                 var roles = await userManager.GetRolesAsync(currentUser);
-                response.Data.Add(roles.FirstOrDefault());
+                response.Data.Add(new LoginResponse() { EmailAddress=currentUser.Email,Role= roles.FirstOrDefault() });
             }
             return Json(response);
         }

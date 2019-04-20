@@ -35,7 +35,18 @@ namespace PeerIt
         }
 
         public IConfiguration Configuration { get; }
-
+        protected virtual void AddCorsPolicy(IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                        .WithOrigins("http://localhost:3000","http://localhost:8080")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+            });
+        }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -131,13 +142,14 @@ namespace PeerIt
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseCors(builder =>
-                builder.WithOrigins("http://localhost:3000")
-                .AllowAnyMethod()
-                .AllowCredentials()
-                .AllowAnyHeader()
+            app.UseCors("CorsPolicy");
+            //app.UseCors(builder =>
+            //    builder.WithOrigins("http://localhost:3000")
+            //    .AllowAnyMethod()
+            //    .AllowCredentials()
+            //    .AllowAnyHeader()
 
-            );
+            //);
             if (env.IsDevelopment())
 
             {

@@ -19,8 +19,9 @@ constructor(props) {
  // / <Login  currentUser={this.state.currentUser}/>
  checkIfLoggedIn(){
    fetch(this.state.baseUrl+"Account/GetCurrentUserRole", {
-        method: 'GET' // or 'PUT'
-       // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
+        method: 'GET',
+        credentials: 'include',
+        mode:'cors'
         
 
         

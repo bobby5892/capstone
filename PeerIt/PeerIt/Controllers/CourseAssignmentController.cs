@@ -17,18 +17,31 @@ namespace PeerIt.Controllers
         #region Private Variables
 
         private CourseAssignmentRepository courseAssignmentRepository;
+        private CourseGroupRepository courseGroupRepository;
         private CourseRepository courseRepository;
         private UserManager<AppUser> userManager;
+
+        private bool isAdmin;
+        private bool isInstructor;
+        private bool isStudent;
+        private AppUser currentUser;
+        private List<CourseGroup> courseGroups;
 
         #endregion Private Variables
 
         #region Constructors
 
         public CourseAssignmentController(CourseAssignmentRepository courseAssignmentRepo,
+                                          CourseGroupRepository courseGroupRepo,
                                           CourseRepository courseRepo,
                                           UserManager<AppUser> userMgr)
         {
+            this.isAdmin = HttpContext.User.IsInRole("Administrator");
+            this.isInstructor = HttpContext.User.IsInRole("Instructor");
+            this.isStudent = HttpContext.User.IsInRole("Student");
+
             courseAssignmentRepository = courseAssignmentRepo;
+            courseGroupRepository = courseGroupRepo;
             courseRepository = courseRepo;
             userManager = userMgr;
         }
@@ -56,32 +69,46 @@ namespace PeerIt.Controllers
                                            string rubric,
                                            string rubricUrl)
         {
-            JsonResponse<bool> response = new JsonResponse<bool>();
+            JsonResponse<CourseAssignment> response = new JsonResponse<CourseAssignment>();
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            Course course = courseRepository.FindByID(courseID);
 
-            if (ModelState.IsValid)
+            if (course != null)
             {
-                Course course = courseRepository.FindByID(courseID);
-
-                if (course != null && course.FK_INSTRUCTOR == await userManager.GetUserAsync(HttpContext.User))
+                if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
                 {
-                    CourseAssignment newAssignment = new CourseAssignment
+                    if (ModelState.IsValid)
                     {
-                        Name = name,
-                        FK_COURSE = course,
-                        InstructionText = instructions,
-                        InstructionsUrl = instructionUrl,
-                        RubricText = rubric,
-                        RubricUrl = rubricUrl
-                    };
+                        CourseAssignment newAssignment = new CourseAssignment
+                        {
+                            Name = name,
+                            FK_COURSE = course,
+                            InstructionText = instructions,
+                            InstructionsUrl = instructionUrl,
+                            RubricText = rubric,
+                            RubricUrl = rubricUrl
+                        };
 
-                    if (courseAssignmentRepository.Add(newAssignment) != null)
-                    {
-                        return Json(response);
+                        if (courseAssignmentRepository.Add(newAssignment) != null)
+                        {
+                            response.Data.Add(newAssignment);
+                            return Json(response);
+                        }
+                        else
+                        {
+                            response.Error.Add(new Error("NotSuccessful", "The data was not successfully written."));
+                        }
                     }
                 }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+                }
             }
-
-            response.Error.Add(new Error("CreateFailed", "The Assignment wasn't created."));
+            else
+            {
+                response.Error.Add(new Error("NotFound", "The course was not found."));
+            }
             return Json(response);
         }
 
@@ -91,18 +118,46 @@ namespace PeerIt.Controllers
         /// <param name="courseID"></param>
         /// <returns></returns>
         [HttpGet]
-        public JsonResult Assignments(int courseID)
+        public async Task<JsonResult> Assignments(int courseID)
         {
             JsonResponse<List<CourseAssignment>> response = new JsonResponse<List<CourseAssignment>>();
-
             Course course = courseRepository.FindByID(courseID);
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+
             if (course != null)
             {
-                response.Data.Add(courseAssignmentRepository.GetByCourseID(courseID));
-                return Json(response);
+                if (this.isAdmin)
+                {
+                    response.Data.Add(courseAssignmentRepository.GetByCourseID(courseID));
+                    return Json(response);
+                }
+                else if (this.isInstructor && course.FK_INSTRUCTOR == user)
+                {
+                    response.Data.Add(courseAssignmentRepository.GetByCourseID(courseID));
+                    return Json(response);
+                }
+                else if (this.isStudent)
+                {
+                    CourseGroup courseGroup = courseGroupRepository.GetByUserAndCourseID(user.Id, courseID);
+                    if (courseGroup != null)
+                    {
+                        response.Data.Add(courseAssignmentRepository.GetByCourseID(courseID));
+                        return Json(response);
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("Forbidden", "You are not a student of this Course."));
+                    }
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+                }
             }
-
-            response.Error.Add(new Error("NotFound", "Course was not Found."));
+            else
+            {
+                response.Error.Add(new Error("NotFound", "Course was not Found."));
+            }
             return Json(response);
         }
 
@@ -114,23 +169,53 @@ namespace PeerIt.Controllers
         /// <param name="assignmentID"></param>
         /// <returns></returns>
         [HttpGet]
-        public JsonResult Assignment(int courseID, int assignmentID)
+        public async Task<JsonResult> Assignment(int courseID, int assignmentID)
         {
             JsonResponse<CourseAssignment> response = new JsonResponse<CourseAssignment>();
             Course course = courseRepository.FindByID(courseID);
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
             if (course != null)
             {
-                CourseAssignment courseAssignment = courseAssignmentRepository.FindByID(assignmentID);
-
-                if (courseAssignment != null)
+                if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
                 {
-                    response.Data.Add(courseAssignment);
-                    return Json(response);
+                    CourseAssignment courseAssignment = courseAssignmentRepository.FindByID(assignmentID);
+
+                    if (courseAssignment != null)
+                    {
+                        response.Data.Add(courseAssignment);
+                        return Json(response);
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("NotFound", "Assignment was not Found."));
+                    }
+                }
+                else if (this.isStudent)
+                {
+                    CourseGroup sCourse = courseGroupRepository.GetByUserAndCourseID(user.Id, courseID);
+                    if (sCourse != null)
+                    {
+                        CourseAssignment courseAssignment = courseAssignmentRepository.FindByID(assignmentID);
+
+                        if (courseAssignment != null)
+                        {
+                            response.Data.Add(courseAssignment);
+                            return Json(response);
+                        }
+                        else
+                        {
+                            response.Error.Add(new Error("NotFound", "Assignment was not Found."));
+                        }
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("Forbidden", "You aren't or weren't enrolled in this course."));
+                    }
                 }
                 else
                 {
-                    response.Error.Add(new Error("NotFound", "Assignment was not Found."));
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
                 }
             }
             else
@@ -148,31 +233,38 @@ namespace PeerIt.Controllers
         /// <param name="instructions"></param>
         /// <returns></returns>
         [HttpPatch]
-        public JsonResult SetAssignmentInstructions(int courseID, int assignmentID, string instructions)
+        public async Task<JsonResult> SetAssignmentInstructions(int courseID, int assignmentID, string instructions)
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
             Course course = courseRepository.FindByID(courseID);
 
-            if (course != null)
+            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == await userManager.GetUserAsync(HttpContext.User))
             {
-                CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
-
-                if (assignment != null)
+                if (course != null)
                 {
-                    assignment.InstructionText = instructions;
-                    if (courseAssignmentRepository.Edit(assignment))
+                    CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
+
+                    if (assignment != null)
                     {
-                        return Json(response);
+                        assignment.InstructionText = instructions;
+                        if (courseAssignmentRepository.Edit(assignment))
+                        {
+                            return Json(response);
+                        }
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("NotFound", "Assignment was not Found."));
                     }
                 }
                 else
                 {
-                    response.Error.Add(new Error("NotFound", "Assignment was not Found."));
+                    response.Error.Add(new Error("NotFound", "Course was not Found."));
                 }
             }
             else
             {
-                response.Error.Add(new Error("NotFound", "Course was not Found."));
+                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
             }
             return Json(response);
         }
@@ -185,31 +277,38 @@ namespace PeerIt.Controllers
         /// <param name="instructionUrl"></param>
         /// <returns></returns>
         [HttpPatch]
-        public JsonResult SetAssignmentInstructionUrl(int courseID, int assignmentID, string instructionUrl)
+        public async Task<JsonResult> SetAssignmentInstructionUrl(int courseID, int assignmentID, string instructionUrl)
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
             Course course = courseRepository.FindByID(courseID);
 
-            if (course != null)
+            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == await userManager.GetUserAsync(HttpContext.User))
             {
-                CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
-
-                if (assignment != null)
+                if (course != null)
                 {
-                    assignment.InstructionsUrl = instructionUrl;
-                    if (courseAssignmentRepository.Edit(assignment))
+                    CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
+
+                    if (assignment != null)
                     {
-                        return Json(response);
+                        assignment.InstructionsUrl = instructionUrl;
+                        if (courseAssignmentRepository.Edit(assignment))
+                        {
+                            return Json(response);
+                        }
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("NotFound", "Assignment was not Found."));
                     }
                 }
                 else
                 {
-                    response.Error.Add(new Error("NotFound", "Assignment was not Found."));
+                    response.Error.Add(new Error("NotFound", "Course was not Found."));
                 }
             }
             else
             {
-                response.Error.Add(new Error("NotFound", "Course was not Found."));
+                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
             }
             return Json(response);
         }
@@ -222,31 +321,38 @@ namespace PeerIt.Controllers
         /// <param name="rubric"></param>
         /// <returns></returns>
         [HttpPatch]
-        public JsonResult SetAssignmentRubric(int courseID, int assignmentID, string rubric)
+        public async Task<JsonResult> SetAssignmentRubric(int courseID, int assignmentID, string rubric)
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
             Course course = courseRepository.FindByID(courseID);
 
-            if (course != null)
+            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == await userManager.GetUserAsync(HttpContext.User))
             {
-                CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
-
-                if (assignment != null)
+                if (course != null)
                 {
-                    assignment.RubricText = rubric;
-                    if (courseAssignmentRepository.Edit(assignment))
+                    CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
+
+                    if (assignment != null)
                     {
-                        return Json(response);
+                        assignment.RubricText = rubric;
+                        if (courseAssignmentRepository.Edit(assignment))
+                        {
+                            return Json(response);
+                        }
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("NotFound", "Assignment was not Found."));
                     }
                 }
                 else
                 {
-                    response.Error.Add(new Error("NotFound", "Assignment was not Found."));
+                    response.Error.Add(new Error("NotFound", "Course was not Found."));
                 }
             }
             else
             {
-                response.Error.Add(new Error("NotFound", "Course was not Found."));
+                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
             }
             return Json(response);
         }
@@ -259,31 +365,38 @@ namespace PeerIt.Controllers
         /// <param name="rubricUrl"></param>
         /// <returns></returns>
         [HttpPatch]
-        public JsonResult SetAssignmentRubricUrl(int courseID, int assignmentID, string rubricUrl)
+        public async Task<JsonResult> SetAssignmentRubricUrl(int courseID, int assignmentID, string rubricUrl)
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
             Course course = courseRepository.FindByID(courseID);
 
-            if (course != null)
+            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == await userManager.GetUserAsync(HttpContext.User))
             {
-                CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
-
-                if (assignment != null)
+                if (course != null)
                 {
-                    assignment.RubricUrl = rubricUrl;
-                    if (courseAssignmentRepository.Edit(assignment))
+                    CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
+
+                    if (assignment != null)
                     {
-                        return Json(response);
+                        assignment.RubricUrl = rubricUrl;
+                        if (courseAssignmentRepository.Edit(assignment))
+                        {
+                            return Json(response);
+                        }
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("NotFound", "Assignment was not Found."));
                     }
                 }
                 else
                 {
-                    response.Error.Add(new Error("NotFound", "Assignment was not Found."));
+                    response.Error.Add(new Error("NotFound", "Course was not Found."));
                 }
             }
             else
             {
-                response.Error.Add(new Error("NotFound", "Course was not Found."));
+                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
             }
             return Json(response);
         }

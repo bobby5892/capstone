@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace PeerIt.Controllers
 {
+    /// <summary>
+    /// A controller object that handles all requests to the server regarding Course Assignments.
+    /// </summary>
     public class CourseAssignmentController : Controller
     {
         #region Private Variables
@@ -31,6 +34,13 @@ namespace PeerIt.Controllers
 
         #region Constructors
 
+        /// <summary>
+        /// Overloaded Constructor
+        /// </summary>
+        /// <param name="courseAssignmentRepo"></param>
+        /// <param name="courseGroupRepo"></param>
+        /// <param name="courseRepo"></param>
+        /// <param name="userMgr"></param>
         public CourseAssignmentController(CourseAssignmentRepository courseAssignmentRepo,
                                           CourseGroupRepository courseGroupRepo,
                                           CourseRepository courseRepo,
@@ -237,8 +247,9 @@ namespace PeerIt.Controllers
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
             Course course = courseRepository.FindByID(courseID);
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == await userManager.GetUserAsync(HttpContext.User))
+            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
             {
                 if (course != null)
                 {
@@ -281,8 +292,9 @@ namespace PeerIt.Controllers
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
             Course course = courseRepository.FindByID(courseID);
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == await userManager.GetUserAsync(HttpContext.User))
+            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
             {
                 if (course != null)
                 {
@@ -325,8 +337,9 @@ namespace PeerIt.Controllers
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
             Course course = courseRepository.FindByID(courseID);
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == await userManager.GetUserAsync(HttpContext.User))
+            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
             {
                 if (course != null)
                 {
@@ -338,6 +351,10 @@ namespace PeerIt.Controllers
                         if (courseAssignmentRepository.Edit(assignment))
                         {
                             return Json(response);
+                        }
+                        else
+                        {
+                            response.Error.Add(new Error("NotSuccessful", " The data was not successfully written."));
                         }
                     }
                     else
@@ -369,8 +386,9 @@ namespace PeerIt.Controllers
         {
             JsonResponse<bool> response = new JsonResponse<bool>();
             Course course = courseRepository.FindByID(courseID);
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == await userManager.GetUserAsync(HttpContext.User))
+            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
             {
                 if (course != null)
                 {
@@ -382,6 +400,10 @@ namespace PeerIt.Controllers
                         if (courseAssignmentRepository.Edit(assignment))
                         {
                             return Json(response);
+                        }
+                        else
+                        {
+                            response.Error.Add(new Error("NotSuccessful", "The data was not successfully written."));
                         }
                     }
                     else

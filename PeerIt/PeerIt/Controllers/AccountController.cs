@@ -403,7 +403,7 @@ namespace PeerIt.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize(Roles = "Administrator,Instructor,Student")]
-        [HttpOptions]
+        [HttpOptions,HttpGet]
         public async Task<JsonResult> GetCurrentUserRole()
         {
             JsonResponse<LoginResponse> response = new JsonResponse<LoginResponse>();

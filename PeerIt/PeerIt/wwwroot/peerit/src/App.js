@@ -17,16 +17,16 @@ constructor(props) {
     // Remember to use this.setState({currentUser : something}); 
   }
  // / <Login  currentUser={this.state.currentUser}/>
- checkIfLoggedIn(){
+ checkIfLoggedIn(){//https://stackoverflow.com/questions/38742379/cors-why-my-browser-doesnt-send-options-preflight-request/38746674#38746674
    fetch(this.state.baseUrl+"Account/GetCurrentUserRole", {
         method: 'GET',
-        credentials: 'include',
-        mode:'cors'
-        
-
-        
-
-
+        credentials: 'same-origin',
+        cache: "no-cache",
+        mode:'cors',
+         headers:{
+            'Content-Type': 'application/json',
+            'X-PINGOVER': "because"
+          }
       }).then(
         res => {
           let json = res.json();

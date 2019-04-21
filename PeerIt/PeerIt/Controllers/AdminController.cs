@@ -107,6 +107,25 @@ namespace PeerIt.Controllers
 
             return Json(response);
         }
+        [Authorize(Roles = "Administrator")]
+        [HttpGet]
+        public async Task<JsonResult> GetInvitedGuests()
+        {
+            JsonResponse<AppUser> response = new JsonResponse<AppUser>();
+            var allUsers = userManager.Users.ToList<AppUser>();
+            // Asp does not support an async lambda to a FIND for C# so using the usermanager to check the is in role Async all in 1 fell swoop - is not allowed
+            //https://stackoverflow.com/questions/17226284/convert-async-lambda-expression-to-delegate-type-system-funct
+
+            for (int i = 0; i < allUsers.Count; i++)
+            {
+                if (await userManager.IsInRoleAsync(allUsers[i], "InvitedGuest"))
+                {
+                    response.Data.Add(allUsers[i]);
+                }
+            }
+
+            return Json(response);
+        }
         /// <summary>
         /// This is the create a user
         /// </summary>
@@ -118,12 +137,12 @@ namespace PeerIt.Controllers
         public async Task<JsonResult> Create(CreateModel model)
         //public async Task<JsonResult> Create(CreateModel model)
         {
+            JsonResponse<AppUser> response = new JsonResponse<AppUser>();
             if (ModelState.IsValid)
             {
-                JsonResponse<AppUser> response = new JsonResponse<AppUser>();
                 AppUser user = new AppUser {
-                    FirstName = model.FirstName.ToLower().ToUpper() + model.FirstName.Substring(1),
-                    LastName = model.LastName.ToLower().ToUpper() + model.LastName.Substring(1),
+                    FirstName = model.FirstName.ToLower(),
+                    LastName = model.LastName.ToLower(),
                     UserName = model.Email.ToLower(),
                     Email = model.Email.ToLower(),
                     IsEnabled = true,
@@ -154,7 +173,11 @@ namespace PeerIt.Controllers
                     }
                 }
             }
-            return Json(Response);
+            else
+            {
+                response.Error.Add(new Error() { Description = "Failed Validation", Name = "AdminCreate" });
+            }
+            return Json(response);
         }
 
         [HttpPost]
@@ -182,18 +205,39 @@ namespace PeerIt.Controllers
             return Json(response);
         }
       
-
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        public async Task<JsonResult> GetUser(string id)
+        {
+            JsonResponse<EditModel> response = new JsonResponse<EditModel>();
+            AppUser user = await userManager.FindByIdAsync(id);
+            if(user == null)
+            {
+                response.Error.Add(new Error() { Description = "No such user", Name = "adminGetUser" });
+                return Json(response);
+            }
+            var roles = await userManager.GetRolesAsync(user);
+            response.Data.Add(new EditModel() {
+                    Email=user.Email,
+                    IsEnabled =user.IsEnabled,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    ID = user.Id,
+                    Role = roles[0]
+            });
+            return Json(response);
+        }
         [HttpPost]
         [Authorize(Roles = "Administrator")]
-        public async Task<JsonResult> Edit(string id, string email,
-                string password)
+        public async Task<JsonResult> Edit(EditModel model)
         {
+            
             JsonResponse<AppUser> response = new JsonResponse<AppUser>();
 
-            AppUser user = await userManager.FindByIdAsync(id);
+            AppUser user = await userManager.FindByIdAsync(model.ID);
             if (user != null)
             {
-                user.Email = email;
+                user.Email = model.Email;
                 IdentityResult validEmail
                     = await userValidator.ValidateAsync(userManager, user);
                 if (!validEmail.Succeeded)
@@ -201,31 +245,32 @@ namespace PeerIt.Controllers
                     response.Error.Add(new Error() { Name = "Admin", Description ="Invalid Email Address" });
                     return Json(response);
                 }
-                IdentityResult validPass = null;
-                if (!string.IsNullOrEmpty(password))
+
+                if (ModelState.IsValid)
                 {
-                    validPass = await passwordValidator.ValidateAsync(userManager,
-                        user, password);
-                    if (validPass.Succeeded)
+                    if(model.Email.Length > 1) { user.Email = model.Email; user.NormalizedEmail = model.Email; user.UserName = model.Email; }
+                    if((model.Password != null) && (model.Password.Length > 1)) { user.PasswordHash = userManager.PasswordHasher.HashPassword(user, model.Password); }
+                    if(model.FirstName.Length > 1) { user.FirstName = model.FirstName; }
+                    if(model.LastName.Length > 1) { user.LastName = model.LastName; }
+                    if(model.Role.Length > 1)
                     {
-                        user.PasswordHash = passwordHasher.HashPassword(user,
-                            password);
+                        var roles = await userManager.GetRolesAsync(user);
+                        await userManager.RemoveFromRolesAsync(user, roles.ToArray());
+
+                        // Now lets add the role we want
+                        await this.userManager.AddToRoleAsync(user, model.Role);
                     }
-                    else
-                    {
-                        response.Error.Add(new Error() { Name = "Admin", Description = "Invalid Password" });
-                        return Json(response);
-                    }
-                
-                }
-                if ((validEmail.Succeeded && validPass == null)
-                        || (validEmail.Succeeded
-                        && password != string.Empty && validPass.Succeeded))
-                {
+                    user.IsEnabled = model.IsEnabled;
+
                     IdentityResult result = await userManager.UpdateAsync(user);
                     if (result.Succeeded)
                     {
                         response.Data.Add(user);
+                        return Json(response);
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error() { Name = "Admin", Description = "Unable to Edit User" });
                         return Json(response);
                     }
                 }
@@ -234,7 +279,6 @@ namespace PeerIt.Controllers
                     response.Error.Add(new Error() { Name = "Admin", Description = "Unable to Edit User" });
                     return Json(response);
                 }
-                
             }
             response.Error.Add(new Error() { Name = "Admin", Description = "Unable to find user" });
             return Json(response);

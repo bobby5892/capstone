@@ -1,6 +1,5 @@
 
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import Webix from '../webix';
 
 class AdminToolbar extends Component {
@@ -13,63 +12,48 @@ class AdminToolbar extends Component {
 	        data : null
 	      };
 	      this.logout = props.logout;
-
-	
-
-    window.webix.protoUI({
-      name:"react",
-      defaults:{
-        borderless:true
-      },
-      $init:function(config){
-        this.$ready.push(function(){    
-          ReactDOM.render(
-            this.config.app,
-            this.$view
-          );
-        });
-      }
-    }, window.webix.ui.view)
-  }
-
+	      // Receive the function handle for handleManageUsersMenuClick
+	      this.handleMenuClick = props.handleMenuClick;
+    }
+    // Click up in Portal 
+    
 	render(){
 		let data = null;
 	    let ui = 
-        {
-          type:"space", id:"a1", rows:
-            [
-              {
-                 type:"space", 
-                 padding:0, 
-                 responsive:"a1", 
-                 height: window.innerHeight,
-                 width: window.innerWidth,
-                 cols:
-                 [
-                     { 
-                        view:"list", 
-                        data:["Admin", "Reports", "Settings","Logout"],
-                        ready:function(){ 
-                          let select = this.select(this.getFirstId()); 
-                          console.log(select);
-                        },
-                        click:function(a){
-                        	if(a === "Logout"){
-                        		//Attempt to call the logout chain
-                        		this.logout();
-                        	}
-                        }.bind(this),
-                        select:true,
-                        scroll:false,
-                        width:200 
-                     }
-                ]
-              }
-            ]
-        };
+	    {
+            view:"list", 
+            data:["Admin", "Manage Courses","Manage Users", "Settings","Logout"],
+            ready:function(){ 
+              // Highlight the first one
+              this.select(this.getFirstId()); 
+            },
+            click:function(a){
+            	if(a === "Logout"){
+            		//Attempt to call the logout chain
+            		this.logout();
+            	}
+            	else if( a === "Manage Users"){
+            		this.handleMenuClick("ManageUsers");
+            	}
+            	else if( a === "Manage Courses"){
+            		this.handleMenuClick("ManageCourses");
+            	}
+            	else if( a === "Settings"){
+            		this.handleMenuClick("AdminSettings");
+            	}
+            	else if( a === "Admin"){
+            		this.handleMenuClick("LiveFeed");
+            	}            	
+
+            }.bind(this),
+
+            select:true,
+            scroll:false,
+            width:200 
+         };
 		
 		return(
-		 	<div>
+		 	<div id="AdminToolbar">
         		<Webix ui={ui} data={data}/>
       		</div>
       	);

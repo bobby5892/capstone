@@ -30,7 +30,6 @@ constructor(props) {
       }).then(
         res => {
           let json = res.json();
-          console.log(res);
           return json;
         }
       )
@@ -38,16 +37,13 @@ constructor(props) {
         //console.log('Success:', JSON.stringify(response))
         if(response.success){
           //console.log("show me " +  JSON.stringify(response));
-          console.log("Role: " + response.data[0].role + " User: " +  response.data[0].emailAddress);
           if((response.data[0].role.length > 1) && (response.data[0].emailAddress.length > 1)){
             // Update the state and include the user
             this.setState({'currentUser': response.data[0].emailAddress, 'role' : response.data[0].role});
           }
         }else{
-          let errors = "";
           response.error.forEach( error => {
             console.log(error);
-            errors += error.description
           }); 
           
         }

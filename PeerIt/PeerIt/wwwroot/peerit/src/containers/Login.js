@@ -10,13 +10,12 @@ class Login extends Component {
 
   constructor(props) {
       super(props);
-      console.log(props);
       this.state = {
         data : null,
       };
       //grab the update Login method
       this.updateLogin = props.handleLogin;
-       console.log(this.state);
+     
 
     window.webix.protoUI({
       name:"react",
@@ -34,13 +33,11 @@ class Login extends Component {
     }, window.webix.ui.view)
   }
   clearError(){
-    console.log("clear error");
      window.webix.$$("loginForm").elements.passwordErrorLabel.setValue("");
   }
  doLogin(){
     let userName = window.webix.$$("loginForm").elements.emailAddress.getValue();
     let password = window.webix.$$("loginForm").elements.password.getValue();
-    console.log("Username: " + userName + " Password: " + password + " baseUrl:" + this.state);
    
     fetch("/Account/Login?Email=" + userName + "&Password=" + password + "&returnUrl=", {
       method: 'POST', // or 'PUT'
@@ -52,13 +49,11 @@ class Login extends Component {
       mode:"cors"
     }).then(res => res.json())
     .then(response => {
-      console.log('Success:', JSON.stringify(response))
       if(response.success){
         this.updateLogin(response.data[0].emailAddress,response.data[0].role);
       }else{
         let errors = "";
         response.error.forEach( error => {
-          console.log(error);
           errors += error.description
         }); 
         window.webix.$$("loginForm").elements.passwordErrorLabel.setValue(errors);
@@ -103,7 +98,8 @@ class Login extends Component {
                                   label:"Email Address",
                                   validate:"isNotEmpty",
                                   validateEvent:"key",
-                                  value:"" 
+                                  value:"" ,
+                              
                                 },
                                 { 
                                  
@@ -114,12 +110,8 @@ class Login extends Component {
                                   label:"Password",
                                   validate:"isNotEmpty", 
                                   validateEvent:"key",
-                                  value:"",
-                                  KeyPress : function(code,e) {
-                                    console.log("KEY PRESSED");
-                                    console.log(code);
-                                    console.log(e);
-                                  }
+                                  value:""
+                                 
                                 },
                                 { 
                                   view:"label", 
@@ -127,7 +119,7 @@ class Login extends Component {
                                   label:"" 
                                 },
 
-                                 {}, { view:"button", label: 'login', click:this.doLogin.bind(this)}
+                                 {}, { view:"button", label: 'login', click:this.doLogin.bind(this), hotkey:"enter"}
                           ],
                             width:500,
                             height:500,
@@ -147,16 +139,8 @@ class Login extends Component {
       <div>
         <Webix ui={ui} data={data}/>
       </div>
-               
-     
       );
-     
-
   }
 }
-
-//const Portal = ({ data, save }) => (
-  
-//)
 export default Login;
 

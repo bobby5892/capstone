@@ -21,6 +21,7 @@ class Portal extends Component {
         data : null,
         currentContentWidgets : ["LiveFeed"]
       };
+      console.log(props.role);
       // Used to change user state from App.js
       this.handleLogin = props.handleLogin;
       
@@ -62,7 +63,7 @@ renderAdminToolbar(){
 }
 renderInstructorToolbar(){
   if(this.state.role ==="Instructor"){
-    return <InstructorToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
+   return <InstructorToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
   }
 }
 renderStudentToolbar(){
@@ -71,17 +72,17 @@ renderStudentToolbar(){
   }
 }
 renderAdminManageUsers(){
-  if((this.state.role === "Administrator" && (this.state.currentContentWidgets.includes("ManageUsers")))){
+  if((this.state.role === "Administrator") && (this.state.currentContentWidgets.includes("ManageUsers"))){
     return <ManageUsers currentUser={this.state.currentUser} role={this.state.role} />
   }
 }
 renderAdminManageCourses(){
-  if((this.state.role === "Administrator" && (this.state.currentContentWidgets.includes("ManageCourses")))){
+  if((this.state.role === "Administrator") && (this.state.currentContentWidgets.includes("ManageCourses"))){
       return <ManageCourses currentUser={this.state.currentUser} role={this.state.role} />
   }
 }
 renderAdminSettings(){
-  if((this.state.role === "Administrator" && (this.state.currentContentWidgets.includes("AdminSettings")))){
+  if((this.state.role === "Administrator") && (this.state.currentContentWidgets.includes("AdminSettings"))){
       return <AdminSettings currentUser={this.state.currentUser} role={this.state.role} />
   }
 }
@@ -157,6 +158,21 @@ logout(){
 }
   render(){
     /*Portal Container */
+    let scope = this;
+      let toolbar = function(){ 
+          if(scope.state.role == "Administrator"){
+              return "AdminToolbar";
+          }
+          else if(scope.state.role == "Instructor"){
+            return "InstructorToolbar";
+          }
+          else if (scope.state.role == "Student"){
+            return "StudentToolbar";
+          }
+          else{
+            
+          }
+        }
       let data = null;
       let ui = 
         {
@@ -174,7 +190,7 @@ logout(){
                         view:"template", 
                         scroll:false,
                         width:200,
-                        content: "AdminToolbar"
+                        content: toolbar()
                      },
                      {  view:"template", 
                         scroll:false,

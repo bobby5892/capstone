@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import './App.css';
 import Portal from './containers/portal.js';
 import Login from './containers/Login.js';
+//https://facebook.github.io/create-react-app/docs/proxying-api-requests-in-development
 class App extends Component {
 constructor(props) {
     super(props);
     this.state = {
     	currentUser : null,
-      baseUrl : "http://localhost:8080/",
       role : null
     };
     // Bind handle Login
@@ -18,7 +18,7 @@ constructor(props) {
   }
  // / <Login  currentUser={this.state.currentUser}/>
  checkIfLoggedIn(){//https://stackoverflow.com/questions/38742379/cors-why-my-browser-doesnt-send-options-preflight-request/38746674#38746674
-   fetch(this.state.baseUrl+"Account/GetCurrentUserRole", {
+   fetch("/Account/GetCurrentUserRole", {
         method: 'GET',
         credentials: 'same-origin',
         cache: "no-cache",
@@ -37,7 +37,12 @@ constructor(props) {
       .then(response => {
         //console.log('Success:', JSON.stringify(response))
         if(response.success){
-          console.log("show me " +  JSON.stringify(response));
+          //console.log("show me " +  JSON.stringify(response));
+          console.log("Role: " + response.data[0].role + " User: " +  response.data[0].emailAddress);
+          if((response.data[0].role.length > 1) && (response.data[0].emailAddress.length > 1)){
+            // Update the state and include the user
+            this.setState({'currentUser': response.data[0].emailAddress, 'role' : response.data[0].role});
+          }
         }else{
           let errors = "";
           response.error.forEach( error => {
@@ -55,15 +60,13 @@ constructor(props) {
   renderPortal(){
     
   	if(this.state.currentUser != null){
-      console.log("render portal");
-  		return <Portal baseUrl={this.state.baseUrl}/>
+  		return <Portal currentUser={this.state.currentUser} role={this.state.role} handleLogin={this.handleLogin} />
   	}
   }
   renderLogin(){
     
   	if(this.state.currentUser == null){
-      console.log("render login");
-  		return <Login baseUrl={this.state.baseUrl} handleLogin={this.handleLogin} />
+  		return <Login  handleLogin={this.handleLogin} />
   	}
   }
   updateLogin(user,role){

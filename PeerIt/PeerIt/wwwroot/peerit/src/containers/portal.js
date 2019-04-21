@@ -4,15 +4,23 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Webix from '../webix';
-
+import AdminToolbar from '../widget/AdminToolbar';
+import InstructorToolbar from '../widget/InstructorToolbar';
+import StudentToolbar from '../widget/StudentToolbar';
  
 class Portal extends Component {
 
   constructor(props) {
       super(props);
       this.state = {
+        currentUser : props.currentUser,
+        role : props.role,
         data : null
       };
+      // Used to change user state from App.js
+      this.handleLogin = props.handleLogin;
+      this.levelCheck = "here";
+      this.logout.bind(this);
 
     window.webix.protoUI({
       name:"react",
@@ -29,23 +37,64 @@ class Portal extends Component {
       }
     }, window.webix.ui.view)
   }
+renderAdminToolbar(){
+  if(this.state.role === "Administrator"){
+     return   <AdminToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
+  }
+}
+renderInstructorToolbar(){
+  if(this.state.role ==="Instructor"){
+    return     <InstructorToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
+  }
+}
+renderStudentToolbar(){
+  if(this.state.role === "Student"){
+    return     <StudentToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
+  }
+}
+logout(){
+  fetch("/Account/Logout", {
+      method: 'GET', // or 'PUT'
+     // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      credentials: "include",
+      mode:"cors"
+    }).then(res => res.json())
+    .then(response => {
+      console.log('Success:', JSON.stringify(response))
 
+      if(response.success){
+        
+          
+      }else{
+        let errors = "";
+        response.error.forEach( error => {
+          console.log(error);
+          errors += error.description
+        }); 
+        
+      }
+
+    })
+    .catch(error => console.error('Error:', error));
+
+    //
+    this.handleLogin(null,null);
+}
   render(){
+
     let data = null;
-    let ui = {type:"space", id:"a1", rows:[{
-                 type:"space", padding:0, responsive:"a1", cols:[
-                     { view:"list", data:["Users", "Reports", "Settings"],
-                       ready:function(){ this.select(this.getFirstId()); },
-                       select:true, scroll:false, width:200 },
-                     { template:"column 2", width:200 },
-                     { view:"datatable", select:true, columns:[
-                        { id:"title", fillspace:1 }, { id:"votes"}
-                       ], data:"data",
-                       minWidth:300 }
-                 ]}]};
+
      return(
       <div>
-        <Webix ui={ui} data={data}/>
+        {this.renderAdminToolbar()}
+        {this.renderInstructorToolbar()}
+        {this.renderStudentToolbar()}
+    
+    
+      
       </div>
                
              

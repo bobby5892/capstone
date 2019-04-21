@@ -402,8 +402,8 @@ namespace PeerIt.Controllers
         /// Get the role of the current user
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles = "Administrator,Instructor,Student")]
-        [HttpOptions,HttpGet]
+        //[Authorize(Roles = "Administrator,Instructor,Student")]
+        //[HttpOptions,HttpGet]
         public async Task<JsonResult> GetCurrentUserRole()
         {
             JsonResponse<LoginResponse> response = new JsonResponse<LoginResponse>();

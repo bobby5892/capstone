@@ -12,8 +12,6 @@ class Login extends Component {
       super(props);
       console.log(props);
       this.state = {
-        baseUrl : props.baseUrl,
-       
         data : null,
       };
       //grab the update Login method
@@ -44,7 +42,7 @@ class Login extends Component {
     let password = window.webix.$$("loginForm").elements.password.getValue();
     console.log("Username: " + userName + " Password: " + password + " baseUrl:" + this.state);
    
-    fetch(this.state.baseUrl+"Account/Login?Email=" + userName + "&Password=" + password + "&returnUrl=", {
+    fetch("/Account/Login?Email=" + userName + "&Password=" + password + "&returnUrl=", {
       method: 'POST', // or 'PUT'
      // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
       headers:{
@@ -97,6 +95,7 @@ class Login extends Component {
                                   template:"Please Login"
                                 },
                                 { 
+                                 
                                   view:"text",
                                   labelAlign:"top",
                                   labelPosition:"top", 
@@ -107,6 +106,7 @@ class Login extends Component {
                                   value:"" 
                                 },
                                 { 
+                                 
                                   view:"text", 
                                   labelPosition:"top",
                                   type:"password", 
@@ -114,7 +114,12 @@ class Login extends Component {
                                   label:"Password",
                                   validate:"isNotEmpty", 
                                   validateEvent:"key",
-                                  value:"" 
+                                  value:"",
+                                  KeyPress : function(code,e) {
+                                    console.log("KEY PRESSED");
+                                    console.log(code);
+                                    console.log(e);
+                                  }
                                 },
                                 { 
                                   view:"label", 
@@ -133,6 +138,9 @@ class Login extends Component {
                      }
                  ]};
 
+                // Now lets check for returns
+               //console.log(window.webix.$$("loginForm").elements);
+               
      
 
      return(

@@ -21,6 +21,5 @@ namespace PeerIt.Models
 
         [Required]
         public string InvitationHash { get; set; }
-
     }
 }

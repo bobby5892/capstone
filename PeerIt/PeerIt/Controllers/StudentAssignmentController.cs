@@ -282,7 +282,7 @@ namespace PeerIt.Controllers
         /// Returns a List of StudentAssignments by the Review Group ID.
         /// </summary>
         /// <returns></returns>
-        // Need to Add ReviewGroups so we can retreive a list of assignments by a group allowed to review each other.
+        // Need to Add ReviewGroups so we can retrieve a list of assignments by a group allowed to review each other.
         [HttpGet]
         public async Task<JsonResult> GetAssignmentsByGroup(int groupID)
         {

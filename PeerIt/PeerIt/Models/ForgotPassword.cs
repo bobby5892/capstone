@@ -15,6 +15,5 @@ namespace PeerIt.Models
 
         [Required]        
         public string ResetHash { get; set; }
-
     }
 }

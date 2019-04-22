@@ -8,7 +8,6 @@ namespace PeerIt.Models
 {
     public class CourseAssignment
     {
-
         #region Variables and Properties
         public int ID { get; set; }
         

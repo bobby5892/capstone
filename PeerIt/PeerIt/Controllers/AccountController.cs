@@ -402,10 +402,11 @@ namespace PeerIt.Controllers
         /// Get the role of the current user
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles = "Administrator,Instructor,Student")]
+        //[Authorize(Roles = "Administrator,Instructor,Student")]
+        //[HttpOptions,HttpGet]
         public async Task<JsonResult> GetCurrentUserRole()
         {
-            JsonResponse<string> response = new JsonResponse<string>();
+            JsonResponse<LoginResponse> response = new JsonResponse<LoginResponse>();
             AppUser currentUser = await userManager.GetUserAsync(HttpContext.User);
             if(currentUser == null)
             {
@@ -413,7 +414,7 @@ namespace PeerIt.Controllers
             }
             else { 
                 var roles = await userManager.GetRolesAsync(currentUser);
-                response.Data.Add(roles.FirstOrDefault());
+                response.Data.Add(new LoginResponse() { EmailAddress=currentUser.Email,Role= roles.FirstOrDefault() });
             }
             return Json(response);
         }

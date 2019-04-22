@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+/*
 namespace PeerIt.Models
 {
     /// <summary>
@@ -27,3 +27,4 @@ namespace PeerIt.Models
         public int groupID { get; set; }
     }
 }
+*/

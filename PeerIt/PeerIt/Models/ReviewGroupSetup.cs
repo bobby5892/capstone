@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+/*
 namespace PeerIt.Models
 {
     /// <summary>
@@ -22,3 +22,4 @@ namespace PeerIt.Models
         public CourseAssignment CourseAssignment { get; set; }
     }
 }
+*/

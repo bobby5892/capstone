@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
+using PeerIt.Interfaces;
 using PeerIt.Models;
 using PeerIt.Repositories;
 
@@ -19,10 +20,10 @@ namespace PeerIt.Controllers
     {
         private readonly IFileProvider _fileProvider;
         IHostingEnvironment _hostingEnvironment;
-        private PFileRepository pFileRepo;
+        private IGenericRepository<PFile, int> pFileRepo;
         private List<PFile> pFiles;
         ///
-        public PFileController(IHostingEnvironment hostingEnvironment, IFileProvider fileProvider, PFileRepository repo)
+        public PFileController(IHostingEnvironment hostingEnvironment, IFileProvider fileProvider, IGenericRepository<PFile,int> repo)
         {
             _fileProvider = fileProvider;
             _hostingEnvironment = hostingEnvironment;
@@ -35,7 +36,7 @@ namespace PeerIt.Controllers
             PFile theFile;
             Stream stream;
             // full path to file in temp location
-            var filePath = Path.GetTempFileName();
+            //var filePath = Path.GetTempFileName();
             //System.IO.File.Copy(filePath, destinationFolder);
             long size = files.Sum(f => f.Length);
             foreach (var formFile in files)
@@ -43,8 +44,11 @@ namespace PeerIt.Controllers
                 theFile = new PFile();
                 pFileRepo.Add(theFile);
                 pFiles = pFileRepo.GetAll();
-                PFile dbpFile = pFileRepo.FindByID(pFiles.Count);
-                string destinationFolder = "Data/" + dbpFile.ID.ToString();
+                Guid fileID = new Guid();
+                fileID.ToString();
+                //PFile dbpFile = pFileRepo.FindByID(pFiles.Count-1);
+                //string fileName = dbpFile.ID.ToString();
+                string destinationFolder = "Data/somemsturid";
 
 
                 if (formFile.Length > 0)
@@ -59,7 +63,7 @@ namespace PeerIt.Controllers
             // process uploaded files
             // Don't rely on or trust the FileName property without validation.
 
-            return Ok(new { count = files.Count, size, filePath });
+            return Ok(new { count = files.Count, size,  }); //filePath
         }
     }
 }

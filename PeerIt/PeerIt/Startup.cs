@@ -73,7 +73,19 @@ namespace PeerIt
             }).AddEntityFrameworkStores<AppDBContext>()
 
         .AddDefaultTokenProviders();
-
+            // Secondary Loading of ANTI CORS - NEEDS REMOVED BEFORE PRODUCTION
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                    });
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
    
         }
@@ -91,6 +103,8 @@ namespace PeerIt
                     .AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
+                    .AllowCredentials()
+                    
                     );
                 app.UseDeveloperExceptionPage();
                 

@@ -11,23 +11,31 @@ constructor(props) {
       baseUrl : "http://localhost:8080/",
       role : null
     };
+    this.checkLogin();
+    console.log(this.state);
     // Bind handle Login
     this.handleLogin = this.updateLogin.bind(this);
-    this.checkLogin();
+    
     // Remember to use this.setState({currentUser : something}); 
   }
  // / <Login  currentUser={this.state.currentUser}/>
  checkLogin(){
 
-      if (this.state.currentUser == null){
-      fetch(this.state.baseUrl + "Account/GetCurrentUserAndRole?" + (new Date).getTime()).then(res => {return res.json(); })
-      .then(response => {
+      if (true){//this.state.currentUser == null){
+      fetch("http://localhost:8080/Account/GetCurrentUserAndRole?" + 
+        (new Date()).getTime(), { method : 'GET' , 
+        headers:{
+          //'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      }).then(res => {
+          console.log(res);
+          return res.json();     
+        }) 
+            .then(response => {
         console.log("CheckkingLogin: " + JSON.stringify(response));
       });
-
   }
-
-
  } 
  
  
@@ -50,6 +58,9 @@ constructor(props) {
     this.setState({'currentUser':user,'role':role});
     console.log("updated user login");
     console.log("state after:" + this.state.currentUser);
+    
+    this.checkLogin();
+    console.log("i got here");
   }
   render() {
    return (

@@ -23,6 +23,7 @@ namespace PeerIt.Repositories
         public DbSet<Setting> Settings { get; set; }
         public DbSet<StudentAssignment> StudentAssignments { get; set; }
         public DbSet<CourseGroup> CourseGroups { get; set; }
+        public DbSet<PFile> PFiles { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

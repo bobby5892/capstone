@@ -10,13 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Infastructure\**" />
-    <Content Remove="Infastructure\**" />
-    <EmbeddedResource Remove="Infastructure\**" />
-    <None Remove="Infastructure\**" />
+
+    <Folder Include="Data\" />
+ 
   </ItemGroup>
 
   <ItemGroup>
+
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

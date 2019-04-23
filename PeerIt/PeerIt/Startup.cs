@@ -16,6 +16,9 @@ using Microsoft.AspNetCore.Cors;
 using PeerIt.Models;
 using PeerIt.Repositories;
 using PeerIt.Interfaces;
+
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -54,7 +57,8 @@ namespace PeerIt
             services.AddCors();
             /* Enity Framework */
             services.AddDbContext<AppDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local"]));
-            
+            services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
+
             /* Add Repositories */
             services.AddTransient<IGenericRepository<ActiveReviewer,int>, ActiveReviewerRepository>();
             services.AddTransient<IGenericRepository<Comment, int>, CommentRepository>();
@@ -65,6 +69,7 @@ namespace PeerIt
             services.AddTransient<IGenericRepository<ForgotPassword, int>, ForgotPasswordRepository>();
             services.AddTransient<IGenericRepository<CourseAssignment, int>, CourseAssignmentRepository>();
             services.AddTransient<IGenericRepository<Invitation, int>, InvitationRepository>();
+            services.AddTransient<IGenericRepository<PFile,string>, PFileRepository>();
             services.AddTransient<IGenericRepository<Review, int>, ReviewRepository>();
             services.AddTransient<IGenericRepository<Setting, string>, SettingsRepository>();
 

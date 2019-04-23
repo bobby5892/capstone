@@ -387,13 +387,16 @@ namespace PeerIt.Migrations
 
             modelBuilder.Entity("PeerIt.Models.PFile", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("ID")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Path");
+                    b.Property<string>("AppUserId");
+
+                    b.Property<string>("Ext");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("AppUserId");
 
                     b.ToTable("PFiles");
                 });
@@ -604,6 +607,13 @@ namespace PeerIt.Migrations
                         .WithMany()
                         .HasForeignKey("FK_COURSEID")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("PeerIt.Models.PFile", b =>
+                {
+                    b.HasOne("PeerIt.Models.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId");
                 });
 
             modelBuilder.Entity("PeerIt.Models.Review", b =>

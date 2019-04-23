@@ -13,8 +13,18 @@ namespace PeerIt.Models
     public class PFile
     {
         ///
-        public int ID { get; set; }
+        public string ID { get; set; }
         ///
-        public string Path { get; set; }
+        public string Ext { get; set; }
+        ///
+        public AppUser AppUser { get; set; }
+        ///
+        public PFile(string id, string extension, AppUser user)
+        {
+            ID = id;
+            Ext = extension;
+            AppUser = user;
+        }
+
     }
 }

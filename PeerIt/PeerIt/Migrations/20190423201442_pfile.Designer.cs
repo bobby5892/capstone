@@ -10,8 +10,8 @@ using PeerIt.Repositories;
 namespace PeerIt.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20190418231707_PFileStuff")]
-    partial class PFileStuff
+    [Migration("20190423201442_pfile")]
+    partial class pfile
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -389,13 +389,16 @@ namespace PeerIt.Migrations
 
             modelBuilder.Entity("PeerIt.Models.PFile", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("ID")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Path");
+                    b.Property<string>("AppUserId");
+
+                    b.Property<string>("Ext");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("AppUserId");
 
                     b.ToTable("PFiles");
                 });
@@ -606,6 +609,13 @@ namespace PeerIt.Migrations
                         .WithMany()
                         .HasForeignKey("FK_COURSEID")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("PeerIt.Models.PFile", b =>
+                {
+                    b.HasOne("PeerIt.Models.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId");
                 });
 
             modelBuilder.Entity("PeerIt.Models.Review", b =>

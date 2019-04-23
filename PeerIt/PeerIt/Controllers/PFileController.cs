@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using PeerIt.Interfaces;
@@ -20,10 +21,11 @@ namespace PeerIt.Controllers
     {
         private readonly IFileProvider _fileProvider;
         IHostingEnvironment _hostingEnvironment;
-        private IGenericRepository<PFile, int> pFileRepo;
+        private IGenericRepository<PFile, string> pFileRepo;
         private List<PFile> pFiles;
+        private UserManager<AppUser> userManager;
         ///
-        public PFileController(IHostingEnvironment hostingEnvironment, IFileProvider fileProvider, IGenericRepository<PFile,int> repo)
+        public PFileController(IHostingEnvironment hostingEnvironment, IFileProvider fileProvider, IGenericRepository<PFile, string> repo, UserManager<AppUser> usermger)
         {
             _fileProvider = fileProvider;
             _hostingEnvironment = hostingEnvironment;
@@ -32,23 +34,17 @@ namespace PeerIt.Controllers
         ///
         [HttpPost]
         public async Task<IActionResult> Post(List<IFormFile> files)
-        { 
-            PFile theFile;
+        {
+            PFile newPFile;
             Stream stream;
-            // full path to file in temp location
-            //var filePath = Path.GetTempFileName();
-            //System.IO.File.Copy(filePath, destinationFolder);
+            Guid guidFileId;
             long size = files.Sum(f => f.Length);
             foreach (var formFile in files)
             {
-                theFile = new PFile();
-                pFileRepo.Add(theFile);
-                pFiles = pFileRepo.GetAll();
-                Guid fileID = new Guid();
-                fileID.ToString();
-                //PFile dbpFile = pFileRepo.FindByID(pFiles.Count-1);
-                //string fileName = dbpFile.ID.ToString();
-                string destinationFolder = "Data/somemsturid";
+                guidFileId = Guid.NewGuid();
+                string ext = formFile.FileName.Split(".")[1];
+
+                string destinationFolder = "Data/" +guidFileId + "."+ext;
 
 
                 if (formFile.Length > 0)
@@ -57,7 +53,10 @@ namespace PeerIt.Controllers
                     {
                         await formFile.CopyToAsync(stream);           
                     }
-                } 
+                }
+                newPFile = new PFile(guidFileId.ToString(), ext, await userManager.GetUserAsync(HttpContext.User));
+                pFileRepo.Add(newPFile);
+                pFiles = pFileRepo.GetAll();
             }
 
             // process uploaded files

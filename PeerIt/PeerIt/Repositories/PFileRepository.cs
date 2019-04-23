@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace PeerIt.Repositories
 {
     ///
-    public class PFileRepository : IGenericRepository<PFile, int>
+    public class PFileRepository : IGenericRepository<PFile, string>
     {
         AppDBContext context;
         ///
@@ -43,7 +43,7 @@ namespace PeerIt.Repositories
         }
 
         ///
-        public PFile FindByID(int ID)
+        public PFile FindByID(string ID)
         {
             foreach (PFile file in this.PFiles)
             {

@@ -19,6 +19,8 @@ namespace PeerIt.Models
         ///
         public AppUser AppUser { get; set; }
         ///
+        public PFile() { }
+        ///
         public PFile(string id, string extension, AppUser user)
         {
             ID = id;

@@ -24,6 +24,7 @@ namespace PeerIt.Controllers
         private IGenericRepository<PFile, string> pFileRepo;
         private List<PFile> pFiles;
         private UserManager<AppUser> userManager;
+        private PFile downloadFile;
         ///
         public PFileController(IHostingEnvironment hostingEnvironment, IFileProvider fileProvider, IGenericRepository<PFile, string> repo, UserManager<AppUser> usermger)
         {
@@ -33,7 +34,7 @@ namespace PeerIt.Controllers
         }
         ///
         [HttpPost]
-        public async Task<IActionResult> Post(List<IFormFile> files)
+        public async Task<IActionResult> Upload(List<IFormFile> files)
         {
             PFile newPFile;
             Stream stream;
@@ -63,6 +64,47 @@ namespace PeerIt.Controllers
             // Don't rely on or trust the FileName property without validation.
 
             return Ok(new { count = files.Count, size,  }); //filePath
+        }
+        public async Task<IActionResult> Download(string pFileId)
+        {
+            if (pFileId == null)
+                return Content("filename not present");
+            downloadFile = pFileRepo.FindByID(pFileId);
+            string pathToFile = "Data/" + downloadFile.ID + "." + downloadFile.Ext;
+            Stream memory = new MemoryStream();
+
+            using (var stream = new FileStream(pathToFile, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            //Response.Headers.Add("Content-Disposition", cd.ToString())
+            string downFileName = downloadFile.ID + downloadFile.Ext;
+            return File(memory, GetContentType(),downFileName);
+        }
+        private string GetContentType()
+        {
+            var types = GetMimeTypes();
+            var ext = "."+downloadFile.Ext;
+            return types[ext];
+        }
+
+
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
         }
     }
 }

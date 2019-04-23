@@ -8,7 +8,6 @@ namespace PeerIt.Models
 {
     public class Setting
     {
-
     	[Required(ErrorMessage ="Must be less than 30 characters"),StringLength(30, ErrorMessage = "Must be less than 30 characters")]    	
     	public string ID {get; set;}
 
@@ -17,6 +16,5 @@ namespace PeerIt.Models
 
     	[StringLength(20, ErrorMessage = "Must be less than 20 characters")]                    
     	public int NumericValue{get;set;}
-
     }
 }

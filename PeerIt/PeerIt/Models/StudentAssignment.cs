@@ -29,6 +29,5 @@ namespace PeerIt.Models
         public int Score { get; set; }
 
         #endregion Variables and Properties
-
     }
 }

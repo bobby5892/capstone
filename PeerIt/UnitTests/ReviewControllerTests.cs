@@ -1,4 +1,4 @@
-using Xunit;
+/*using Xunit;
 using PeerIt.Repositories;
 using PeerIt.Controllers;
 using PeerIt.Models;
@@ -48,7 +48,7 @@ namespace UnitTests
            userManager = new MockUserManager();   
 
 
-            /* Create a in Memory Database instead of using the SQL  - Destroyed after running*/
+            
             var optionsBuilder = new DbContextOptionsBuilder<AppDBContext>()
                 .UseInMemoryDatabase(databaseName: "temp")
                 .Options;
@@ -141,3 +141,4 @@ namespace UnitTests
         }     
     }
 }
+*/

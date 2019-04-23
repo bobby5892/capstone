@@ -47,6 +47,23 @@ namespace PeerIt.Repositories
             return this.Reviews;
         }
         /// <summary>
+        /// Gets a list of Reviews by a Student Assignment's ID
+        /// </summary>
+        /// <param name="assignmentID"></param>
+        /// <returns></returns>
+        public List<Review> GetReviewsByAssignment(int assignmentID)
+        {
+            List<Review> reviews = new List<Review>();
+            Reviews.ForEach(r =>
+            {
+                if (r.FK_STUDENT_ASSIGNMENT.ID == assignmentID)
+                {
+                    reviews.Add(r);
+                }
+            });
+            return reviews;
+        }
+        /// <summary>
         /// Edit a review
         /// </summary>
         /// <param name="model">Review</param>

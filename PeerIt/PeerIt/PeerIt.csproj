@@ -10,8 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+
     <Folder Include="Data\" />
-    <Folder Include="Infastructure\" />
+ 
+  </ItemGroup>
+
+  <ItemGroup>
+
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

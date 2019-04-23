@@ -38,6 +38,55 @@ namespace PeerIt.Repositories
         }
 
         /// <summary>
+        /// Gets a list of CourseGroups by a user's ID
+        /// </summary>
+        /// <param name="userID"></param>
+        /// <returns></returns>
+        public List<CourseGroup> GetByUserID(string userID)
+        {
+            List<CourseGroup> classes = new List<CourseGroup>();
+            this.CourseGroups.ForEach(courseGroup =>
+            {
+                if (courseGroup.FK_AppUser.Id == userID)
+                {
+                    classes.Add(courseGroup);
+                }
+            });
+            return classes;
+        }
+
+        /// <summary>
+        /// Gets a list of CourseGroups by a course's ID.
+        /// </summary>
+        /// <param name="courseID"></param>
+        /// <returns></returns>
+        public List<CourseGroup> GetByCourseID(int courseID)
+        {
+            List<CourseGroup> classes = new List<CourseGroup>();
+            this.CourseGroups.ForEach(courseGroup =>
+            {
+                if (courseGroup.FK_Course.ID == courseID)
+                {
+                    classes.Add(courseGroup);
+                }
+            });
+            return classes;
+        }
+
+        public CourseGroup GetByUserAndCourseID(string userID, int courseID)
+        {
+            CourseGroup courseGroup = null;
+            this.CourseGroups.ForEach(cg =>
+            {
+                if (cg.FK_Course.ID == courseID && cg.FK_AppUser.Id == userID)
+                {
+                    courseGroup = cg;
+                }
+            });
+            return courseGroup;
+        }
+
+        /// <summary>
         /// Returns all CourseGroup objects in the dbcontext
         /// </summary>
         /// <returns></returns>

@@ -67,6 +67,25 @@ namespace PeerIt.Repositories
         }
 
         /// <summary>
+        /// Gets a List of Student Assignments by a user's ID and a course's ID
+        /// </summary>
+        /// <param name="userID"></param>
+        /// <param name="courseID"></param>
+        /// <returns></returns>
+        public List<StudentAssignment> GetByStudentAndCourseID(string userID, int courseID)
+        {
+            List<StudentAssignment> sAssignments = new List<StudentAssignment>();
+            StudentAssignments.ForEach(sa =>
+            {
+                if (sa.AppUser.Id == userID && sa.CourseAssignment.FK_COURSE.ID == courseID)
+                {
+                    sAssignments.Add(sa);
+                }
+            });
+            return sAssignments;
+        }
+
+        /// <summary>
         /// Returns all the Student Assignment Submissions that are ungraded
         /// by Course ID
         /// </summary>
@@ -88,20 +107,15 @@ namespace PeerIt.Repositories
             return sAssignments;
         }
 
-        /// <summary>
-        /// Returns a List of a user's StudentAssignments in a Course.
-        /// </summary>
-        /// <param name="userID"></param>
-        /// <param name="courseID"></param>
-        /// <returns></returns>
-        public List<StudentAssignment> getByUserInCourse(string userID, int courseID)
+        public List<StudentAssignment> GetByStudentAndCourseIDUngraded(string userID, int courseID)
         {
             List<StudentAssignment> sAssignments = new List<StudentAssignment>();
 
             foreach (StudentAssignment sA in StudentAssignments)
             {
-                if (sA.CourseAssignment.FK_COURSE.ID == courseID &&
-                    sA.AppUser.Id == userID)
+                if (sA.AppUser.Id == userID &&
+                    sA.CourseAssignment.FK_COURSE.ID == courseID &&
+                    sA.Score == -1)
                 {
                     sAssignments.Add(sA);
                 }

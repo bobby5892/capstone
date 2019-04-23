@@ -16,10 +16,9 @@ namespace PeerIt.Models
     	[Required]    	
     	public StudentAssignment FK_STUDENT_ASSIGNMENT {get; set;}
 
-    	
     	[Required(ErrorMessage ="Content is a required field"),StringLength(100000, ErrorMessage = "Must be less than 100,000 characters")]    	
     	public string Content {get; set;}
-    	public DateTime TimestampCreated {get; set;}
 
+    	public DateTime TimestampCreated {get; set;}
     }
 }

@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using Xunit;
 using PeerIt.Repositories;
 using PeerIt.Models;
@@ -32,7 +32,7 @@ namespace UnitTests
 
         public ModelsTests()
         {
-            /* Create a in Memory Database instead of using the SQL  - Destroyed after running*/
+           
             var optionsBuilder = new DbContextOptionsBuilder<AppDBContext>()
                 .UseInMemoryDatabase(databaseName: "temp")
                 .Options;
@@ -91,3 +91,5 @@ namespace UnitTests
         #endregion Settings Repo Testing
     }
 }
+
+*/

@@ -10,15 +10,12 @@ class Login extends Component {
 
   constructor(props) {
       super(props);
-      console.log(props);
       this.state = {
-        baseUrl : props.baseUrl,
-       
         data : null,
       };
       //grab the update Login method
       this.updateLogin = props.handleLogin;
-       console.log(this.state);
+     
 
     window.webix.protoUI({
       name:"react",
@@ -36,29 +33,27 @@ class Login extends Component {
     }, window.webix.ui.view)
   }
   clearError(){
-    console.log("clear error");
      window.webix.$$("loginForm").elements.passwordErrorLabel.setValue("");
   }
-  doLogin(){
+ doLogin(){
     let userName = window.webix.$$("loginForm").elements.emailAddress.getValue();
     let password = window.webix.$$("loginForm").elements.password.getValue();
-    console.log("Username: " + userName + " Password: " + password + " baseUrl:" + this.state);
    
-    fetch(this.state.baseUrl+"Account/Login?Email=" + userName + "&Password=" + password + "&returnUrl=", {
+    fetch("/Account/Login?Email=" + userName + "&Password=" + password + "&returnUrl=", {
       method: 'POST', // or 'PUT'
      // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
       headers:{
         'Content-Type': 'application/json'
-      }
+      },
+      credentials: "include",
+      mode:"cors"
     }).then(res => res.json())
     .then(response => {
-      console.log('Success:', JSON.stringify(response))
       if(response.success){
         this.updateLogin(response.data[0].emailAddress,response.data[0].role);
       }else{
         let errors = "";
         response.error.forEach( error => {
-          console.log(error);
           errors += error.description
         }); 
         window.webix.$$("loginForm").elements.passwordErrorLabel.setValue(errors);
@@ -95,6 +90,7 @@ class Login extends Component {
                                   template:"Please Login"
                                 },
                                 { 
+                                 
                                   view:"text",
                                   labelAlign:"top",
                                   labelPosition:"top", 
@@ -102,9 +98,11 @@ class Login extends Component {
                                   label:"Email Address",
                                   validate:"isNotEmpty",
                                   validateEvent:"key",
-                                  value:"" 
+                                  value:"" ,
+                              
                                 },
                                 { 
+                                 
                                   view:"text", 
                                   labelPosition:"top",
                                   type:"password", 
@@ -112,7 +110,8 @@ class Login extends Component {
                                   label:"Password",
                                   validate:"isNotEmpty", 
                                   validateEvent:"key",
-                                  value:"" 
+                                  value:""
+                                 
                                 },
                                 { 
                                   view:"label", 
@@ -120,7 +119,7 @@ class Login extends Component {
                                   label:"" 
                                 },
 
-                                 {}, { view:"button", label: 'login', click:this.doLogin.bind(this)}
+                                 {}, { view:"button", label: 'login', click:this.doLogin.bind(this), hotkey:"enter"}
                           ],
                             width:500,
                             height:500,
@@ -131,22 +130,17 @@ class Login extends Component {
                      }
                  ]};
 
+                // Now lets check for returns
+               //console.log(window.webix.$$("loginForm").elements);
+               
      
 
      return(
       <div>
         <Webix ui={ui} data={data}/>
       </div>
-               
-     
       );
-     
-
   }
 }
-
-//const Portal = ({ data, save }) => (
-  
-//)
 export default Login;
 

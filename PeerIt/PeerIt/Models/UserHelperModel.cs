@@ -13,19 +13,23 @@ namespace PeerIt.Models
     public class CreateModel
     {
         //https://github.com/Apress/pro-asp.net-core-mvc-2/blob/master/29%20-%20Applying%20Identity/Users/Users/Models/UserViewModels.cs
-    /// <summary>
-    /// Name of User
-    /// </summary>
+        /// <summary>
+        /// Name of User
+        /// </summary>
         [Required]
-        public string Name { get; set; }
-/// <summary>
-/// Email address of user
-/// </summary>
+
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
+
+        /// <summary>
+        /// Email address of user
+        /// </summary>
         [Required]
         public string Email { get; set; }
-/// <summary>
-/// Password of user
-/// </summary>
+        /// <summary>
+        /// Password of user
+        /// </summary>
         [Required]
         public string Password { get; set; }
     }
@@ -75,17 +79,45 @@ namespace PeerIt.Models
         /// </summary>
         [Required]
         public string RoleName { get; set; }
-/// <summary>
-/// CLSID of Role
-/// </summary>
+        /// <summary>
+        /// CLSID of Role
+        /// </summary>
         public string RoleId { get; set; }
-/// <summary>
-/// List to Add
-/// </summary>
+        /// <summary>
+        /// List to Add
+        /// </summary>
         public string[] IdsToAdd { get; set; }
-/// <summary>
-/// List to Delete
-/// </summary>
+        /// <summary>
+        /// List to Delete
+        /// </summary>
         public string[] IdsToDelete { get; set; }
+    }
+    public class EditModel
+    {
+        //https://github.com/Apress/pro-asp.net-core-mvc-2/blob/master/29%20-%20Applying%20Identity/Users/Users/Models/UserViewModels.cs
+        /// <summary>
+        /// Name of User
+        /// </summary>
+        /// 
+        [Required]
+        public string ID { get; set; }
+        [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
+        /// <summary>
+        /// Email address of user
+        /// </summary>
+        [Required]
+        public string Email { get; set; }
+        /// <summary>
+        /// Password of user
+        /// </summary>
+        public string Password { get; set; }
+        [Required]
+        public string Role { get; set; }
+
+        [Required]
+        public bool IsEnabled { get; set; }
     }
 }

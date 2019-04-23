@@ -12,6 +12,7 @@
     "webix": "^4.2.0",
     "webix-jet": "^2.0.5"
   },
+  "proxy": "http://localhost:8080",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

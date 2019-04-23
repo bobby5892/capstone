@@ -180,6 +180,7 @@ logout(){
             [
               {
                  type:"space", 
+                 scroll:"auto",
                  padding:0, 
                  responsive:"a1", 
                  height: window.innerHeight,
@@ -189,7 +190,7 @@ logout(){
                      { 
                         view:"template", 
                         scroll:false,
-                        width:200,
+                        width:350,
                         content: toolbar()
                      },
                      {  view:"template", 

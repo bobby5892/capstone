@@ -13,6 +13,8 @@ class InstructorToolbar extends Component {
     this.logout = props.logout;
 
   }
+  getclasses(){
+  }
 
   render() {
     let data = null;
@@ -63,13 +65,24 @@ class InstructorToolbar extends Component {
                   { 
                       view:"accordionitem",
                       header:"Pane 2",
+                      padding:0,
                       //headerAlt:"Pane 2 Closed",
                       body:"This is Pane 2 body", //just text
                       collapsed: true
                   },
-                      { header:"CS195", body:"arg 1",collapsed: true }, 
+                      { header:"CS195", body:"arg 1",collapsed: true , width:150}, 
                       { header:"CS260", body:"blah",collapsed: true },
                       { header:"CS195-2", body:"webcrap 3",collapsed: true }
+                  ]
+                },
+                {
+                  view:"form", width:150, scroll:false,
+                  elements:[
+                    { view:"button", label:"Create Course", width:150},
+                    // { view:"button", label:"Form", type:"form" },
+                    // { view:"button", label:"Danger", type:"danger" },
+                    // { view:"button", label:"Prev", type:"prev" },
+                    // { view:"button", label:"Next", type:"next" }
                   ]
                 }
               ]

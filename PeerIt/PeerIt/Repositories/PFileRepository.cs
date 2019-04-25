@@ -7,19 +7,30 @@ using System.Threading.Tasks;
 
 namespace PeerIt.Repositories
 {
-    ///
+    /// <summary>
+    /// PFileRepository
+    /// </summary>
     public class PFileRepository : IGenericRepository<PFile, string>
     {
         AppDBContext context;
-        ///
+        /// <summary>
+        /// Contstructor takes the database context 
+        /// </summary>
+        /// <param name="context"></param>
         public PFileRepository(AppDBContext context)
         {
             this.context = context;
         }
-        ///
+        /// <summary>
+        /// List of type PFile
+        /// </summary>
         public List<PFile> PFiles { get { return context.PFiles.ToList<PFile>(); } }
 
-        ///
+        /// <summary>
+        /// Add a PFile to the database
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public PFile Add(PFile model)
         {
             context.PFiles.Add(model);
@@ -30,19 +41,31 @@ namespace PeerIt.Repositories
             return null;
         }
 
-        ///
+        /// <summary>
+        /// Delete 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public bool Delete(PFile model)
         {
             throw new NotImplementedException();
         }
 
-        ///
+        /// <summary>
+        /// Edit
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public bool Edit(PFile model)
         {
             throw new NotImplementedException();
         }
 
-        ///
+        /// <summary>
+        /// Find by Id
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public PFile FindByID(string ID)
         {
             foreach (PFile file in this.PFiles)
@@ -53,7 +76,10 @@ namespace PeerIt.Repositories
             return null;
         }
 
-        ///
+        /// <summary>
+        /// Get em all
+        /// </summary>
+        /// <returns></returns>
         public List<PFile> GetAll()
         {
             return this.PFiles;

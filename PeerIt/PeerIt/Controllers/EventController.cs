@@ -39,14 +39,15 @@ namespace PeerIt.Controllers
         /// <summary>
         /// Retrieves Events by the AppUser's ID.
         /// </summary>
-        /// <param name="userID"></param>
         /// <returns></returns>
-        public async Task<JsonResult> GetEventsByUser(string userID)
+        public async Task<JsonResult> GetEventsByUser()
         {
             JsonResponse<List<Event>> response = new JsonResponse<List<Event>>();
-            AppUser user = await userManager.FindByIdAsync(userID);
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            string userID = user.Id;
 
-            if (user != null)
+
+            if (userID != null)
             {
                 response.Data.Add(eventRepository.GetByUserID(userID));
             }

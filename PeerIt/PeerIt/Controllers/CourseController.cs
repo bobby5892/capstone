@@ -340,10 +340,19 @@ namespace PeerIt.Controllers
         [HttpPost]
         public async Task<JsonResult> CreateCourse(string courseName)
         {
+            JsonResponse<Course> response = new JsonResponse<Course>();
             SetRoles();
             Course newCourse = new Course() {Name=courseName,FK_INSTRUCTOR = await usrMgr.GetUserAsync(HttpContext.User) };
             newCourse = this.courseRepository.Add(newCourse);
-            return Json(newCourse);
+            if (newCourse == null)
+            {
+                response.Error.Add(new Error() { Description = "Course not created", Name = "CourseController" });
+            }
+            else
+            {
+                response.Data.Add(newCourse);
+            }
+            return Json(response);
         }
         /// <summary>
         /// Delete a course [admin/instructor]

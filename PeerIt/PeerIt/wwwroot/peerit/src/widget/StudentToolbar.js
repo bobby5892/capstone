@@ -30,7 +30,7 @@ class StudentToolbar extends Component {
             }.bind(this),
             select:true,
             scroll:false,
-            width:200 
+            //width:200 
          };
 		console.log("attempted render");
 		 return(<div  id="StudentToolbar">

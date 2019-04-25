@@ -1,0 +1,39 @@
+
+
+<form enctype="multipart/form-data" action="http://localhost:8080/PFile/Upload" method="POST">
+<br> File to upload<input type="file" name="files">
+<input type="submit" value="Send file">
+</form>
+
+<form action="http://localhost:8080/PFile/Download" method="GET">
+    
+    <input type="text" name="pFileId" placeholder="filename to Download" style="width: 1000px;" >
+    <input type="submit" value="Download the file"><br>
+</form><br>
+
+<form action="http://localhost:8080/PFile/DeleteFile" method="DELETE">
+    <input type="text" name="id" style="width: 1000px;" >
+</form>
+<button onclick="DeleteTheFile();">Delete the file</button>
+<script>
+
+    function DeleteTheFile()
+    {
+        fetch("http://localhost:8080/PFile/DeleteFile?id=a1ea3dcc-798c-4064-a585-d67ef4c60748", {
+        headers:{
+        'Content-Type': 'application/json'
+      },
+            method:"DELETE",
+            cors:"cors",
+            credentials:"include"
+      }).then(res => res.json())
+    .then(response => {
+      if(response.success){
+            console.log(response);
+      }else{
+        console.log(response); 
+       
+      }    
+    });
+    }
+</script>

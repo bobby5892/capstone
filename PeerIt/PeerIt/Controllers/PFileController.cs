@@ -11,6 +11,7 @@ using Microsoft.Extensions.FileProviders;
 using PeerIt.Interfaces;
 using PeerIt.Models;
 using PeerIt.Repositories;
+using PeerIt.ViewModels;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -68,6 +69,8 @@ namespace PeerIt.Controllers
 
             return Ok(new { count = files.Count, size,  }); //filePath
         }
+
+        [HttpGet]
         public async Task<IActionResult> Download(string pFileId)
         {
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
@@ -88,6 +91,23 @@ namespace PeerIt.Controllers
 
             string downFileName = downloadFile.Name +"."+ downloadFile.Ext;
             return File(memory, GetContentType(),downFileName);
+        }
+
+        ///Delete a file
+        [HttpDelete]
+        public JsonResult DeleteFile(string id)
+        {
+            JsonResponse<string> jsonResponse = new JsonResponse<string>();
+            downloadFile = pFileRepo.FindByID(id);
+            System.IO.File.Delete("Data/" + downloadFile.ID +"."+ downloadFile.Ext);
+
+            if (pFileRepo.Delete(downloadFile) == true)
+            {
+                jsonResponse.Data.Add("File Deleted");
+                return Json(jsonResponse);
+            }
+            jsonResponse.Error.Add(new Error() { Name = "Not Deleted", Description = "File not deleted" });
+            return Json(jsonResponse);
         }
 
         ///Helpers

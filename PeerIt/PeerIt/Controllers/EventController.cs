@@ -53,7 +53,7 @@ namespace PeerIt.Controllers
             }
             else
             {
-                response.Error.Add(new Error("NotFound", "User was not Found."));
+                response.Error.Add(new Error("No User", "User was not Found."));
             }
 
             return Json(response);
@@ -64,20 +64,26 @@ namespace PeerIt.Controllers
         /// </summary>
         /// <param name="eventID"></param>
         /// <returns></returns>
-        public JsonResult GetEventByID(int eventID)
+        public async Task<JsonResult> GetEventByID(int eventID)
         {
             JsonResponse<Event> response = new JsonResponse<Event>();
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
             Event requestedEvent = eventRepository.FindByID(eventID);
 
             if (requestedEvent != null)
             {
-                if (eventRepository.ToggleHasSeen(eventID))
+                if(user != requestedEvent.FK_AppUser)
                 {
-                    response.Data.Add(requestedEvent);
-                    return Json(response);
+                    if (eventRepository.ToggleHasSeen(eventID))
+                    {
+                        response.Data.Add(requestedEvent);
+                        return Json(response);
+                    }
                 }
+                response.Error.Add(new Error("User not authorized to view this event"));
+                return Json(Response);
             }
-            response.Error.Add(new Error("NotFound", "Event was not Found"));
+            response.Error.Add(new Error("NotFound", "No event for that Id"));
             return Json(response);
         }
 

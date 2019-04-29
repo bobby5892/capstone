@@ -18,20 +18,32 @@ class AdminToolbar extends Component {
 		console.log("Constructor of Admin Toolbar" + JSON.stringify(this));
 	}
 	// Click up in Portal 
+	builtCourseAccord() {
+		console.log('made it to course accord');
 
+		return ({
+			view: "accordionitem",
+			header: "Pane 2",
+			padding: 0,
+			//headerAlt:"Pane 2 Closed",
+			body: "This is Pane 2 body", //just text
+			collapsed: true
+		});
+
+	}
 	render() {
 		let scope = this;
 		let data = null;
 		let ui =
 		{
 			type: "space",
-			padding:0,
+			padding: 0,
 			gravity: 1,
 			rows: [
 				{
 					view: "list",
 					gravity: 1,
-					height:175,
+					height: 175,
 					//scroll:"y",
 					data: ["Admin", "Manage Courses", "Manage Users", "Settings", "Logout"],
 					ready: function () {
@@ -61,7 +73,23 @@ class AdminToolbar extends Component {
 					select: true,
 					//scroll: false,
 					//width: 200
+				}, {
+					view: "accordion",
+					scroll: "y",
+					multi: true,
+
+					rows: [
+						scope.builtCourseAccord()]
+						// {
+						// 	view: "accordionitem",
+						// 	header: "Pane 2",
+						// 	padding: 0,
+						// 	//headerAlt:"Pane 2 Closed",
+						// 	body: "This is Pane 2 body", //just text
+						// 	collapsed: true
+						// }]
 				},
+				
 				{
 					view: "button",
 					gravity: 1,

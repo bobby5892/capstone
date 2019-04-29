@@ -1,0 +1,41 @@
+{
+  "name": "lwat-cli",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "start": "babel-node test.js",
+    "watch": "babel-watch test.js "
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-watch": "^7.0.0",
+    "colors": "^1.3.3",
+    "curl": "^0.1.4",
+    "curl-request": "^1.1.1",
+    "minimist": "^1.2.0",
+    "request": "^2.88.0"
+  },
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobby5892/light-weight-api-tester.git"
+  },
+  "presets": [
+    "env"
+  ],
+  "keywords": [
+    "lightweight",
+    "api",
+    "test"
+  ],
+  "author": "Robert Moore",
+  "bugs": {
+    "url": "https://github.com/bobby5892/light-weight-api-tester/issues"
+  },
+  "homepage": "https://github.com/bobby5892/light-weight-api-tester#readme"
+}

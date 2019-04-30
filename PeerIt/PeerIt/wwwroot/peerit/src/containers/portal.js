@@ -58,17 +58,17 @@ renderLiveFeed(){
 }
 renderAdminToolbar(){
   if(this.state.role === "Administrator"){
-     return   <AdminToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)} handleMenuClick={this.handleMenuClick.bind(this)}/>
+     return   <AdminToolbar renderAccountWindow={this.renderAccountWindow.bind(this)} currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)} handleMenuClick={this.handleMenuClick.bind(this)}/>
   }
 }
 renderInstructorToolbar(){
   if(this.state.role ==="Instructor"){
-   return <InstructorToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
+   return <InstructorToolbar renderAccountWindow={this.renderAccountWindow.bind(this)} currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
   }
 }
 renderStudentToolbar(){
   if(this.state.role === "Student"){
-    return <StudentToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
+    return <StudentToolbar renderAccountWindow={this.renderAccountWindow.bind(this)} currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
   }
 }
 renderAdminManageUsers(){
@@ -124,7 +124,64 @@ renderMultipleContentWidgets(){
   }
 }
 // Portal additional methods
-
+renderAccountWindow(){
+ // console.log("rendering" + JSON.stringify(this.state.editUser));
+  let scope = this;
+  
+  var newWindow = window.webix.ui({
+          view:"window",
+          id:"accountWindow",
+          width: 900,
+          height: 600,
+          move:true,
+          position:"center",
+          head:{
+              type:"space",
+              cols:[
+                  { view:"label", label: "Edit My Account" },
+                  {
+                    view:"button", label:"Close", width:70,left:250,
+                    click:function(){
+                      scope.setState({"editUser" : null });
+                      window.webix.$$("accountWindow").close();
+                    } 
+                  }
+               ]   
+          },
+          body:{
+              type:"space",
+              rows:[
+                  { 
+                    view:"form", 
+                    id:"editAccountForm",
+                    width:900,
+                    elements:[
+                        
+                        { view:"text", label:"First Name", name:"FirstName", labelWidth:100,invalidMessage: "First Name can not be empty", value: ""}, 
+                        { view:"text", label:"Last Name", name:"LastName", labelWidth:100,invalidMessage: "Last Name can not be empty",value: ""},
+                        { view:"text", label:"Email", name:"Email", labelWidth:100,invalidMessage: "Must be valid email address",value: "" },
+                        { view:"text", type:"password", label:"Password", name:"Password", labelWidth:100, invalidMessage: "Password can not be empty" },
+                        { view:"text", type:"password", label:"Confirm Password", name:"Password", labelWidth:100, invalidMessage: "Password can not be empty" },
+                        
+                        { margin:5, cols:[
+                            { view:"button", value:"Edit User" , type:"form", click:function(){
+                             // scope.saveEditWindow();
+                             // This calls the method that saves the changes that you make
+                            }}
+                        ]}
+                    ],
+                    rules:{
+                        "Email": window.webix.rules.isEmail,
+                        "LastName": window.webix.rules.isNotEmpty,
+                        "FirstName": window.webix.rules.isNotEmpty,
+                        "Password" :  window.webix.rules.isNotEmpty
+                    }
+                  }
+              ]
+          }
+          
+      }).show();
+        }
 logout(){
   fetch("/Account/Logout", {
       method: 'GET', // or 'PUT'

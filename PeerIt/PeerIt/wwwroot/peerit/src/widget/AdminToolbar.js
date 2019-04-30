@@ -13,7 +13,8 @@ class AdminToolbar extends Component {
 	      };
 	      this.logout = props.logout;
 	      // Receive the function handle for handleManageUsersMenuClick
-	      this.handleMenuClick = props.handleMenuClick;
+				this.handleMenuClick = props.handleMenuClick;
+				this.renderAccountWindow = props.renderAccountWindow;
     }
     // Click up in Portal 
     
@@ -22,7 +23,7 @@ class AdminToolbar extends Component {
 	    let ui = 
 	    {
             view:"list", 
-            data:["Admin", "Manage Courses","Manage Users", "Settings","Logout"],
+            data:["Admin", "Manage Courses","Account","Manage Users", "Settings","Logout"],
             ready:function(){ 
               // Highlight the first one
               this.select(this.getFirstId()); 
@@ -43,7 +44,10 @@ class AdminToolbar extends Component {
             	}
             	else if( a === "Admin"){
             		this.handleMenuClick("LiveFeed");
-            	}            	
+							}  
+							else if( a === "Account"){
+            		this.renderAccountWindow();
+            	}          	
 
             }.bind(this),
 

@@ -9,7 +9,8 @@ class StudentToolbar extends Component {
 	      this.state = {
 	        data : null
 	      };
-	this.logout = props.logout;
+  this.logout = props.logout;
+  this.renderAccountWindow = props.renderAccountWindow;
 
   }
 

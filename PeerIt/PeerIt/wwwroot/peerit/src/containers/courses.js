@@ -9,7 +9,13 @@ import Webix from '../webix';
 class Courses extends Component {
 
   constructor(props) {
-   
+    super(props);
+    this.state = {
+      currentUser: props.currentUser,
+      role: props.role,
+      data: null,
+      Courses:null
+    };
 
     window.webix.protoUI({
       name:"react",
@@ -25,7 +31,7 @@ class Courses extends Component {
         });
       }
     }, window.webix.ui.view);
-  }
+}
 loadCourses() {
 
     console.log('made it to course accord' + JSON.stringify("Scope of loadCourse" + JSON.stringify(this)));
@@ -117,15 +123,20 @@ loadCourses() {
         collapsed: true}]);
     }
   }  
-  render(){
-  
+  render() {
+    return(<div>
+      
+      
+    </div>);
+  /*  let ui = null;
+    let data = null;
      
 
      return(
       <div>
         <Webix ui={ui} data={data}/>
       </div>
-      );
+      );*/
   }
 }
 export default Courses;

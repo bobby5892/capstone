@@ -45,35 +45,7 @@ class InstructorToolbar extends Component {
             //width: 350,
             height: 150
           },
-          {
-            view: "accordion",
-            scroll: "y",
-            multi: true,
-
-            rows: [ //or cols 
-
-              {
-                view: "accordionitem",
-                header: "Pane 1",
-                headerHeight: 50,
-                //headerAlt:"Pane 2 Closed", 
-                body: "form", //ui component
-                height: 100,
-                collapsed: true
-              },
-              {
-                view: "accordionitem",
-                header: "Pane 2",
-                padding: 0,
-                //headerAlt:"Pane 2 Closed",
-                body: "This is Pane 2 body", //just text
-                collapsed: true
-              },
-              { header: "CS195", body: "arg 1", collapsed: true},
-              { header: "CS260", body: "blah", collapsed: true },
-              { header: "CS195-2", body: "webcrap 3", collapsed: true }
-            ]
-          },
+          // This is where we would render courses        
           {
             view: "form", scroll: false,
             elements: [
@@ -86,15 +58,8 @@ class InstructorToolbar extends Component {
                 inputWidth: 100,
                 click: function () {
                   scope.handleCreateCourseWindow();
-
-                  // Lets only allow once
-
                 }
               },
-              // { view:"button", label:"Form", type:"form" },
-              // { view:"button", label:"Danger", type:"danger" },
-              // { view:"button", label:"Prev", type:"prev" },
-              // { view:"button", label:"Next", type:"next" }
             ]
           }
         ]

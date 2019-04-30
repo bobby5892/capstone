@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import Webix from '../webix';
 import Courses from '../containers/courses.js';
+import CreateCourse from '../widget/CreateCourse.js';
 class AdminToolbar extends Component {
 
 	constructor(props) {
@@ -15,23 +16,30 @@ class AdminToolbar extends Component {
 		this.logout = props.logout;
 		// Receive the function handle for handleManageUsersMenuClick
 		this.handleMenuClick = props.handleMenuClick;
+		this.showCreateCourse = props.handleCreateCourse;
 	}
 	renderCourses() {
        return <Courses currentUser={this.state.currentUser} role={this.state.role} />
-	}	
+	}
+	renderCreateCourseButton() {
+       return <CreateCourse currentUser={this.state.currentUser} role={this.state.role} showCreateCourse={this.showCreateCourse} />
+	}			
 	render() {
 		let scope = this;
 		let data = null;
 		let ui =
 		{
 			type: "space",
-			padding: 0,
-			gravity: 1,
+            scroll: "auto",
+            height: window.innerHeight*.8,
+            padding: 0,
+            responsive: "a1",
 			rows: [
 					{
 						view: "list",
 						gravity: 1,
-						height: 175,
+						padding:0,
+						margin:0,
 						//scroll:"y",
 						data: ["Admin",  "Manage Users", "Settings", "Logout"],
 						ready: function () {
@@ -58,14 +66,27 @@ class AdminToolbar extends Component {
 
 						}.bind(this),
 						select: true,
-					}
+					},
+					{
+						gravity: 2,
+					 	view: "template",
+                 		scroll: false,
+                 		template: "right",
+                 		content: "CreateCourse",
+                 		align:"right"
+                	}
+				
 			]
 		}
 
 		return (
+
 			<div id="AdminToolbar" >
+			{this.renderCreateCourseButton()}
 				<Webix ui={ui} data={data} />
 				{this.renderCourses()}
+				
+
 			</div>
 		);
 	}

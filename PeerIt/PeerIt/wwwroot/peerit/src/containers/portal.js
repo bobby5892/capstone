@@ -21,7 +21,6 @@ class Portal extends Component {
       data: null,
       currentContentWidgets: ["LiveFeed"]
     };
-    console.log(props.role);
     // Used to change user state from App.js
     this.handleLogin = props.handleLogin;
 
@@ -226,7 +225,6 @@ class Portal extends Component {
   logout() {
     fetch("/Account/Logout", {
       method: 'GET', // or 'PUT'
-      // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
       headers: {
         'Content-Type': 'application/json'
       },

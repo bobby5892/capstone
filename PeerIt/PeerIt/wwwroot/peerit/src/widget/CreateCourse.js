@@ -5,31 +5,38 @@ import Webix from '../webix';
 class CreateCourse extends Component {
 
 	constructor(props) {
-	    
+   super(props);
+    this.state = {
+      currentUser: props.currentUser,
+      role: props.role,
+      data: null
+      
+    };
+    console.log("ShowCreatecourse: " + props.showCreateCourse);
+    this.showCreateCourse = props.showCreateCourse;
 
   }
-/*
-{
-          view: "button",
-          gravity: 1,
-          label: "Create Course",
-          id: "createCourse_button",
-          value: "Create Course",
-
-          inputWidth: 100,
-          click: function () {  
-            scope.handleCreateCourseWindow();
-          }
-        }
-*/
-
 	render(){
+    let scope = this;
+    let ui = {
+        view: "button",
+        gravity: 1,
+        label: "Create Course",
+        id: "createCourse_button",
+        value: "Create Course",
+
+        inputWidth: 100,
+        click: function () {  
+         scope.ShowCreateCourse();
+        }
+      };
+    let data = null;
 	
-		 return(<div  id="StudentToolbar">
+		 return(<div  id="CreateCourse">
         <Webix ui={ui} data={data}/>
       </div>
       );
 	}
 }
-export default StudentToolbar;
+export default CreateCourse;
 

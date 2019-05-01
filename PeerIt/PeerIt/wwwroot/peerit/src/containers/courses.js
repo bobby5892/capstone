@@ -9,6 +9,7 @@ import Webix from '../webix';
 class Courses extends Component {
 
   constructor(props) {
+
     super(props);
     this.state = {
       currentUser: props.currentUser,
@@ -124,19 +125,24 @@ loadCourses() {
     }
   }  
   render() {
-    return(<div>
-      
-      
-    </div>);
-  /*  let ui = null;
+
+    let ui = {
+        view:"accordion",
+        multi:true,
+        cols:[ //or rows 
+            { header:"col 1", body:"content 1" }, 
+            { header:"col 2", body:"content 2" },
+            { header:"col 3", body:"content 3" }
+        ]
+    };
     let data = null;
      
 
      return(
-      <div>
+      <div id="Courses">
         <Webix ui={ui} data={data}/>
       </div>
-      );*/
+      );
   }
 }
 export default Courses;

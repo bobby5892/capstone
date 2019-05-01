@@ -12,8 +12,6 @@ class CreateCourse extends Component {
       data: null
       
     };
-    console.log("ShowCreatecourse: " + props.showCreateCourse);
-    //this.showCreateCourse = props.showCreateCourse;
 
   }
    createCourse() {
@@ -21,7 +19,7 @@ class CreateCourse extends Component {
 
     fetch("Course/CreateCourse?courseName=" + formData.CourseName, {
       method: 'POST', // or 'PUT'
-      // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
+
       headers: {
         'Content-Type': 'application/json'
       },

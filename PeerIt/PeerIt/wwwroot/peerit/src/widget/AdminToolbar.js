@@ -68,12 +68,21 @@ class AdminToolbar extends Component {
 						}.bind(this),
 						select: true,
 					},
+				
 					{
 						gravity: 2,
 					 	view: "template",
                  		scroll: false,
                  		template: "right",
                  		content: "CreateCourse",
+                 		align:"right"
+                	},
+                	{
+						gravity: 2,
+					 	view: "template",
+                 		scroll: false,
+                 		template: "right",
+                 		content: "Courses",
                  		align:"right"
                 	}
 				
@@ -83,9 +92,9 @@ class AdminToolbar extends Component {
 		return (
 
 			<div id="AdminToolbar" >
-			{this.renderCreateCourseButton()}
-				<Webix ui={ui} data={data} />
+				{this.renderCreateCourseButton()}
 				{this.renderCourses()}
+				<Webix ui={ui} data={data} />
 				
 
 			</div>

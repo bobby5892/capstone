@@ -418,8 +418,45 @@ namespace PeerIt.Controllers
             }
             return Json(response);
         }
-        
 
+        /// <summary>
+        /// Returns the data to populate the form inside the "UpdateAccountWindow"
+        /// </summary>
+        /// <returns></returns>
+        public async Task<JsonResult> PopulateFormData()
+        {
+            JsonResponse<AppUser> response = new JsonResponse<AppUser>();
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+
+            response.Data.Add(user);
+            return Json(response);     
+        }
+
+        /// <summary>
+        /// Edit and update the current users accoun info and return it
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public async Task<JsonResult> UpdateAccountInfo(string email, string firstName, string lastName, string password)
+        {
+            JsonResponse<AppUser> response = new JsonResponse<AppUser>();
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            user.FirstName = firstName;
+            user.LastName = lastName;
+            if ((password != null) && (password.Length > 1))
+            {
+                user.PasswordHash = userManager.PasswordHasher.HashPassword(user, password);
+            }
+            IdentityResult result = await userManager.UpdateAsync(user);
+            response.Data.Add(user);
+            response.Error.Add(new Error() { Name = "Password Changed", Description = "Password Change Success" });
+            return Json(response);
+
+
+        }
         #endregion Methods that return Json
     }
 }

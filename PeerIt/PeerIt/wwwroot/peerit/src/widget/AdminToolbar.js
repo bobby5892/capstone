@@ -14,7 +14,9 @@ class AdminToolbar extends Component {
 	      this.logout = props.logout;
 	      // Receive the function handle for handleManageUsersMenuClick
 				this.handleMenuClick = props.handleMenuClick;
-				this.renderAccountWindow = props.renderAccountWindow;
+				this.accountClick = props.accountClick;
+				//this.renderAccountWindow = props.renderAccountWindow;
+				
     }
     // Click up in Portal 
     
@@ -27,7 +29,7 @@ class AdminToolbar extends Component {
             ready:function(){ 
               // Highlight the first one
               this.select(this.getFirstId()); 
-            },
+						},
             click:function(a){
             	if(a === "Logout"){
             		//Attempt to call the logout chain
@@ -46,7 +48,8 @@ class AdminToolbar extends Component {
             		this.handleMenuClick("LiveFeed");
 							}  
 							else if( a === "Account"){
-            		this.renderAccountWindow();
+								this.accountClick();
+            		//this.renderAccountWindow();
             	}          	
 
             }.bind(this),

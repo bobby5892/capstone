@@ -31,7 +31,7 @@ class CreateCourse extends Component {
       .then(response => {
         if (response.success) {
           this.setState({});
-          window.webix.$$("newCourseForm").close();
+          window.webix.$$("newCourseWindow").close();
         } else {
           let errors = "";
           response.error.forEach(error => {

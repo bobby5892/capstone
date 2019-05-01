@@ -16,6 +16,7 @@ class AdminToolbar extends Component {
 		this.logout = props.logout;
 		// Receive the function handle for handleManageUsersMenuClick
 		this.handleMenuClick = props.handleMenuClick;
+		console.log("Props:" + props.handleCreateCourse);
 		this.showCreateCourse = props.handleCreateCourse;
 	}
 	renderCourses() {

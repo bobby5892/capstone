@@ -45,7 +45,7 @@ class Login extends Component {
         'Content-Type': 'application/json'
       },
       credentials: "include",
-      mode:"cors"
+      mode:"no-cors"
     }).then(res => res.json())
     .then(response => {
       if(response.success){

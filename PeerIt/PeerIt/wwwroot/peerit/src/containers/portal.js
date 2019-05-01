@@ -66,7 +66,8 @@ class Portal extends Component {
         role={this.state.role}
         logout={this.logout.bind(this)}
         handleMenuClick={this.handleMenuClick.bind(this)}
-        handleCreateCourse={this.renderCreateCourseWindow.bind(this)} />
+       // handleCreateCourse={this.renderCreateCourseWindow.bind(this)}
+        />
     }
   }
   renderInstructorToolbar() {
@@ -134,94 +135,9 @@ class Portal extends Component {
       return ui;
     }
   }
-  renderCreateCourseWindow() {
-    let scope = this;
-    if (window.webix.$$("newCourseWindow") == null) {
-      var newWindow = window.webix.ui({
-        view: "window",
-        id: "newCourseWindow",
-        width: 500,
-        height: 500,
-        move: true,
-        position: "center",
-        head: {
-          type: "space",
-          cols: [
-            { view: "label", label: "Create New Course" },
-            {
-              view: "button", label: "Close", width: 70, left: 250,
-              click: function () {
-                window.webix.$$("newCourseWindow").close();
-              }
-            }
-          ]
-        },
-        body: {
-          type: "space",
-          rows: [
-            {
-              view: "form",
-              id: "newCourseForm",
-              width: 400,
-              elements: [
-
-                { view: "text", label: "Course Name", name: "CourseName", labelWidth: 100, invalidMessage: "Course Name can not be empty" },
-                // { view:"text", label:"Last Name", name:"LastName", labelWidth:100,invalidMessage: "Last Name can not be empty" },
-                // { view:"text", label:"Email", name:"Email", labelWidth:100,invalidMessage: "Must be valid email address" },
-                // { view:"text", type:"password", label:"Password", name:"Password", labelWidth:100, invalidMessage: "Password can not be empty" },
-                // { view:"label", label:"", name:"newUserErrorLabel", labelWidth:100},
-                {
-                  margin: 5, cols: [
-                    {
-                      view: "button", value: "Create Course", type: "form", click: function () {
-                        scope.createCourse();
-                      }
-                    }
-                  ]
-                }
-              ],
-              rules: {
-                "CourseName": window.webix.rules.isNotEmpty
-              }
-            }
-          ]
-        }
-
-      }).show();
-    }
-  }
+  
   // Portal additional methods
-  createCourse() {
-    let formData = window.webix.$$("newCourseForm").getValues();
-    alert(formData.CourseName);
-
-    fetch("Course/CreateCourse?courseName=" + formData.CourseName, {
-      method: 'POST', // or 'PUT'
-      // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: "include",
-      mode: "cors"
-    }).then(res => res.json())
-      .then(response => {
-        if (response.success) {
-          this.setState({});
-          window.webix.$$("newCourseForm").close();
-        } else {
-          let errors = "";
-          response.error.forEach(error => {
-            errors += error.description
-          });
-
-        }
-        console.log(response);
-
-      })
-      .catch(error => console.error('Error:', error));
-
-
-  }
+ 
   logout() {
     fetch("/Account/Logout", {
       method: 'GET', // or 'PUT'

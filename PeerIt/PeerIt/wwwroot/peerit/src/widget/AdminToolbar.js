@@ -32,7 +32,7 @@ class AdminToolbar extends Component {
 		{
 			type: "space",
             scroll: "auto",
-            height: window.innerHeight*.8,
+            height: window.innerHeight,
             padding: 0,
             responsive: "a1",
 			rows: [
@@ -69,22 +69,23 @@ class AdminToolbar extends Component {
 						select: true,
 					},
 				
-					{
-						gravity: 2,
+				
+                	{
+						
+					 	view: "template",
+                 		scroll: false,
+                 		template: "right",
+                 		content: "Courses",
+                 		align:"right"
+                	},
+                	{
+						gravity: 1,
 					 	view: "template",
                  		scroll: false,
                  		template: "right",
                  		content: "CreateCourse",
                  		align:"right"
                 	},
-                	{
-						gravity: 2,
-					 	view: "template",
-                 		scroll: false,
-                 		template: "right",
-                 		content: "Courses",
-                 		align:"right"
-                	}
 				
 			]
 		}

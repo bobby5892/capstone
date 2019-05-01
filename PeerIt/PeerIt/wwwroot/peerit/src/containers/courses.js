@@ -32,11 +32,12 @@ class Courses extends Component {
         });
       }
     }, window.webix.ui.view);
+    this.loadCourses();
 }
 loadCourses() {
 
     console.log('made it to course accord' + JSON.stringify("Scope of loadCourse" + JSON.stringify(this)));
-    let accord = [];
+    let accord = Array();
     fetch("Course/GetCourses", {
       method: 'GET', // or 'PUT'
       headers: {
@@ -63,7 +64,7 @@ loadCourses() {
             });
           })
           console.log(accord);  
-           this.setState({'Courses': accord});
+           this.setState({'Courses':accord});
            console.log("State after Fetch: " + JSON.stringify(this.state));
           // window.webix.$$("newCourseForm").close();
         } else {
@@ -108,13 +109,15 @@ loadCourses() {
       
   }*/
 
-
-    if(this.state.Courses != null){
-    
-      return this.state.Courses
-      ;
+  console.log("Check@Render: " + this.state.Courses);
+ // console.log(typeof(this.state.Courses));
+    if(this.state.Courses !== null){
+      console.log("render abunch of courses");
+      
+      return this.state.Courses;
     }
     else{
+      console.log("no course");
       return([{
         view: "accordionitem",
         header: "No Courses",
@@ -125,15 +128,10 @@ loadCourses() {
     }
   }  
   render() {
-
     let ui = {
         view:"accordion",
-        multi:true,
-        cols:[ //or rows 
-            { header:"col 1", body:"content 1" }, 
-            { header:"col 2", body:"content 2" },
-            { header:"col 3", body:"content 3" }
-        ]
+        //multi:true,
+        rows:this.renderCourses()
     };
     let data = null;
      

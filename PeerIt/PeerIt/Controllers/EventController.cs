@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using PeerIt.Models;
 using PeerIt.ViewModels;
 using PeerIt.Repositories;
+using PeerIt.Interfaces;
 
 namespace PeerIt.Controllers
 {
@@ -18,7 +19,7 @@ namespace PeerIt.Controllers
         #region Constructors
 
         private UserManager<AppUser> userManager;
-        private EventRepository eventRepository;
+        private IGenericRepository<Event,int> eventRepository;
 
         /// <summary>
         /// OverLoaded Constructor
@@ -26,10 +27,11 @@ namespace PeerIt.Controllers
         /// <param name="userMgr"></param>
         /// <param name="eventRepo"></param>
         public EventController(UserManager<AppUser> userMgr,
-            EventRepository eventRepo)
+            IGenericRepository<Event,int> eventRepository)
         {
             userManager = userMgr;
-            eventRepository = eventRepo;
+            this.eventRepository = eventRepository;
+            
         }
 
         #endregion Constructors
@@ -41,14 +43,40 @@ namespace PeerIt.Controllers
         /// </summary>
         /// <param name="userID"></param>
         /// <returns></returns>
+        /// 
+
+        [HttpPost]
         public async Task<JsonResult> GetEventsByUser(string userID)
         {
             JsonResponse<List<Event>> response = new JsonResponse<List<Event>>();
             AppUser user = await userManager.FindByIdAsync(userID);
+            //string userID = user.Id;
 
             if (user != null)
             {
                 response.Data.Add(eventRepository.GetByUserID(userID));
+            }
+            else
+            {
+                response.Error.Add(new Error("NotFound", "User was not Found."));
+            }
+
+            return Json(response);
+        }
+        [HttpGet]
+        public async Task<JsonResult> GetEventsByUser()
+        {
+            JsonResponse<Event> response = new JsonResponse<Event>();
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            //string userID = user.Id;
+
+            if (user != null)
+            {
+    
+                eventRepository.GetByUserID(user.Id).ForEach(e => {
+                    response.Data.Add(e);
+                });
+               
             }
             else
             {

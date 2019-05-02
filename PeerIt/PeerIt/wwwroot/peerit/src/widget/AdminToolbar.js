@@ -43,7 +43,8 @@ class AdminToolbar extends Component {
             	}
             	else if( a === "Admin"){
             		this.handleMenuClick("LiveFeed");
-            	}            	
+				} 
+				          	
 
             }.bind(this),
 

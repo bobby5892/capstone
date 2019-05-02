@@ -188,7 +188,7 @@ class ManageUsers extends Component {
                           "Email": window.webix.rules.isEmail,
                           "LastName": window.webix.rules.isNotEmpty,
                           "FirstName": window.webix.rules.isNotEmpty,
-                          "Password" :  window.webix.rules.isNotEmpty
+                          "Password" : window.webix.rules.isNotEmpty
                       }
                     }
                 ]

@@ -213,6 +213,7 @@ logout(){
           {this.renderAdminManageCourses()}
           {this.renderAdminSettings()}
         </div>
+
       </div>
       );
   }

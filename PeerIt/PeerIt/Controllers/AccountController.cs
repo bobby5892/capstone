@@ -452,7 +452,6 @@ namespace PeerIt.Controllers
             }
             IdentityResult result = await userManager.UpdateAsync(user);
             response.Data.Add(user);
-            response.Error.Add(new Error() { Name = "Password Changed", Description = "Password Change Success" });
             return Json(response);
 
 

@@ -34,7 +34,7 @@ class Portal extends Component {
 
       //Account menu click
       this.accountClick.bind(this);
-
+      this.fetchAccountFormData.bind(this);
   }
 renderPortal(){
   //https://forum.webix.com/discussion/31137/reactjs-layout-components
@@ -93,58 +93,113 @@ renderAdminSettings(){
 handleMenuClick(contentWidget){
   this.setState({'currentContentWidgets' : contentWidget});
 }
-accountClick(){
-  console.log("Clicked on Account");
+fetchAccountFormData(){
   fetch("/Account/PopulateFormData", {
-    method: 'GET', // or 'PUT'
-   // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
+    method: 'GET',
     headers:{
       'Content-Type': 'application/json'
     },
     credentials: "include",
     mode:"no-cors"
   }).then(res => res.json())
-  .then(response => {
-    console.log('Success:', JSON.stringify(response))
+    .then(response => {
+    console.log('POPULATE-FORM-DATA:', JSON.stringify(response))
 
+    //create an account object and assign its value to the "account" property of the state object.
     if(response.success){
       let account = {
         "FirstName" : response.data[0].firstName,
         "LastName" : response.data[0].lastName,
         "Email" : response.data[0].email
-
       }
       this.setState({"account":account});
 
-      console.log("After Setting: " +  JSON.stringify(this.state.account));
-      // Save the state - this.setState({});
-      // Then you'll render the window
+      console.log("Account after setting the state " +  JSON.stringify(this.state.account));
         return true;
     }else{
       let errors = "";
       return false;
     }
-
   }).then(shouldRender => {
     if(shouldRender){
       this.renderAccountWindow();
     }
   })
   .catch(error => console.error('Error:', error));
- 
 }
-saveEditWindow(){
-  var properties = window.webix.$$("editAccountForm").getValues();
+//Click event for the "Account" link in the toolbar.
+accountClick(){
+  this.fetchAccountFormData();
+}
+renderAccountWindow(){
+  // console.log("rendering" + JSON.stringify(this.state.editUser));
+   let scope = this;
+   console.log("Checking State @ Time of Window: " + JSON.stringify(this.state));
+   var newWindow = window.webix.ui({
+           view:"window",
+           id:"accountWindow",
+           width: 900,
+           height: 600,
+           move:true,
+           position:"center",
+           head:{
+               type:"space",
+               cols:[
+                   { view:"label", label: "Edit My Account" },
+                   {
+                     view:"button", label:"Close", width:70,left:250,
+                     click:function(){
+                       scope.setState({"editUser" : null });
+                       window.webix.$$("accountWindow").close();
+                     } 
+                   }
+                ]   
+           },
+           body:{
+               type:"space",
+               rows:[
+                   { 
+                     view:"form", 
+                     id:"editAccountForm",
+                     width:900,
+                     elements:[
+                       { view:"label", label:"Your Email: "+this.state.account.Email, name:"Email", labelWidth:100,invalidMessage: "Must be valid email address",value:this.state.account.Email },
+                         { view:"text", label:"First Name", name:"FirstName", labelWidth:100,invalidMessage: "First Name can not be empty", value:this.state.account.FirstName }, 
+                         { view:"text", label:"Last Name", name:"LastName", labelWidth:100,invalidMessage: "Last Name can not be empty",value:this.state.account.LastName},
+                         { view:"text", type:"password", label:"New Password", name:"Password1", labelWidth:160, invalidMessage: "Password can not be empty" },
+                         { view:"text", type:"password", label:"Confirm Password", name:"Password2", labelWidth:160, invalidMessage: "Password can not be empty" },
+                         
+                         { margin:5, cols:[
+                             { view:"button", value:"Save Changes" , type:"form", click:function(){
+                               scope.saveAccountChanges();
+                             }}
+                         ]}
+                     ],
+                     rules:{
+                         "Email": window.webix.rules.isEmail,
+                         "LastName": window.webix.rules.isNotEmpty,
+                         "FirstName": window.webix.rules.isNotEmpty,
+                         "Password" :  window.webix.rules.isNotEmpty
+                     }
+                   }
+               ]
+           }
+  }).show();
+}
+saveAccountChanges(){
+  let properties = window.webix.$$("editAccountForm").getValues();
+ // console.log(properties);
   console.log(JSON.stringify(properties));
 
   if(properties.Password1 != "" && properties.Password1 == properties.Password2)
   {
     var newPassword = properties.Password2;
   }
-  else
-  newPassword = "";
-  
-    fetch("/Account/UpdateAccountInfo?email="+properties.Email+"&firstName="+properties.FirstName+
+  else{
+    var newPassword = "";
+  }
+
+  fetch("/Account/UpdateAccountInfo?email="+properties.Email+"&firstName="+properties.FirstName+
       "&lastName="+properties.LastName+"&password="+newPassword, {
     method: 'POST',
     headers:{
@@ -154,27 +209,25 @@ saveEditWindow(){
     mode:"no-cors"
     }).then(res => res.json())
     .then(response => {
-      console.log('IF IT WAS A SUCCESS:', JSON.stringify(response))
-      
-
       if(response.success){
         let account = {
           "FirstName" : response.data[0].firstName,
           "LastName" : response.data[0].lastName,
           "Email" : response.data[0].email,
-          "Password" : response.error[0].description
         }
         this.setState({"account":account});
 
         console.log("After Setting: " +  JSON.stringify(this.state.account));
-        console.log("ERROR RESPONSE"+response.error[0].description);
-        // Save the state - this.setState({});
-        // Then you'll render the window
           return true;
       }else
       {
         let errors = "";
         return false;
+      }
+    }).then(isChanged => {
+      if(isChanged){
+        window.webix.$$("accountWindow").close();
+        this.logout();
       }
     })
     .catch(error => console.error('Error:', error));
@@ -214,62 +267,7 @@ renderMultipleContentWidgets(){
   }
 }
 // Portal additional methods
-renderAccountWindow(){
- // console.log("rendering" + JSON.stringify(this.state.editUser));
-  let scope = this;
-  console.log("Checking State @ Time of Window: " + JSON.stringify(this.state));
-  var newWindow = window.webix.ui({
-          view:"window",
-          id:"accountWindow",
-          width: 900,
-          height: 600,
-          move:true,
-          position:"center",
-          head:{
-              type:"space",
-              cols:[
-                  { view:"label", label: "Edit My Account" },
-                  {
-                    view:"button", label:"Close", width:70,left:250,
-                    click:function(){
-                      scope.setState({"editUser" : null });
-                      window.webix.$$("accountWindow").close();
-                    } 
-                  }
-               ]   
-          },
-          body:{
-              type:"space",
-              rows:[
-                  { 
-                    view:"form", 
-                    id:"editAccountForm",
-                    width:900,
-                    elements:[
-                      { view:"label", label:"Your Email: "+this.state.account.Email, name:"Email", labelWidth:100,invalidMessage: "Must be valid email address",value:this.state.account.Email },
-                        { view:"text", label:"First Name", name:"FirstName", labelWidth:100,invalidMessage: "First Name can not be empty", value:this.state.account.FirstName }, 
-                        { view:"text", label:"Last Name", name:"LastName", labelWidth:100,invalidMessage: "Last Name can not be empty",value:this.state.account.LastName},
-                        { view:"text", type:"password", label:"New Password", name:"Password1", labelWidth:160, invalidMessage: "Password can not be empty" },
-                        { view:"text", type:"password", label:"Confirm Password", name:"Password2", labelWidth:160, invalidMessage: "Password can not be empty" },
-                        
-                        { margin:5, cols:[
-                            { view:"button", value:"Save Changes" , type:"form", click:function(){
-                              scope.saveEditWindow();
-                            }}
-                        ]}
-                    ],
-                    rules:{
-                        "Email": window.webix.rules.isEmail,
-                        "LastName": window.webix.rules.isNotEmpty,
-                        "FirstName": window.webix.rules.isNotEmpty,
-                        "Password" :  window.webix.rules.isNotEmpty
-                    }
-                  }
-              ]
-          }
-          
-      }).show();
-        }
+
 logout(){
   fetch("/Account/Logout", {
       method: 'GET', // or 'PUT'

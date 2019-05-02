@@ -9,8 +9,8 @@ class StudentToolbar extends Component {
 	      this.state = {
 	        data : null
 	      };
-	this.logout = props.logout;
-
+  this.logout = props.logout;
+  this.uploadReview = props.uploadReview;
   }
 
 	render(){
@@ -18,7 +18,7 @@ class StudentToolbar extends Component {
 	    let ui = 
         { 
             view:"list", 
-            data:["Student", "Reports", "Settings","Logout"],
+            data:["Student", "Reports", "Settings","Upload Review","Logout"],
             ready:function(){ 
               this.select(this.getFirstId()); 
             },
@@ -26,6 +26,10 @@ class StudentToolbar extends Component {
             	if(a === "Logout"){
             		//Attempt to call the logout chain
             		this.logout();
+              }
+              if(a === "Upload Review"){
+            		//Attempt to call the logout chain
+            		this.uploadReview();
             	}
             }.bind(this),
             select:true,

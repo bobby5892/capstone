@@ -20,6 +20,9 @@ namespace PeerIt.Models
         public string Ext { get; set; }
         ///
         public AppUser AppUser { get; set; }
+
+        public StudentAssignment StudentAssignment { get; set; }
+
         ///
         public PFile() { }
         ///

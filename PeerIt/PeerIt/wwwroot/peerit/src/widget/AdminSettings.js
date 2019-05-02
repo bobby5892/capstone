@@ -14,7 +14,7 @@ class AdminSettings extends Component {
         role : props.role,
      
       };
-
+      this.renderWindow = false;
     window.webix.protoUI({
       name:"react",
       defaults:{
@@ -28,64 +28,70 @@ class AdminSettings extends Component {
           );
         });
       }
-    }, window.webix.ui.view)
+    }, window.webix.ui.view);
+    //load the content
+  }
+  loadSettings(){
+    // This reaches out and grabs the settings
+    // in the final then - it sets this.renderWindow = true
   }
  renderEditWindow(){
-    console.log("rendering" + JSON.stringify(this.state.editUser));
-    let scope = this;
-    var newWindow = window.webix.ui({
-            view:"window",
-            id:"settingsWindow",
-            width: 500,
-            height: 500,
-            move:true,
-            position:"center",
-            head:{
-                type:"space",
-                cols:[
-                    { view:"label", label: "Settings" },
-                    {
-                      view:"button", label:"Close", width:70,left:250,
-                      click:function(){
-                        //scope.setState({"editUser" : null });
-                        window.webix.$$("settingsWindow").close();
-                      } 
-                    }
-                 ]   
-            },
-            body:{
-                type:"space",
-                rows:[
-                    { 
-                      view:"form", 
-                      id:"configurationForm",
-                      width:400,
-                      elements:[
-                          { view:"checkbox", value: 0, label:"Send Emails", name: "IsEnabled", labelWidth:100 },
-                          { view:"text", label:"Server", name:"serverName", labelWidth:100,invalidMessage: "Server cannot be empty", value:""},
-                          { view:"text", label:"Port", name:"portNum", width:150, labelWidth:100, invalidMessage:"Port cannot be empty", value:""},
-                          { view:"text", label:"Login", name:"usernameAdminLogin", labelWidth:100,invalidMessage: "Please login to confirm changes",value: ""},
-                          { view:"text", type:"password", label:"Password", name:"passwordAdminLogin", labelWidth:100, invalidMessage: "Password can not be empty" },
-                          { margin:5, cols:[
-                              { view:"button", value:"Save Settings" , type:"form", click:function(){
-                               // scope.saveEditWindow();
-                               alert("save settings");
-                              }}
-                          ]}
-                      ],
-                      rules:{
-                          "serverName": window.webix.rules.isNotEmpty,
-                          "portNum": window.webix.rules.isNotEmpty,
-                          "usernameAdminLogin": window.webix.rules.isEmail,
-                          "Password" :  window.webix.rules.isNotEmpty
+  if(this.renderWindow){
+      console.log("rendering" + JSON.stringify(this.state.editUser));
+      let scope = this;
+      var newWindow = window.webix.ui({
+              view:"window",
+              id:"settingsWindow",
+              width: 500,
+              height: 500,
+              move:true,
+              position:"center",
+              head:{
+                  type:"space",
+                  cols:[
+                      { view:"label", label: "Settings" },
+                      {
+                        view:"button", label:"Close", width:70,left:250,
+                        click:function(){
+                          //scope.setState({"editUser" : null });
+                          window.webix.$$("settingsWindow").close();
+                        } 
                       }
-                    }
-                ]
-            }
-            
-        }).show();
-          }
-
+                   ]   
+              },
+              body:{
+                  type:"space",
+                  rows:[
+                      { 
+                        view:"form", 
+                        id:"configurationForm",
+                        width:400,
+                        elements:[
+                            { view:"checkbox", value: 0, label:"Send Emails", name: "IsEnabled", labelWidth:100 },
+                            { view:"text", label:"SMTP Server", name:"serverName", labelWidth:100,invalidMessage: "Server cannot be empty", value:""},
+                            { view:"text", label:"SMTP Port", name:"portNum", width:150, labelWidth:100, invalidMessage:"Port cannot be empty", value:""},
+                            { view:"text", label:"SMTP Login", name:"usernameAdminLogin", labelWidth:100,invalidMessage: "Please login to confirm changes",value: ""},
+                            { view:"text", type:"password", label:"SMTP Password", name:"passwordAdminLogin", labelWidth:125, invalidMessage: "Password can not be empty" },
+                            { margin:5, cols:[
+                                { view:"button", value:"Save Settings" , type:"form", click:function(){
+                                 // scope.saveEditWindow();
+                                 alert("save settings");
+                                }}
+                            ]}
+                        ],
+                        rules:{
+                            "serverName": window.webix.rules.isNotEmpty,
+                            "portNum": window.webix.rules.isNotEmpty,
+                            "usernameAdminLogin": window.webix.rules.isEmail,
+                            "Password" :  window.webix.rules.isNotEmpty
+                        }
+                      }
+                  ]
+              }
+              
+          }).show();
+    }
+  }    
   render(){
 
     let data = null;

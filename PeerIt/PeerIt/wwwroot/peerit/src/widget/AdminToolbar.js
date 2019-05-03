@@ -42,7 +42,7 @@ class AdminToolbar extends Component {
 						padding:0,
 						scroll: false,
 						margin:0,
-						//scroll:"y",
+						height:225,
 						data: ["Admin",  "Manage Users", "Settings", "Logout"],
 						ready: function () {
 							// Highlight the first one
@@ -69,15 +69,11 @@ class AdminToolbar extends Component {
 						}.bind(this),
 						select: true,
 					},
-				
-				
-                	{
-						
+				    {
 					 	view: "template",
-                 		scroll: true,
-                 		template: "right",
-                 		content: "Courses",
-                 		align:"right"
+	             		template: "right",
+	             		content: "Courses",
+	             		align:"right"
                 	},
                 	{
 						gravity: 1,

@@ -88,12 +88,13 @@ loadCourses() {
         view:"scrollview",
         id:"verses",
         scroll:"y", // vertical scrolling
-        height: 200, 
+        height: 350, 
         width: 250,
         body:{
         rows:[
             { "view":"accordion",
             "gravity":3,
+            "scroll" : "y",
             "multi":false,
             "css":"webix_dark",
             "id" : "courses", 

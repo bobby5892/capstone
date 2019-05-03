@@ -15,7 +15,14 @@ class Courses extends Component {
       currentUser: props.currentUser,
       role: props.role,
       data: null,
-      Courses:null
+      Courses: [{
+              view: "accordionitem",
+              header: "No Courses",
+              id : "noCourse",
+              padding: 0,
+              body:"No Courses", 
+              collapsed: false
+            }]
     };
 
     window.webix.protoUI({
@@ -35,107 +42,68 @@ class Courses extends Component {
     this.loadCourses();
 }
 loadCourses() {
-
-    console.log('made it to course accord' + JSON.stringify("Scope of loadCourse" + JSON.stringify(this)));
-    let accord = Array();
+    //let accord = [];
     fetch("Course/GetCourses", {
       method: 'GET', // or 'PUT'
       headers: {
         'Content-Type': 'application/json'
       },
       credentials: "include",
-      mode: "cors"
+      mode: "no-cors"
     }).then(res => res.json())
       .then(response => {
         if (response.success) {
-          //data = response.data;
-          console.log(response.data)
+          let accord = {};
           response.data.forEach(element => {
-            console.log("Adding Element: " + element.name);
-
-            accord.push({
+            accord = {
               view: "accordionitem",
               header: element.name,
               id: element.id,
               padding: 0,
-              //headerAlt:"Pane 2 Closed",
-              body: "This is " + element.name, //just text
-              collapsed: true
-            });
+              body: element.name, 
+              collapsed: true,
+              height:200
+            };
+            window.webix.$$("courses").addView(accord);
           })
-          console.log(accord);  
-           this.setState({'Courses':accord});
-           console.log("State after Fetch: " + JSON.stringify(this.state));
-          // window.webix.$$("newCourseForm").close();
+           this.setState({"Courses":accord});
+           window.webix.$$("courses").removeView("noCourse");
+
+
+           // force react to redraw
+           
         } else {
-          let errors = "";
+/*          let errors = "";
           response.error.forEach(error => {
             errors += error.description
-          });
+          });*/
         }
       })
       .catch(error => console.error('Error:', error));
-    //return ({
-      // view: "accordionitem",
-      // header: data,
-      // padding: 0,
-      // //headerAlt:"Pane 2 Closed",
-      // body: "This is Pane 2 body", //just text
-      // collapsed: true
-    //});
-  }
-  renderCourses(){
-    //let scope = this;
-  /*  if(this.state.Courses === null){
-      console.log("RenderCourses: state was empty");
-      console.log("State Courses"+ JSON.stringify(this.state.Courses));
-      return([{
-      view: "accordionitem",
-      header: "No Courses",
-      padding: 0,
-      //headerAlt:"Pane 2 Closed",
-      body: "This is Pane 2 body", //just text
-      collapsed: true}])
-    }
-    else {
-      /*var accorditem =[];
-      forEach(item in this.state.Courses){
-        accorditem.push(item);
-      };
-      console.log("state was good");
-      console.log("State after Set: " + JSON.stringify(this.state));
-      //return JSON.stringify(this.state.Courses );
-      return this.state.Courses;
-      
-  }*/
 
-  console.log("Check@Render: " + this.state.Courses);
- // console.log(typeof(this.state.Courses));
-    if(this.state.Courses !== null){
-      console.log("render abunch of courses");
-      
-      return this.state.Courses;
-    }
-    else{
-      console.log("no course");
-      return([{
-        view: "accordionitem",
-        header: "No Courses",
-        padding: 0,
-        //headerAlt:"Pane 2 Closed",
-        body: "This is Pane 2 body", //just text
-        collapsed: true}]);
-    }
-  }  
+  }
   render() {
     let ui = {
-        view:"accordion",
-        //multi:true,
-        rows:this.renderCourses()
+
+        view:"scrollview",
+        id:"verses",
+        scroll:"y", // vertical scrolling
+        height: 200, 
+        width: 250,
+        body:{
+        rows:[
+            { "view":"accordion",
+            "gravity":3,
+            "multi":false,
+            "css":"webix_dark",
+            "id" : "courses", 
+            "rows":Array.from(this.state.Courses)}
+        ]   
+      }
+
+        
     };
     let data = null;
-     
-
      return(
       <div id="Courses">
         <Webix ui={ui} data={data}/>

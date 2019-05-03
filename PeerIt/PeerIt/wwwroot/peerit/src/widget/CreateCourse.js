@@ -28,7 +28,7 @@ class CreateCourse extends Component {
     }).then(res => res.json())
       .then(response => {
         if (response.success) {
-          this.setState({});
+          this.setState({"data" : 0});
           window.webix.$$("newCourseWindow").close();
         } else {
           let errors = "";
@@ -60,6 +60,8 @@ class CreateCourse extends Component {
               view: "button", label: "Close", width: 70, left: 250,
               click: function () {
                 window.webix.$$("newCourseWindow").close();
+                //temp fix - if more time add a cleaner reload
+                
               }
             }
           ]

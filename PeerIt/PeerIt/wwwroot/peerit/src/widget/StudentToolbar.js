@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import Webix from '../webix';
-
+import Courses from '../containers/courses.js';
 class StudentToolbar extends Component {
 
 	constructor(props) {
@@ -12,29 +12,49 @@ class StudentToolbar extends Component {
 	this.logout = props.logout;
 
   }
-
+  renderCourses() {
+       return <Courses currentUser={this.state.currentUser} role={this.state.role} />
+  }
 	render(){
 		let data = null;
 	    let ui = 
         { 
-            view:"list", 
-            data:["Student", "Reports", "Settings","Logout"],
-            ready:function(){ 
-              this.select(this.getFirstId()); 
-            },
-            click:function(a){
-            	if(a === "Logout"){
-            		//Attempt to call the logout chain
-            		this.logout();
-            	}
-            }.bind(this),
-            select:true,
-            scroll:false,
-            //width:200 
-         };
+          type: "space",
+            scroll: "auto",
+            height: window.innerHeight,
+            width:275,
+            padding: 0,
+            responsive: "a1",
+            rows: [
+                    {
+                        view:"list", 
+                        data:["Student", "Reports", "Settings","Logout"],
+                        ready:function(){ 
+                          this.select(this.getFirstId()); 
+                        },
+                        click:function(a){
+                        	if(a === "Logout"){
+                        		//Attempt to call the logout chain
+                        		this.logout();
+                        	}
+                        }.bind(this),
+                        select:true,
+                        scroll:false,
+                        height:200
+                    },
+                    {
+                      view: "template",
+                        scroll: true,
+                        template: "right",
+                        content: "Courses",
+                        align:"right"
+                    }
+                ]
+      }
 		console.log("attempted render");
 		 return(<div  id="StudentToolbar">
         <Webix ui={ui} data={data}/>
+        {this.renderCourses()}
       </div>
       );
 	}

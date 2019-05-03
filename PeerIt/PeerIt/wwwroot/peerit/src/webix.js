@@ -8,6 +8,7 @@ import 'webix/webix.js';
 import 'webix/webix.css';
 
 class Webix extends Component {
+
   render() {
     return (
       <div ref="root"></div>
@@ -44,6 +45,7 @@ class Webix extends Component {
 
     this.componentWillUpdate(this.props);
   }
+   
   
 }
 

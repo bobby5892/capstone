@@ -16,7 +16,6 @@ class AdminToolbar extends Component {
 		this.logout = props.logout;
 		// Receive the function handle for handleManageUsersMenuClick
 		this.handleMenuClick = props.handleMenuClick;
-		console.log("Props:" + props.handleCreateCourse);
 		this.showCreateCourse = props.handleCreateCourse;
 	}
 	renderCourses() {
@@ -33,6 +32,7 @@ class AdminToolbar extends Component {
 			type: "space",
             scroll: "auto",
             height: window.innerHeight,
+            width:275,
             padding: 0,
             responsive: "a1",
 			rows: [
@@ -40,6 +40,7 @@ class AdminToolbar extends Component {
 						view: "list",
 						gravity: 1,
 						padding:0,
+						scroll: false,
 						margin:0,
 						//scroll:"y",
 						data: ["Admin",  "Manage Users", "Settings", "Logout"],
@@ -73,7 +74,7 @@ class AdminToolbar extends Component {
                 	{
 						
 					 	view: "template",
-                 		scroll: false,
+                 		scroll: true,
                  		template: "right",
                  		content: "Courses",
                  		align:"right"
@@ -81,7 +82,7 @@ class AdminToolbar extends Component {
                 	{
 						gravity: 1,
 					 	view: "template",
-                 		scroll: false,
+                 		scroll: true,
                  		template: "right",
                  		content: "CreateCourse",
                  		align:"right"

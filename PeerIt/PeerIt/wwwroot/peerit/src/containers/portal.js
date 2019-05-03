@@ -29,12 +29,6 @@ class Portal extends Component {
 
     // Handle Menu Users Click
     this.handleMenuClick.bind(this);
-
-    // handle create course window
-    this.handleCreateCourse = this.renderCreateCourseWindow;
-
-
-
   }
   renderPortal() {
     //https://forum.webix.com/discussion/31137/reactjs-layout-components
@@ -66,7 +60,7 @@ class Portal extends Component {
         role={this.state.role}
         logout={this.logout.bind(this)}
         handleMenuClick={this.handleMenuClick.bind(this)}
-       // handleCreateCourse={this.renderCreateCourseWindow.bind(this)}
+      
         />
     }
   }
@@ -75,7 +69,7 @@ class Portal extends Component {
       return <InstructorToolbar currentUser={this.state.currentUser}
         role={this.state.role}
         logout={this.logout.bind(this)}
-        handleCreateCourse={this.renderCreateCourseWindow.bind(this)} />
+        />
     }
   }
   renderStudentToolbar() {
@@ -203,6 +197,7 @@ class Portal extends Component {
                   view: "template",
                   scroll: false,
                   gravity: 1,
+                  width:300,
                   template: "left",
                   content: toolbar()
                 },

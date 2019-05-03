@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import Webix from '../webix';
 import { compileFunction } from 'vm';
+import Courses from '../containers/courses.js';
+import CreateCourse from '../widget/CreateCourse.js';
 
 class InstructorToolbar extends Component {
 
@@ -12,9 +14,15 @@ class InstructorToolbar extends Component {
     };
     this.logout = props.logout;
     this.handleCreateCourseWindow = props.handleCreateCourse;
+    this.showCreateCourse = props.handleCreateCourse;
 
   }
-  
+  renderCourses() {
+       return <Courses currentUser={this.state.currentUser} role={this.state.role} />
+  }
+  renderCreateCourseButton() {
+       return <CreateCourse currentUser={this.state.currentUser} role={this.state.role} showCreateCourse={this.showCreateCourse} />
+  } 
 
   render() {
     let scope = this;
@@ -47,27 +55,29 @@ class InstructorToolbar extends Component {
           },
           // This is where we would render courses        
           {
-            view: "form", scroll: false,
-            elements: [
-              {
-                view: "button",
-                label: "Create Course",
-                id: "createCourse_button",
-                value: "Create Course",
-
-                inputWidth: 100,
-                click: function () {
-                  scope.handleCreateCourseWindow();
-                }
-              },
-            ]
-          }
+            
+            view: "template",
+              scroll: true,
+              template: "right",
+              content: "Courses",
+              align:"right"
+            },
+            {
+              gravity: 1,
+              view: "template",
+              scroll: true,
+              template: "right",
+              content: "CreateCourse",
+              align:"right"
+          }      
         ]
     };
 
 
     console.log("attempted render");
     return (<div id="InstructorToolbar" >
+      {this.renderCreateCourseButton()}
+      {this.renderCourses()}
       <Webix ui={ui} data={data} />
     </div>
     );

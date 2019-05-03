@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Webix from '../webix';
-
+import '../css/courses.css';
  
 class Courses extends Component {
 
@@ -60,7 +60,10 @@ loadCourses() {
               header: element.name,
               id: element.id,
               padding: 0,
-              body: element.name, 
+              css: "courseMenuItem",
+              body:{ 
+                cols : this.renderSubMenu()
+              },
               collapsed: true,
               height:200
             };
@@ -81,6 +84,77 @@ loadCourses() {
       })
       .catch(error => console.error('Error:', error));
 
+  }
+  renderSubMenu(){
+    console.log("Role:" + this.state.role);
+    if(this.state.role == "Administrator" || this.state.role == "Instructor"){
+          return ( 
+            [
+            {
+            view: "tabview",
+            css:"subCourseTabMenu",
+            cells: [
+              {
+                css:"subCourseMenu",
+                header: "Students",
+                body: {
+                  id: "blah2",
+                  body: "temp"
+                }
+              },
+              {
+                css:"subCourseMenu",
+                header: "Activity",
+                body: {
+                  id: "blah1",
+                  body: "temp"
+                }
+              },
+              {
+                css:"subCourseMenu",
+                header: "Bulk",
+                body: {
+                  id: "blah3",
+                  body: "temp"
+                }
+              },
+              {
+                css:"subCourseMenu",
+                header: "Settings",
+                body: {
+                  id: "blah4",
+                  body: "temp"
+                }
+              }              
+            ]
+          }
+        ]
+      );
+    }
+    else if (this.state.role == "Student"){
+      return ( [{
+        view: "tabview",
+        cells: [
+          {
+            header: "Your Assignments",
+            body: {
+              id: "blah2",
+              body: "temp"
+              //view: "list", 
+              // list config
+            }
+          },
+          {
+            header: "Group Assignments",
+            body: {
+              id: "blah1",
+              body: "temp"
+              // form config
+            }
+          }
+        ]
+      }]);
+    }
   }
   render() {
     let ui = {
@@ -107,6 +181,7 @@ loadCourses() {
     let data = null;
      return(
       <div id="Courses">
+
         <Webix ui={ui} data={data}/>
       </div>
       );

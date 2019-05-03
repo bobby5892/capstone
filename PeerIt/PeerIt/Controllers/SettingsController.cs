@@ -16,6 +16,20 @@ namespace PeerIt.Controllers
         {
             this.settingRepository = settingRepository;
         }
+
+        public JsonResult GetSettings()
+        {
+            JsonResponse<Setting> response = new JsonResponse<Setting>();
+            List<Setting> settings = settingRepository.GetAll();
+            if (settings != null)
+            {
+                response.Data = settings;
+                return Json(response);
+            }
+            response.Error.Add(new Error("NotFound", "Could not access Config Settings."));
+            return Json(response);
+        }
+
         /// <summary>
         /// Retrieve a specific setting by looking up the ID
         /// </summary>
@@ -41,10 +55,6 @@ namespace PeerIt.Controllers
             return Json(response);
         }
         public JsonResult EditSetting (string ID, string StringValue, int NumericValue)
-        {
-            return null;
-        }
-        public JsonResult GetSettings()
         {
             return null;
         }

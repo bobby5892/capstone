@@ -12,6 +12,10 @@ class AdminSettings extends Component {
       this.state = {
         currentUser : props.currentUser,
         role : props.role,
+        SMTP_Enabled :null,
+        SMTP_USERNAME :null,
+        SMTP_Port : null,
+        SMTP_HOST : null
      
       };
       this.renderWindow = false;
@@ -30,14 +34,70 @@ class AdminSettings extends Component {
       }
     }, window.webix.ui.view);
     //load the content
+    this.loadSettings();
+    console.log("Cons State: " + JSON.stringify(this.state));
   }
+
   loadSettings(){
     // This reaches out and grabs the settings
     // in the final then - it sets this.renderWindow = true
+    if (this.state.SMTP_Enabled == null){
+      this.getData("Settings/GetSettings");
+    }
+  }
+
+  getData(src){
+    console.log("State in GetData: " + JSON.stringify(this.state));
+    let scope = this;
+       fetch(src, {
+            method: 'GET', // or 'PUT'
+            headers:{
+              'Content-Type': 'application/json'
+            },
+            credentials: "include",
+            mode:"no-cors"
+          }).then(res => res.json())
+          .then(response => {
+            if(response.success){
+              // This would cause a re-render
+              //console.log("data: " + JSON.stringify(response))
+              return response;
+            }
+          }).then(response => {
+              this.renderWindow = true;
+
+              let stateChange  = {
+                  
+                   "SMTP_Enabled" :""+ scope.getSetting("SMTP_Enabled",response.data,"numeric"),
+                   "SMTP_USERNAME" :""+ scope.getSetting("SMTP_USERNAME",response.data,"string"),
+                   "SMTP_Port" :""+ scope.getSetting("SMTP_Port",response.data,"numeric"),
+                   "SMTP_HOST" :""+ scope.getSetting("SMTP_HOST",response.data,"string")
+                  };
+                console.log("stateChange: " + JSON.stringify(stateChange));
+                this.setState( stateChange );
+             
+             console.log("SCOPE: " + JSON.stringify(scope.state));
+
+          })
+          .catch(error => console.error('Error:', error));
+  }
+  getSetting(setting,data,column){
+    for(let i = 0;i<data.length;i++)
+    {
+        if(data[i].id == setting){
+            if(column == "numeric"){
+              console.log(data[i].numericValue);
+                return data[i].numericValue;
+            }
+            else{
+              console.log(data[i].stringValue);
+                return data[i].stringValue;
+            }
+        }
+    }
   }
  renderEditWindow(){
   if(this.renderWindow){
-      console.log("rendering" + JSON.stringify(this.state.editUser));
       let scope = this;
       var newWindow = window.webix.ui({
               view:"window",
@@ -67,10 +127,10 @@ class AdminSettings extends Component {
                         id:"configurationForm",
                         width:400,
                         elements:[
-                            { view:"checkbox", value: 0, label:"Send Emails", name: "IsEnabled", labelWidth:100 },
-                            { view:"text", label:"SMTP Server", name:"serverName", labelWidth:100,invalidMessage: "Server cannot be empty", value:""},
-                            { view:"text", label:"SMTP Port", name:"portNum", width:150, labelWidth:100, invalidMessage:"Port cannot be empty", value:""},
-                            { view:"text", label:"SMTP Login", name:"usernameAdminLogin", labelWidth:100,invalidMessage: "Please login to confirm changes",value: ""},
+                            { view:"checkbox", value: scope.state.SMTP_Enabled, label:"Send Emails", name: "IsEnabled", labelWidth:100 },
+                            { view:"text", label:"SMTP Server", name:"serverName", labelWidth:100,invalidMessage: "Server cannot be empty", value:scope.state.SMTP_HOST},
+                            { view:"text", label:"SMTP Port", name:"portNum", width:150, labelWidth:100, invalidMessage:"Port cannot be empty", value:this.state.SMTP_Port},
+                            { view:"text", label:"SMTP Login", name:"usernameAdminLogin", labelWidth:100,invalidMessage: "Please login to confirm changes",value: this.state.SMTP_USERNAME},
                             { view:"text", type:"password", label:"SMTP Password", name:"passwordAdminLogin", labelWidth:125, invalidMessage: "Password can not be empty" },
                             { margin:5, cols:[
                                 { view:"button", value:"Save Settings" , type:"form", click:function(){

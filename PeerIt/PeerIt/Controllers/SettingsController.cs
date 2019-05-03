@@ -54,9 +54,96 @@ namespace PeerIt.Controllers
             // send it back to the browser
             return Json(response);
         }
-        public JsonResult EditSetting (string ID, string StringValue, int NumericValue)
+        public JsonResult EditSetting (string Id, string stringValue, int numericValue)
         {
+            JsonResponse<Setting> response = new JsonResponse<Setting>();
+            var result = settingRepository.FindByID(Id);
+            if (result != null)
+            {
+                Setting newSet = new Setting
+                {
+                    ID = Id,
+                    StringValue = stringValue,
+                    NumericValue = numericValue
+                };
+                if (settingRepository.Edit(newSet))
+                {
+                    response.Data.Add(newSet);
+                    return Json(response);
+                }
+            }
             return null;
+        }
+        public JsonResult EditSettings(string isEnabledId, int isEnabledValue,
+                                       string serverId, string serverValue,
+                                       string portId, int portValue,
+                                       string usernameId, string usernameValue,
+                                       string passwordId, string passwordValue)
+        {
+            JsonResponse<Setting> response = new JsonResponse<Setting>();
+            Setting enabledSetting = settingRepository.FindByID(isEnabledId);
+            Setting serverSetting = settingRepository.FindByID(serverId);
+            Setting portSetting = settingRepository.FindByID(portId);
+            Setting usernameSetting = settingRepository.FindByID(usernameId);
+            Setting passwordSetting = settingRepository.FindByID(passwordId);
+
+            if (enabledSetting != null && serverSetting != null &&
+                portSetting != null && usernameId != null &&
+                passwordSetting != null)
+            {
+                enabledSetting.NumericValue = isEnabledValue;
+                serverSetting.StringValue = serverValue;
+                portSetting.NumericValue = portValue;
+                usernameSetting.StringValue = usernameValue;
+                passwordSetting.StringValue = passwordValue;
+                if (settingRepository.Edit(passwordSetting))
+                {
+                    if (settingRepository.Edit(enabledSetting))
+                    {
+                        if(settingRepository.Edit(serverSetting))
+                        {
+                            if (settingRepository.Edit(portSetting))
+                            {
+                                if (settingRepository.Edit(usernameSetting))
+                                {
+                                    response.Data.Add(enabledSetting);
+                                    response.Data.Add(serverSetting);
+                                    response.Data.Add(portSetting);
+                                    response.Data.Add(usernameSetting);
+                                    response.Data.Add(passwordSetting);
+                                    return Json(response);
+                                }
+                                else
+                                {
+                                    response.Error.Add(new Error("NotSuccessful", usernameId + " did not successfully write"));
+                                }
+                            }
+                            else
+                            {
+                                response.Error.Add(new Error("NotSuccessful", portId + " did not successfully write"));
+                            }
+                        }
+                        else
+                        {
+                            response.Error.Add(new Error("NotSuccessful", serverId + " did not successfully write"));
+                        }
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("NotSuccessful", isEnabledId + " did not successfully write"));
+                    }
+                }
+                else
+                {
+                    response.Error.Add(new Error("NotSuccessful", passwordId + " did not successfully write"));
+                }
+                
+            }
+            else
+            {
+                response.Error.Add(new Error("NotFound", "Data was not found."));
+            }
+            return Json(response);
         }
     }
 }

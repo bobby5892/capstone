@@ -151,7 +151,39 @@ class AdminSettings extends Component {
               
           }).show();
     }
-  }    
+  }
+
+    saveEditWindow(){
+    let scope = this;
+    let formValues = window.webix.$$("settingsWindow").getValues();
+      // Save the edit window
+      let req = "/Settings/EditSettings";
+          console.log("Making Request: " + req);
+        fetch(req, {
+            method: 'POST', // or 'PUT'
+            headers:{
+              'Content-Type': 'application/json'
+            },
+            credentials: "include",
+            mode:"no-cors"
+          }).then(res => res.json())
+          .then(response => {
+            if(response.success){
+              
+              //console.log("attempting to open render window");
+              //Dirt Reload Data
+              // Start Data Load 
+              if(this.state.administrators === null){ this.getData("/Admin/GetAdministrators","administrators"); }
+              if(this.state.instructors === null){ this.getData("/Admin/GetInstructors","instructors"); }
+              if(this.state.students === null){ this.getData("/Admin/GetStudents","students"); }
+              if(this.state.invitedguests === null){this.getData("/Admin/GetInvitedGuests","invitedguests"); }
+             
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      
+  }
+
   render(){
 
     let data = null;

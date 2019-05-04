@@ -59,7 +59,7 @@ renderAdminInstructorSettings(){
 }
 renderAdminInstructorStudentsList(){
 
-  return new <AdminInstructorStudentsList currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
+  return  <AdminInstructorStudentsList currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
 }
 renderStudentGroupAssignments(){
   return <StudentGroupAssignments currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>

@@ -25,7 +25,7 @@ class AdminToolbar extends Component {
        return <CreateCourse currentUser={this.state.currentUser} role={this.state.role} showCreateCourse={this.showCreateCourse} />
 	}			
 	render() {
-		let scope = this;
+		//let scope = this;
 		let data = null;
 		let ui =
 		{

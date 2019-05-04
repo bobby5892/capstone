@@ -31,10 +31,10 @@ class CreateCourse extends Component {
           this.setState({"data" : 0});
           window.webix.$$("newCourseWindow").close();
         } else {
-          let errors = "";
-          response.error.forEach(error => {
-            errors += error.description
-          });
+       //   let errors = "";
+          //response.error.forEach(error => {
+       //  //   errors += error.description
+      //    });
 
         }
         console.log(response);
@@ -45,7 +45,7 @@ class CreateCourse extends Component {
   renderCreateCourseWindow() {
     let scope = this;
     if (window.webix.$$("newCourseWindow") == null) {
-      var newWindow = window.webix.ui({
+       window.webix.ui({
         view: "window",
         id: "newCourseWindow",
         width: 500,

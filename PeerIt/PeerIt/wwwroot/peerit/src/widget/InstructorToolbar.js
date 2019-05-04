@@ -1,7 +1,6 @@
 
 import React, { Component } from 'react';
 import Webix from '../webix';
-import { compileFunction } from 'vm';
 import Courses from '../containers/courses.js';
 import CreateCourse from '../widget/CreateCourse.js';
 
@@ -25,7 +24,7 @@ class InstructorToolbar extends Component {
   } 
 
   render() {
-    let scope = this;
+    //let scope = this;
     let data = null;
     let ui =
     {

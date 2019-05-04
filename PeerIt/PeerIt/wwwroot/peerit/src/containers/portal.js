@@ -148,11 +148,11 @@ class Portal extends Component {
 
 
         } else {
-          let errors = "";
-          response.error.forEach(error => {
-            console.log(error);
-            errors += error.description
-          });
+          //(let errors = "";
+          //response.error.forEach(error => {
+            console.log(response.error);
+            //errors += error.description
+          //});
 
         }
 
@@ -166,13 +166,13 @@ class Portal extends Component {
     /*Portal Container */
     let scope = this;
     let toolbar = function () {
-      if (scope.state.role == "Administrator") {
+      if (scope.state.role === "Administrator") {
         return "AdminToolbar";
       }
-      else if (scope.state.role == "Instructor") {
+      else if (scope.state.role === "Instructor") {
         return "InstructorToolbar";
       }
-      else if (scope.state.role == "Student") {
+      else if (scope.state.role === "Student") {
         return "StudentToolbar";
       }
       else {

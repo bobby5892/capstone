@@ -3,7 +3,7 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import Webix from '../webix';
+//import Webix from '../webix';
 
 class AdminSettings extends Component {
 
@@ -32,7 +32,7 @@ class AdminSettings extends Component {
   }
   render(){
 
-    let data = null;
+    //let data = null;
 
      return(
       <div id="AdminSettings">

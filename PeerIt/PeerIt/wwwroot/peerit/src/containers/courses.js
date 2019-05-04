@@ -5,7 +5,12 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Webix from '../webix';
 import '../css/courses.css';
- 
+import AdminInstructorAssignments from '../widget/CourseViewer/AdminInstructorAssignments';
+import AdminInstructorSettings from '../widget/CourseViewer/AdminInstructorSettings';
+import AdminInstructorStudentsList from '../widget/CourseViewer/AdminInstructorStudentsList';
+import StudentGroupAssignments from '../widget/CourseViewer/StudentGroupAssignments';
+import StudentYourAssignments from '../widget/CourseViewer/StudentYourAssignments';
+import AdminInstructorBulk from '../widget/CourseViewer/AdminInstructorBulk';
 class Courses extends Component {
 
   constructor(props) {
@@ -15,6 +20,7 @@ class Courses extends Component {
       currentUser: props.currentUser,
       role: props.role,
       data: null,
+      viewingCourse: null,
       Courses: [{
               view: "accordionitem",
               header: "No Courses",
@@ -24,7 +30,7 @@ class Courses extends Component {
               collapsed: false
             }]
     };
-
+    this.component = {};
     window.webix.protoUI({
       name:"react",
       defaults:{
@@ -41,7 +47,28 @@ class Courses extends Component {
     }, window.webix.ui.view);
     this.loadCourses();
 }
+
+renderAdminInstructorAssignments(){
+  return <AdminInstructorAssignments currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
+}
+renderAdminInstructorBulk(){
+  return <AdminInstructorBulk currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
+}
+renderAdminInstructorSettings(){
+  return <AdminInstructorSettings currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
+}
+renderAdminInstructorStudentsList(){
+
+  return new <AdminInstructorStudentsList currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
+}
+renderStudentGroupAssignments(){
+  return <StudentGroupAssignments currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
+}
+renderStudentYourAssignments(){
+  return <StudentYourAssignments currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
+}
 loadCourses() {
+ let scope = this;
     //let accord = [];
     fetch("Course/GetCourses", {
       method: 'GET', // or 'PUT'
@@ -62,100 +89,133 @@ loadCourses() {
               padding: 0,
               css: "courseMenuItem",
               body:{ 
-                cols : this.renderSubMenu()
+                cols : this.renderSubMenu(element.id)
+              },
+              on:{
+                'onItemClick' : function (i){
+                    console.log("clicked" + i);
+                    scope.setState({"viewingCourse" : i});
+                    // Attempt to render
+                 }
               },
               collapsed: true,
               height:200
             };
             window.webix.$$("courses").addView(accord);
+
           })
+
            this.setState({"Courses":accord});
            window.webix.$$("courses").removeView("noCourse");
-
-
-           // force react to redraw
-           
+          
+          window.webix.$$("coursesTabView").attachEvent("onViewShow", function(){
+              // your handler here
+              
+          });
+          // We need to watch for a click on the header - then load content based on the header
         } else {
-/*          let errors = "";
-          response.error.forEach(error => {
-            errors += error.description
-          });*/
+
         }
       })
       .catch(error => console.error('Error:', error));
 
   }
-  renderSubMenu(){
-    console.log("Role:" + this.state.role);
-    if(this.state.role == "Administrator" || this.state.role == "Instructor"){
+  renderSubMenu(courseID){
+    if(this.state.role === "Administrator" || this.state.role === "Instructor"){
+      let renderObjects = {
+        'Students' : null
+      };
+      if(this.state.viewingCourse === courseID){
+        renderObjects.Students =  {content: "AdminInstructorStudentsList"};
+      }
+
           return ( 
             [
-            {
-            view: "tabview",
-            css:"subCourseTabMenu",
-            cells: [
               {
-                css:"subCourseMenu",
-                header: "Students",
-                body: {
-                  id: "blah2",
-                  body: "temp"
-                }
-              },
-              {
-                css:"subCourseMenu",
-                header: "Activity",
-                body: {
-                  id: "blah1",
-                  body: "temp"
-                }
-              },
-              {
-                css:"subCourseMenu",
-                header: "Bulk",
-                body: {
-                  id: "blah3",
-                  body: "temp"
-                }
-              },
-              {
-                css:"subCourseMenu",
-                header: "Settings",
-                body: {
-                  id: "blah4",
-                  body: "temp"
-                }
-              }              
-            ]
-          }
+                id:"coursesTabView",
+                view: "tabview",
+                css:"subCourseTabMenu",
+                multiview:{
+                   animate:true
+                },
+              /*  on:{
+                    'onViewShow' : function (){
+                      let courseMenuItems = this.getParentView().getParentView().getParentView().getChildViews();
+                      for(let i=0; i<courseMenuItems.length;i++){
+                          console.log(i + ":" + Object.keys(courseMenuItems[i]));
+                      }
+                      console.log("numberOfItems: " + courseMenuItems.length);
+                      console.log("there are " + this.getChildViews().length + "things");
+                      console.log("clicked a thing" + this.getChildViews()[0].collapsed);
+                    }
+                    
+                    
+                  },*/
+              cells: [
+                {
+                  css:"subCourseMenu",
+                  header: "Students",
+                  autoheight:true,
+                  body:{
+                    id: "subCourseMenuAdminInstructorStudentList" + courseID,
+                    height:200
+                  },
+                  collapsed:true,
+                  gravity:1
+                },
+                {
+                  css:"subCourseMenu",
+                  header: "Assignments",
+                  body: {
+                    view: "template",
+                    template: "Default template with some text inside"
+                  },
+                  collapsed:true
+                },              
+                {
+                  css:"subCourseMenu",
+                  header: "Bulk",
+                  body: {
+                    id: "menuItemAdminInstructorBulk",
+                    body: "temp"
+                  }
+                },
+                {
+                  css:"subCourseMenu",
+                  header: "Settings",
+                  body: {
+                    id: "menuItemAdminInstructorSettings",
+                    body: "temp"
+                  }
+                }              
+              ]
+            }
         ]
       );
     }
-    else if (this.state.role == "Student"){
+    else if (this.state.role === "Student"){
       return ( [{
         view: "tabview",
         cells: [
           {
             header: "Your Assignments",
             body: {
-              id: "blah2",
+              id: "menuItemStudentYourAssignments",
               body: "temp"
-              //view: "list", 
-              // list config
             }
           },
           {
             header: "Group Assignments",
             body: {
-              id: "blah1",
+              id: "menuItemStudentGroupAssignments",
               body: "temp"
-              // form config
             }
           }
         ]
       }]);
     }
   }
+ 
   render() {
     let ui = {
 
@@ -181,8 +241,9 @@ loadCourses() {
     let data = null;
      return(
       <div id="Courses">
-
+        {this.renderAdminInstructorStudentsList()}
         <Webix ui={ui} data={data}/>
+        }
       </div>
       );
   }

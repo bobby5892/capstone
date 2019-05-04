@@ -91,53 +91,56 @@ namespace PeerIt.Controllers
                 portSetting != null && usernameId != null &&
                 passwordSetting != null)
             {
-                enabledSetting.NumericValue = isEnabledValue;
-                serverSetting.StringValue = serverValue;
-                portSetting.NumericValue = portValue;
                 usernameSetting.StringValue = usernameValue;
+                usernameSetting.NumericValue = 0;
+                if (settingRepository.Edit(usernameSetting))
+                {
+                    response.Data.Add(usernameSetting);
+                }
+                else
+                {
+                    response.Error.Add(new Error("NotSuccessful", usernameId + " did not successfully write"));
+                }
+                portSetting.NumericValue = portValue;
+                portSetting.StringValue = null;
+                if (settingRepository.Edit(portSetting))
+                {
+                    response.Data.Add(portSetting);
+                }
+                else
+                {
+                    response.Error.Add(new Error("NotSuccessful", portId + " did not successfully write"));
+                }
+                serverSetting.StringValue = serverValue;
+                serverSetting.NumericValue = 0;
+                if (settingRepository.Edit(serverSetting))
+                {
+                    response.Data.Add(serverSetting);
+                }
+                else
+                {
+                    response.Error.Add(new Error("NotSuccessful", serverId + " did not successfully write"));
+                }
+                enabledSetting.NumericValue = isEnabledValue;
+                enabledSetting.StringValue = null;
+                if (settingRepository.Edit(enabledSetting))
+                {
+                    response.Data.Add(enabledSetting);
+                }
+                else
+                {
+                    response.Error.Add(new Error("NotSuccessful", isEnabledId + " did not successfully write"));
+                }
                 passwordSetting.StringValue = passwordValue;
+                passwordSetting.NumericValue = 0;
                 if (settingRepository.Edit(passwordSetting))
                 {
-                    if (settingRepository.Edit(enabledSetting))
-                    {
-                        if(settingRepository.Edit(serverSetting))
-                        {
-                            if (settingRepository.Edit(portSetting))
-                            {
-                                if (settingRepository.Edit(usernameSetting))
-                                {
-                                    response.Data.Add(enabledSetting);
-                                    response.Data.Add(serverSetting);
-                                    response.Data.Add(portSetting);
-                                    response.Data.Add(usernameSetting);
-                                    response.Data.Add(passwordSetting);
-                                    return Json(response);
-                                }
-                                else
-                                {
-                                    response.Error.Add(new Error("NotSuccessful", usernameId + " did not successfully write"));
-                                }
-                            }
-                            else
-                            {
-                                response.Error.Add(new Error("NotSuccessful", portId + " did not successfully write"));
-                            }
-                        }
-                        else
-                        {
-                            response.Error.Add(new Error("NotSuccessful", serverId + " did not successfully write"));
-                        }
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("NotSuccessful", isEnabledId + " did not successfully write"));
-                    }
+                    response.Data.Add(passwordSetting);
                 }
                 else
                 {
                     response.Error.Add(new Error("NotSuccessful", passwordId + " did not successfully write"));
                 }
-                
             }
             else
             {

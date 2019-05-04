@@ -60,24 +60,19 @@ class AdminSettings extends Component {
           .then(response => {
             if(response.success){
               // This would cause a re-render
-              //console.log("data: " + JSON.stringify(response))
               return response;
             }
           }).then(response => {
               this.renderWindow = true;
-
               let stateChange  = {
-                  
                    "SMTP_Enabled" :""+ scope.getSetting("SMTP_Enabled",response.data,"numeric"),
                    "SMTP_USERNAME" :""+ scope.getSetting("SMTP_USERNAME",response.data,"string"),
                    "SMTP_Port" :""+ scope.getSetting("SMTP_Port",response.data,"numeric"),
                    "SMTP_HOST" :""+ scope.getSetting("SMTP_HOST",response.data,"string")
                   };
-                console.log("stateChange: " + JSON.stringify(stateChange));
-                this.setState( stateChange );
-             
-             console.log("SCOPE: " + JSON.stringify(scope.state));
-
+              console.log("stateChange: " + JSON.stringify(stateChange));
+              this.setState( stateChange );
+              console.log("SCOPE: " + JSON.stringify(scope.state));
           })
           .catch(error => console.error('Error:', error));
   }
@@ -96,8 +91,8 @@ class AdminSettings extends Component {
         }
     }
   }
- renderEditWindow(){
-  if(this.renderWindow){
+  renderEditWindow(){
+    if(this.renderWindow){
       let scope = this;
       var newWindow = window.webix.ui({
               view:"window",
@@ -130,12 +125,11 @@ class AdminSettings extends Component {
                             { view:"checkbox", value: scope.state.SMTP_Enabled, label:"Send Emails", name: "IsEnabled", labelWidth:100 },
                             { view:"text", label:"SMTP Server", name:"serverName", labelWidth:100,invalidMessage: "Server cannot be empty", value:scope.state.SMTP_HOST},
                             { view:"text", label:"SMTP Port", name:"portNum", width:150, labelWidth:100, invalidMessage:"Port cannot be empty", value:this.state.SMTP_Port},
-                            { view:"text", label:"SMTP Login", name:"usernameAdminLogin", labelWidth:100,invalidMessage: "Please login to confirm changes",value: this.state.SMTP_USERNAME},
-                            { view:"text", type:"password", label:"SMTP Password", name:"passwordAdminLogin", labelWidth:125, invalidMessage: "Password can not be empty" },
+                            { view:"text", label:"SMTP Login", name:"smtpUsername", labelWidth:100,invalidMessage: "Please login to confirm changes",value: this.state.SMTP_USERNAME},
+                            { view:"text", type:"password", label:"SMTP Password", name:"smtpPassword", labelWidth:125, invalidMessage: "Password can not be empty" },
                             { margin:5, cols:[
                                 { view:"button", value:"Save Settings" , type:"form", click:function(){
-                                 // scope.saveEditWindow();
-                                 alert("save settings");
+                                  scope.saveEditWindow();
                                 }}
                             ]}
                         ],
@@ -153,11 +147,15 @@ class AdminSettings extends Component {
     }
   }
 
-    saveEditWindow(){
+  saveEditWindow(){
     let scope = this;
-    let formValues = window.webix.$$("settingsWindow").getValues();
+    let formValues = window.webix.$$("configurationForm").getValues();
       // Save the edit window
-      let req = "/Settings/EditSettings";
+      let req = "/Settings/EditSettings" + "?isEnabledId=SMTP_Enabled" + "&isEnabledValue=" + formValues.IsEnabled +
+                "&serverId=SMTP_HOST" + "&serverValue=" + formValues.serverName +
+                "&portId=SMTP_Port" + "&portValue=" + formValues.portNum +
+                "&usernameId=SMTP_USERNAME" + "&usernameValue=" + formValues.smtpUsername +
+                "&passwordId=SMTP_Password" + "&passwordValue=" + formValues.smtpPassword;
           console.log("Making Request: " + req);
         fetch(req, {
             method: 'POST', // or 'PUT'
@@ -169,35 +167,24 @@ class AdminSettings extends Component {
           }).then(res => res.json())
           .then(response => {
             if(response.success){
-              
+              alert("All Changes Saved Successfully.")
+              console.log("We did it!");
               //console.log("attempting to open render window");
               //Dirt Reload Data
               // Start Data Load 
-              if(this.state.administrators === null){ this.getData("/Admin/GetAdministrators","administrators"); }
-              if(this.state.instructors === null){ this.getData("/Admin/GetInstructors","instructors"); }
-              if(this.state.students === null){ this.getData("/Admin/GetStudents","students"); }
-              if(this.state.invitedguests === null){this.getData("/Admin/GetInvitedGuests","invitedguests"); }
-             
             }
           })
           .catch(error => console.error('Error:', error));
-      
   }
 
   render(){
-
     let data = null;
-
      return(
       <div id="AdminSettings">
         {this.renderEditWindow()}
-      
       </div>
-               
-             
       );
   }
 }
 
 export default AdminSettings;
-

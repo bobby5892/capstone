@@ -35,7 +35,6 @@ class AdminSettings extends Component {
     }, window.webix.ui.view);
     //load the content
     this.loadSettings();
-    console.log("Cons State: " + JSON.stringify(this.state));
   }
 
   loadSettings(){
@@ -47,7 +46,6 @@ class AdminSettings extends Component {
   }
 
   getData(src){
-    console.log("State in GetData: " + JSON.stringify(this.state));
     let scope = this;
        fetch(src, {
             method: 'GET', // or 'PUT'
@@ -70,9 +68,7 @@ class AdminSettings extends Component {
                    "SMTP_Port" :""+ scope.getSetting("SMTP_Port",response.data,"numeric"),
                    "SMTP_HOST" :""+ scope.getSetting("SMTP_HOST",response.data,"string")
                   };
-              console.log("stateChange: " + JSON.stringify(stateChange));
               this.setState( stateChange );
-              console.log("SCOPE: " + JSON.stringify(scope.state));
           })
           .catch(error => console.error('Error:', error));
   }
@@ -81,11 +77,9 @@ class AdminSettings extends Component {
     {
         if(data[i].id == setting){
             if(column == "numeric"){
-              console.log(data[i].numericValue);
                 return data[i].numericValue;
             }
             else{
-              console.log(data[i].stringValue);
                 return data[i].stringValue;
             }
         }

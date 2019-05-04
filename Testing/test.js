@@ -23,4 +23,4 @@ lwat.get("http://localhost:8080/Account/GetCurrentUserRole").then((response) => 
 		lwat.assert(response.data[0].role,"Administrator","Check That current role is admin");
 });
 
-
+//lwat.get("http://localhost:8080/" + )

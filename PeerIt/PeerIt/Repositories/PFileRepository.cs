@@ -48,7 +48,17 @@ namespace PeerIt.Repositories
         /// <returns></returns>
         public bool Delete(PFile model)
         {
-            throw new NotImplementedException();
+            PFile file = FindByID(model.ID);
+            
+            if(file.ID != null)
+            {
+                this.PFiles.Remove(file);
+                if(context.SaveChanges() < 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

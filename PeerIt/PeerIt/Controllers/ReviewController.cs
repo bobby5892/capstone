@@ -20,6 +20,7 @@ namespace PeerIt.Controllers
 
         private ReviewRepository reviewRepository;
         private StudentAssignmentRepository studentAssignmentRepository;
+        private CourseGroupRepository courseGroupRepository;
         //private JsonResponse<Review> response;
         //private List<Review> reviews;
         //private Review review;
@@ -42,11 +43,13 @@ namespace PeerIt.Controllers
         /// <param name="studentAssignmentRepo"></param>
         public ReviewController(UserManager<AppUser> userMgr, 
                                 ReviewRepository reviewRepo,
-                                StudentAssignmentRepository studentAssignmentRepo)
+                                StudentAssignmentRepository studentAssignmentRepo,
+                                CourseGroupRepository courseGroupRepo)
         {
             userManager = userMgr;
             reviewRepository = reviewRepo;
             studentAssignmentRepository = studentAssignmentRepo;
+            courseGroupRepository = courseGroupRepo;
 
             this.isAdmin = HttpContext.User.IsInRole("Administrator");
             this.isInstructor = HttpContext.User.IsInRole("Instructor");
@@ -108,31 +111,109 @@ namespace PeerIt.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public JsonResult GetReviewById(int id)
+        public async Task<JsonResult> GetReviewById(int id)
         {
             JsonResponse<Review> response = new JsonResponse<Review>();
             Review review = reviewRepository.FindByID(id);
-            response.Data.Add(review);
-            if(response.TotalResults < 0)
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+
+            if (review != null)
             {
-                return Json(response);
+                if (this.isAdmin || this.isInstructor && review.FK_STUDENT_ASSIGNMENT.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
+                {
+                    response.Data.Add(review);
+                    return Json(response);
+                }
+                else if (this.isStudent)
+                {
+                    if (review.FK_APP_USER.Id == user.Id)
+                    {
+                        response.Data.Add(review);
+                        return Json(response);
+                    }
+                    else if (review.FK_STUDENT_ASSIGNMENT.AppUser.Id == user.Id)
+                    {
+                        response.Data.Add(review);
+                        return Json(response);
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("Forbidden", "This Review is not for you or by you."));
+                    }
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+                }
             }
-            response.Error.Add(new Error() { Name = "No Review", Description = "No Review for that Id" });
+            else
+            {
+                response.Error.Add(new Error("NotFound", "The review was not found."));
+            }
             return Json(response);
         }
         /// <summary>
         /// Creates a new review and adds it to the database
         /// </summary>
         /// <param name="contents"></param>
-        /// <param name="userId"></param>
         /// <param name="studentAssignmentId"></param>
         /// <returns></returns>
-        public async Task<JsonResult> CreateReview(string contents, string userId, int studentAssignmentId)
+        public async Task<JsonResult> CreateReview(string contents, int studentAssignmentId)
         {
             JsonResponse<Review> response = new JsonResponse<Review>();
-            AppUser user = await GetCurrentUserById(userId);
+            //AppUser user = await GetCurrentUserById(userId);
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
             studentAssignment = studentAssignmentRepository.FindByID(studentAssignmentId);
+            Course course = studentAssignment.CourseAssignment.FK_COURSE;
+            AppUser assignUser = studentAssignment.AppUser;
 
+            if (studentAssignment != null)
+            {
+                if (this.isAdmin || this.isInstructor && studentAssignment.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
+                {
+                    Review review = new Review() { Content = contents, FK_APP_USER = user, FK_STUDENT_ASSIGNMENT = studentAssignment };
+                    Review newReview = reviewRepository.Add(review);
+                    if (newReview != null)
+                    {
+                        response.Data.Add(newReview);
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("NotSuccessful", "the data was not successfully written."));
+                    }
+                }
+                else if (this.isStudent)
+                {
+                    CourseGroup courseGroupCurrentUser = courseGroupRepository.GetByUserAndCourseID(user.Id, course.ID);
+                    CourseGroup courseGroupAssignmentUser = courseGroupRepository.GetByUserAndCourseID(assignUser.Id, course.ID);
+                    if (courseGroupCurrentUser.ReviewGroup == courseGroupCurrentUser.ReviewGroup)
+                    {
+                        Review review = new Review() { Content = contents, FK_APP_USER = user, FK_STUDENT_ASSIGNMENT = studentAssignment };
+                        Review newReview = reviewRepository.Add(review);
+                        if (newReview != null)
+                        {
+                            response.Data.Add(newReview);
+                        }
+                        else
+                        {
+                            response.Error.Add(new Error("NotSuccessful", "the data was not successfully written."));
+                        }
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("Forbidden", "you are not in this group."));
+                    }
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+                }
+            }
+            else
+            {
+                response.Error.Add(new Error("NotFound", "The assignment was not found."));
+            }
+            /*
             if(studentAssignment == null)
             {
                 response.Error.Add(new Error() {Name = "No Student Assignment", Description = "No student assignment for that id"});
@@ -148,9 +229,11 @@ namespace PeerIt.Controllers
             {
                 response.Error.Add(new Error { Name = "Could not Add", Description = "Could not add the new review to database" });
             }
+            */
             return Json(response);
         }
 
+        /*
         /// <summary>
         /// 
         /// </summary>
@@ -161,6 +244,7 @@ namespace PeerIt.Controllers
             AppUser user = await userManager.FindByIdAsync(userId);
             return user;
         }
+        */
 
         #endregion Methods That Return Json
     }

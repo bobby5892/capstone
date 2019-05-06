@@ -9,3 +9,4 @@ PeerIt/PeerIt/obj/*
 PeerIt/UnitTests/obj/*
 PeerIt/UnitTests/bin/*
 PeerIt/PeerIt/wwwroot/peerit/node_modules/*
+*/node_modules/*

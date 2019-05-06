@@ -3,7 +3,7 @@ import LWAT from './index.js';
 let lwat = new LWAT();
 
 // Test GetSetting()
-lwat.get("http://localhost:8080/Account/Login",
+lwat.post("http://localhost:8080/Account/Login",
 			{"Email" : "admin@example.com",
 			 "Password" : "password",
 			 "returnUrl" : ""

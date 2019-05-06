@@ -17,7 +17,9 @@ using PeerIt.ViewModels;
 
 namespace PeerIt.Controllers
 {
-    ///
+    /// <summary>
+    /// Controller
+    /// </summary>
     public class PFileController : Controller
     {
         private readonly IFileProvider _fileProvider;
@@ -25,16 +27,30 @@ namespace PeerIt.Controllers
         private IGenericRepository<PFile, string> pFileRepo;
         private List<PFile> pFiles;
         private UserManager<AppUser> userManager;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="hostingEnvironment"></param>
+        /// <param name="fileProvider"></param>
+        /// <param name="repo"></param>
+        /// <param name="usermger"></param>
+
         private PFile downloadFile;
         ///
         public PFileController(IHostingEnvironment hostingEnvironment, IFileProvider fileProvider, IGenericRepository<PFile, string> repo, UserManager<AppUser> usermgr)
+
         {
             _fileProvider = fileProvider;
             _hostingEnvironment = hostingEnvironment;
             pFileRepo = repo;
             userManager = usermgr;
         }
-        ///
+        /// <summary>
+        /// Upload a File
+        /// </summary>
+        /// <param name="files"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Upload(List<IFormFile> files)
         {

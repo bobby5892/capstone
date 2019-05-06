@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using PeerIt.Models;
-using PeerIt.ViewModels;
 using PeerIt.Repositories;
+using PeerIt.ViewModels;
 using PeerIt.Interfaces;
 
 namespace PeerIt.Controllers
@@ -27,7 +28,7 @@ namespace PeerIt.Controllers
         /// <param name="userMgr"></param>
         /// <param name="eventRepo"></param>
         public EventController(UserManager<AppUser> userMgr,
-            IGenericRepository<Event,int> eventRepository)
+            IGenericRepository<Event, int> eventRepository)
         {
             userManager = userMgr;
             this.eventRepository = eventRepository;
@@ -48,13 +49,21 @@ namespace PeerIt.Controllers
         [HttpPost]
         public async Task<JsonResult> GetEventsByUser(string userID)
         {
-            JsonResponse<List<Event>> response = new JsonResponse<List<Event>>();
+            JsonResponse<Event> response = new JsonResponse<Event>();
             AppUser user = await userManager.FindByIdAsync(userID);
             //string userID = user.Id;
 
             if (user != null)
             {
-                response.Data.Add(eventRepository.GetByUserID(userID));
+                // response.Data.Add(eventRepository.GetByUserID(user.Id));
+               
+                response.Data = eventRepository.GetAll().FindAll(x => {
+                    if (x.FK_AppUser.Id == user.Id)
+                    {
+                        return true;
+                    }
+                    return false;
+                });
             }
             else
             {
@@ -72,11 +81,15 @@ namespace PeerIt.Controllers
 
             if (user != null)
             {
-    
-                eventRepository.GetByUserID(user.Id).ForEach(e => {
-                    response.Data.Add(e);
+
+                response.Data = eventRepository.GetAll().FindAll(x => {
+                    if (x.FK_AppUser.Id == user.Id)
+                    {
+                        return true;
+                    }
+                    return false;
                 });
-               
+
             }
             else
             {
@@ -96,14 +109,14 @@ namespace PeerIt.Controllers
             JsonResponse<Event> response = new JsonResponse<Event>();
             Event requestedEvent = eventRepository.FindByID(eventID);
 
-            if (requestedEvent != null)
+            /*if (requestedEvent != null)
             {
                 if (eventRepository.ToggleHasSeen(eventID))
                 {
                     response.Data.Add(requestedEvent);
                     return Json(response);
                 }
-            }
+            }*/
             response.Error.Add(new Error("NotFound", "Event was not Found"));
             return Json(response);
         }

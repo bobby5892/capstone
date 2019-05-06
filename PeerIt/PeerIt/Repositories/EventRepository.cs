@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PeerIt.Interfaces;
 using PeerIt.Models;
+
 namespace PeerIt.Repositories
 {
     public class EventRepository : IGenericRepository<Event, int>

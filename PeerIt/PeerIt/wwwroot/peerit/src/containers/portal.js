@@ -31,6 +31,8 @@ class Portal extends Component {
       // Handle Menu Users Click
       this.handleMenuClick.bind(this);
 
+      this.renderUploadReviewWindow.bind(this);
+
   }
 renderPortal(){
   //https://forum.webix.com/discussion/31137/reactjs-layout-components
@@ -63,7 +65,7 @@ renderAdminToolbar(){
 }
 renderInstructorToolbar(){
   if(this.state.role ==="Instructor"){
-   return <InstructorToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
+   return <InstructorToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)} renderUploadReviewWindow={this.renderUploadReviewWindow.bind(this)}/>
   }
 }
 renderStudentToolbar(){
@@ -156,7 +158,61 @@ logout(){
     //
     this.handleLogin(null,null);
 }
-  render(){
+renderUploadReviewWindow(){
+  let scope = this;
+
+  var newWindow = window.webix.ui({
+          view:"window",
+          id:"uploadReviewWindow",
+          width: 900,
+          height: 600,
+          move:true,
+          position:"center",
+          head:{
+              type:"space",
+              cols:[
+                  { view:"label", label: "Upload a Review" },
+                  {
+                    view:"button", label:"Close", width:70,left:250,
+                    click:function(){
+                      //scope.setState({"editUser" : null });
+                      window.webix.$$("uploadReviewWindow").close();
+                    } 
+                  }
+               ]   
+          },
+          body:{
+              type:"space",
+              rows:[
+                  { 
+                    view:"form", 
+                    id:"uploadReviewForm",
+                    width:900,
+                    elements:[
+                      { view:"label", label:"Upload your review form here: ", name:"", labelWidth:100,value:"" },
+                      {view:"uploader",inputName:"files",upload:"/PFile/UploadReview" ,urlData:{studentAssignmentId:35} ,name:"ReviewFile",value:"Click here to upload your review file"},
+                      { view:"text", label:"Course", name:"Course", labelWidth:100, value:""}, 
+                      { view:"text", label:"Assignment", name:"Assignment", labelWidth:100, value:""},
+                        
+                        // { margin:5, cols:[
+                        //     { view:"button", value:"Upload" , type:"form", click:function(){
+                        //       scope.uploadTheReviewDoc();
+                        //     }}
+                        // ]}
+                    ],
+                    rules:{
+                        "Email": window.webix.rules.isEmail,
+                        "LastName": window.webix.rules.isNotEmpty,
+                        "FirstName": window.webix.rules.isNotEmpty,
+                        "Password" :  window.webix.rules.isNotEmpty
+                    }
+                  }
+              ]
+          }
+ }).show();
+}
+
+render(){
     /*Portal Container */
     let scope = this;
       let toolbar = function(){ 

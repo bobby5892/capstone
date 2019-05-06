@@ -42,8 +42,9 @@ class AdminToolbar extends Component {
             		this.handleMenuClick("AdminSettings");
             	}
             	else if( a === "Admin"){
-            		this.handleMenuClick("LiveFeed");
-            	}            	
+								this.handleMenuClick("LiveFeed");
+							}
+							    	
 
             }.bind(this),
 

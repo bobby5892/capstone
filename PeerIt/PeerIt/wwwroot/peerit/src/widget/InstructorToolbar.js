@@ -8,17 +8,22 @@ class InstructorToolbar extends Component {
 	      super(props);
 	      this.state = {
 	        data : null
-	      };
-	this.logout = props.logout;
+        };
+  
+  this.logout = props.logout;
+  
+  this.renderUploadReviewWindow = props.renderUploadReviewWindow;
 
   }
-
+  renderInPortal(){
+    this.renderUploadReviewWindow();
+  }
 	render(){
 		let data = null;
 	    let ui = 
 		{ 
             view:"list", 
-            data:["Instructor", "Reports", "Settings","Logout"],
+            data:["Instructor", "Reports", "Settings","Upload Assignment","Logout"],
             ready:function(){ 
               this.select(this.getFirstId()); 
             },
@@ -26,6 +31,10 @@ class InstructorToolbar extends Component {
             	if(a === "Logout"){
             		//Attempt to call the logout chain
             		this.logout();
+            }
+            else if (a === "Upload Assignment"){
+              console.log("state: " + JSON.stringify(this.state));
+              this.renderInPortal();
             }
             }.bind(this),
             select:true,

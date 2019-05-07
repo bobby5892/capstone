@@ -12,11 +12,11 @@ class InstructorToolbar extends Component {
   
   this.logout = props.logout;
   
-  this.renderUploadReviewWindow = props.renderUploadReviewWindow;
+  this.renderUploadAssignmentWindow = props.renderUploadAssignmentWindow;
 
   }
   renderInPortal(){
-    this.renderUploadReviewWindow();
+    this.renderUploadAssignmentWindow();
   }
 	render(){
 		let data = null;

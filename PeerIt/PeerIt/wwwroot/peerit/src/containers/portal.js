@@ -31,7 +31,7 @@ class Portal extends Component {
       // Handle Menu Users Click
       this.handleMenuClick.bind(this);
 
-      this.renderUploadReviewWindow.bind(this);
+      this.renderUploadAssignmentWindow.bind(this);
 
   }
 renderPortal(){
@@ -65,7 +65,7 @@ renderAdminToolbar(){
 }
 renderInstructorToolbar(){
   if(this.state.role ==="Instructor"){
-   return <InstructorToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)} renderUploadReviewWindow={this.renderUploadReviewWindow.bind(this)}/>
+   return <InstructorToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)} renderUploadAssignmentWindow={this.renderUploadAssignmentWindow.bind(this)}/>
   }
 }
 renderStudentToolbar(){
@@ -158,12 +158,12 @@ logout(){
     //
     this.handleLogin(null,null);
 }
-renderUploadReviewWindow(){
+renderUploadAssignmentWindow(){
   let scope = this;
 
   var newWindow = window.webix.ui({
           view:"window",
-          id:"uploadReviewWindow",
+          id:"uploadAssignmentWindow",
           width: 900,
           height: 600,
           move:true,
@@ -171,12 +171,12 @@ renderUploadReviewWindow(){
           head:{
               type:"space",
               cols:[
-                  { view:"label", label: "Upload a Review" },
+                  { view:"label", label: "Upload an Assignment" },
                   {
                     view:"button", label:"Close", width:70,left:250,
                     click:function(){
                       //scope.setState({"editUser" : null });
-                      window.webix.$$("uploadReviewWindow").close();
+                      window.webix.$$("uploadAssignmentWindow").close();
                     } 
                   }
                ]   
@@ -186,13 +186,20 @@ renderUploadReviewWindow(){
               rows:[
                   { 
                     view:"form", 
-                    id:"uploadReviewForm",
+                    id:"uploadAssignmentForm",
                     width:900,
                     elements:[
-                      { view:"label", label:"Upload your review form here: ", name:"", labelWidth:100,value:"" },
-                      {view:"uploader",inputName:"files",upload:"/PFile/UploadReview" ,urlData:{studentAssignmentId:35} ,name:"ReviewFile",value:"Click here to upload your review file"},
+                      { view:"label", label:"Upload your Assignment form here: ", name:"", labelWidth:100,value:"" },
+                      { view:"uploader",inputName:"files",/*upload:"/PFile/Upload" ,/*urlData:{studentAssignmentId:35} ,*/
+                            name:"AssignmentFile",link:"mylist",value:"Click here to upload your Course Assignment file"},
+                            {
+                              view:"list",  id:"mylist", type:"uploader",
+                              autoheight:true, borderless:true	
+                            },
                       { view:"text", label:"Course", name:"Course", labelWidth:100, value:""}, 
-                      { view:"text", label:"Assignment", name:"Assignment", labelWidth:100, value:""},
+                      { view:"text", label:"Due Date", name:"Due_Date", labelWidth:100, value:""},
+                      { view:"button",label:"Submit",name:"submit_button",type:"form"}
+                      
                         
                         // { margin:5, cols:[
                         //     { view:"button", value:"Upload" , type:"form", click:function(){
@@ -201,11 +208,9 @@ renderUploadReviewWindow(){
                         // ]}
                     ],
                     rules:{
-                        "Email": window.webix.rules.isEmail,
-                        "LastName": window.webix.rules.isNotEmpty,
-                        "FirstName": window.webix.rules.isNotEmpty,
-                        "Password" :  window.webix.rules.isNotEmpty
-                    }
+                        "Course": window.webix.rules.isNotEmpty,
+                        "Due_Date": window.webix.rules.isDate
+                        }
                   }
               ]
           }

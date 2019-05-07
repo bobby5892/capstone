@@ -80,7 +80,7 @@ namespace PeerIt.Controllers
                         return Json(response);
                     }
                 }
-                response.Error.Add(new Error("User not authorized to view this event"));
+                response.Error.Add(new Error() { Description = "User not authorized to view this event" });
                 return Json(Response);
             }
             response.Error.Add(new Error("NotFound", "No event for that Id"));

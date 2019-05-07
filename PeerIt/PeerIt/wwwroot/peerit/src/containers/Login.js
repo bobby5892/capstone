@@ -41,12 +41,11 @@ class Login extends Component {
    
     fetch("/Account/Login?Email=" + userName + "&Password=" + password + "&returnUrl=", {
       method: 'POST', // or 'PUT'
-     // body: JSON.stringify({"Email":userName,"Password":password,"returnUrl":null}), // data can be `string` or {object}!
       headers:{
         'Content-Type': 'application/json'
       },
       credentials: "include",
-      mode:"cors"
+      mode:"no-cors"
     }).then(res => res.json())
     .then(response => {
       if(response.success){

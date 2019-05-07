@@ -98,7 +98,30 @@ loadCourses() {
       .catch(error => console.error('Error:', error));
 
   }
+ webixGetNextChild(id){
+ 	let indexCount = -1;
+ 	let numberOfViews = window.webix.$$("courses").getChildViews().length;
+ 	for(let i=0; i<numberOfViews;i++){
+ 		//console.log("considering " + this.state.viewingCourse + " vs " +  window.webix.$$("courses").getChildViews()[i].config.id);
+ 		if(this.state.viewingCourse	== window.webix.$$("courses").getChildViews()[i].config.id){
+ 			console.log("found current child");
+ 			indexCount = i;
+ 		}
+ 	}
+ 	//console.log("indexCount : " + indexCount);
+ 	//console.log("NextChildType : " + typeof(window.webix.$$("courses").getChildViews()[(indexCount)+1]) !== "undefined");
+ 	if(
+ 		(indexCount != -1 ) && (typeof(window.webix.$$("courses").getChildViews()[(indexCount)+1]) !== "undefined")
+ 	 ){
+ 		//console.log("bout to send it back" + indexCount);
+ 		let nextChildID = window.webix.$$("courses").getChildViews()[(indexCount)+1].config.id;
+ 	//	console.log("bout to send it back" + nextChildID);
+		return nextChildID;
+	}
+	return false;
+ 	//console.log("ChildView:" + typeof(window.webix.$$("courses").getChildViews()[++i]));
 
+ }
   drawCourses(){
 
   	let scope=this;
@@ -142,8 +165,43 @@ loadCourses() {
 		              },
 		              on:{
 		                'onItemClick' : function (i){
-		                    scope.handleCourseViewer({"viewingCourse" : parseInt(i)});
-		                    scope.drawCourses();
+		                	let redraw = false;
+		                	// Check if it should redraw
+		                	if(parseInt(i) != parseInt(scope.state.viewingCourse)){
+		                		redraw = true;
+		                	}
+		                	else{
+		                		// They clicked on self
+		                		// Check and see if there is another view passed to change the active view to
+		                		try {
+		                			let index = window.webix.$$("courses").index(i);
+		                			//Check if the next index is a thing
+		                			//console.log("bout to try something crazy on " + i);
+		                			
+		                			let nextChild = scope.webixGetNextChild(i);
+		                			//console.log("next child is: " + nextChild + " compared to " + i);
+		                			if(nextChild != false){
+		                				//console.log("setting view to next child");
+		                				scope.handleCourseViewer({"viewingCourse" : parseInt(nextChild)});
+
+		                			}
+		                				// Lets set the one we're viewing up to what the accordion is showing
+		                				
+		                			
+		                		}
+		                		catch(e){
+		                			console.log("error" + e);
+		                		}
+		                	}
+		                	// Update the viewing course
+		                	scope.handleCourseViewer({"viewingCourse" : parseInt(i)});
+		                //	console.log("i: " + i + " viewingCourse: " + scope.state.viewingCourse);
+		                	// Check if clicking on self and its already viewable - if so do nothing
+		                	if(redraw){
+		                    		console.log(" I clicked on a " + i + " and the currentViewed is " + scope.state.viewingCourse);
+		                    		//scope.handleCourseViewer({"viewingCourse" : parseInt(i)});
+		                    		scope.drawCourses();
+		                    }
 		                 }
 		              },
 		              collapsed: true,

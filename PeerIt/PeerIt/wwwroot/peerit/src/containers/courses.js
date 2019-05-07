@@ -201,11 +201,15 @@ loadCourses() {
                   header: "Students",
                   id:"AdminInstructorSubListItem",
                   body: {
-                   		content: "AdminInstructorStudentsList"
+                   		content: "AdminInstructorStudentsList",
+                   		scroll: "y",
+                  		width:250
                   },
                   autoheight:true,
                   collapsed:true,
-                  gravity:1
+                  gravity:1,
+
+
                 },
                 {
                   css:"subCourseMenu",

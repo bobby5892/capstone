@@ -165,7 +165,7 @@ renderUploadReviewWindow(){
                       width:900,
                       elements:[
                         { view:"label", label:"Upload your review form here: ", name:"", labelWidth:100,value:"" },
-                        {view:"uploader",inputName:"files",upload:"/PFile/UploadReview" ,urlData:{studentAssignmentId:35} ,name:"ReviewFile",value:"Click here to upload your review file"},
+                        { view:"uploader",inputName:"files",upload:"/Review/UploadReview" ,urlData:{studentAssignmentId:35} ,name:"ReviewFile",value:"Click here to upload your review file"},
                         { view:"text", label:"Course", name:"Course", labelWidth:100, value:""}, 
                         { view:"text", label:"Assignment", name:"Assignment", labelWidth:100, value:""},
                           

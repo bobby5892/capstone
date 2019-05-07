@@ -136,45 +136,47 @@ namespace PeerIt.Controllers
                 {".csv", "text/csv"}
             };
         }
-        /// <summary>
-        /// Upload a review form
-        /// </summary>
-        /// <param name="files"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> UploadReview(List<IFormFile> files, int studentAssignmentId)
-        {
-            PFile newPFile;
-            Stream stream;
-            Guid guidFileId;
-            long size = files.Sum(f => f.Length);
-            foreach (var formFile in files)
-            {
-                guidFileId = Guid.NewGuid();
-                string ext = formFile.FileName.Split(".")[1];
-                string name = formFile.FileName.Split(".")[0];
-                AppUser user = await userManager.GetUserAsync(HttpContext.User);
+        ///// <summary>
+        ///// Upload a review form
+        ///// </summary>
+        ///// <param name="files"></param>
+        ///// <returns></returns>
+        //[HttpPost]
+        //public async Task<IActionResult> UploadReview(List<IFormFile> files)
+        //{
+        //    PFile newPFile;
+        //    Review newReview();
+        //    Stream stream;
+        //    Guid guidFileId;
+        //    long size = files.Sum(f => f.Length);
+        //    foreach (var formFile in files)
+        //    {
+        //        guidFileId = Guid.NewGuid();
+        //        string ext = formFile.FileName.Split(".")[1];
+        //        string name = formFile.FileName.Split(".")[0];
+        //        AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-                string destinationFolder = "Data/" + guidFileId + "." + ext;
+        //        string destinationFolder = "Data/" + guidFileId + "." + ext;
 
 
-                if (formFile.Length > 0)
-                {
-                    using (stream = new FileStream(destinationFolder, FileMode.Create))
-                    {
-                        await formFile.CopyToAsync(stream);
-                    }
-                }
-                newPFile = new PFile(guidFileId.ToString(), name, ext, user);
-                newPFile.StudentAssignment = studentAssignRepo.FindByID(studentAssignmentId);
-                pFileRepo.Add(newPFile);
-                pFiles = pFileRepo.GetAll();
-            }
+        //        if (formFile.Length > 0)
+        //        {
+        //            using (stream = new FileStream(destinationFolder, FileMode.Create))
+        //            {
+        //                await formFile.CopyToAsync(stream);
+        //            }
+        //        }
+        //        newPFile = new PFile(guidFileId.ToString(), name, ext, user);
+        //        newPFile.StudentAssignment = studentAssignRepo.FindByID(studentAssignmentId);
+        //        newReview = new Review() { FK_STUDENT_ASSIGNMENT = stud}
+        //        pFileRepo.Add(newPFile);
+        //        pFiles = pFileRepo.GetAll();
+        //    }
 
-            // process uploaded files
-            // Don't rely on or trust the FileName property without validation.
+        //    // process uploaded files
+        //    // Don't rely on or trust the FileName property without validation.
 
-            return Ok(new { count = files.Count, size, }); //filePath
-        }
+        //    return Ok(new { count = files.Count, size, }); //filePath
+        //}
     }
 }

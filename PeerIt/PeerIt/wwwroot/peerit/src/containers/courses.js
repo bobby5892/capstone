@@ -90,47 +90,77 @@ loadCourses() {
       .then(response => {
         if (response.success) {
         	this.setState({courses: response.data});
-        	scope.drawCourses();
+        	console.log("response.data: " + JSON.stringify(response.data));
+        	
+        	this.drawCourses();
         } 
       })
       .catch(error => console.error('Error:', error));
 
   }
+
   drawCourses(){
 
   	let scope=this;
-  	   let accord = {};
+  	   let accordArray =[];
   	   if(this.state.courses != null && this.state.courses.length>0){
+   			// Clear
+   			/*  window.webix.ui([{
+
+		        view:"scrollview",
+		        id:"verses",
+		        scroll:"y", // vertical scrolling
+		        height: 350, 
+		        width: 250,
+		        body:{
+		        rows:[
+		            { 
+		            	"view":"accordion",
+			            "gravity":3,
+			            "scroll" : "y",
+			            "multi":false,
+			            "css":"webix_dark",
+			            "id" : "courses",
+			            "rows" :  []
+		            }
+		        ]   
+		      }        
+		    }],window.webix.$$("courses")); */
+		    // lets remove 
+		    console.log("Courses" + JSON.stringify(this.state.courses));
 	        this.state.courses.forEach(element => {
-	            accord = {
-	              view: "accordionitem",
-	              header: element.name,
-	              id: element.id,
-	              padding: 0,
-	              css: "courseMenuItem",
-	              body:{ 
-	                cols : this.renderSubMenu(element.id)
-	              },
-	              on:{
-	                'onItemClick' : function (i){
-	                    scope.handleCourseViewer({"viewingCourse" : parseInt(i)});
-	                    scope.drawCourses();
-	                 }
-	              },
-	              collapsed: true,
-	              height:200
-	            };
-	            window.webix.$$("courses").addView(accord);
-
-	      	});
-
-		 
-		    window.webix.$$("courses").removeView("noCourse");
-		      
-	        window.webix.$$("coursesTabView").attachEvent("onViewShow", function(){
-	              // your handler here
-	          });
-	          // We need to watch for a click on the header - then load content based on the header
+	        	console.log("considered" + window.webix.$$("courses").index(element.id));
+	       		
+    			let accord = {
+		              view: "accordionitem",
+		              header: element.name,
+		              id: element.id,
+		              padding: 0,
+		              css: "courseMenuItem",
+		              body:{ 
+		                cols : this.renderSubMenu(element.id)
+		              },
+		              on:{
+		                'onItemClick' : function (i){
+		                    scope.handleCourseViewer({"viewingCourse" : parseInt(i)});
+		                    scope.drawCourses();
+		                 }
+		              },
+		              collapsed: true,
+		              height:200
+		            };
+		        // Lets try if it doesnt exisit
+		        try{
+		       		 if(window.webix.$$("courses").index(element.id) == -1){
+		        		window.webix.$$("courses").addView(accord);
+		        	}
+		        }
+		        catch (e){
+		        		console.log("error" + e);
+		        		
+		        }
+				
+        	});
 		}     
   }
 
@@ -141,46 +171,48 @@ loadCourses() {
         'Students' : null
       };
       console.log("check : " + this.state.viewingCourse+ " " +  courseID);
-      if(this.state.viewingCourse === courseID){
-      	console.log("trying content");
-        renderObjects.studentList =  {
-                  css:"subCourseMenu",
+        if(this.state.viewingCourse === courseID){
+        	console.log("NOW IS A GOOD TIME T TRY AND CHANGE IDS");
+        	/*window.webix.ui([{
+             	  css:"subCourseMenu",
                   header: "Students",
-                  content: "AdminInstructorStudentsList",
+                  id:"AdminInstructorSubListItem",
+                  body: {
+                   // view: "context",
+                    content: "AdminInstructorStudentsList"
+                  },
                   autoheight:true,
                   collapsed:true,
                   gravity:1
-                };
-      }
-      else{
-		   renderObjects.studentList =  {
-                  css:"subCourseMenu",
-                  header: "Students",
-                  template: "Not visible",
-                  autoheight:true,
-                  collapsed:true,
-                  gravity:1
-                };
-      }
+                }],window.webix.$$("AdminInstructorSubListItem"));*/
+                //console.log(window.webix.$$("coursesTabView"));
+               // window.webix.$$("AdminInstructorSubListItem").setContent(document.getElementById("AdminInstructorStudentsList"));
 
-
-          return ( 
-            [
-              {
-                id:"coursesTabView",
+               window.webix.ui([{
+                id:"coursesTabView"+courseID,
                 view: "tabview",
                 css:"subCourseTabMenu",
                 multiview:{
                    animate:true
                 },
               cells: [
-               renderObjects.studentList,
+              {
+             	  css:"subCourseMenu",
+                  header: "Students",
+                  id:"AdminInstructorSubListItem",
+                  body: {
+                   		content: "AdminInstructorStudentsList"
+                  },
+                  autoheight:true,
+                  collapsed:true,
+                  gravity:1
+                },
                 {
                   css:"subCourseMenu",
                   header: "Assignments",
                   body: {
                     view: "template",
-                    template: "Default template with some text inside"
+                    template: "selected"
                   },
                   collapsed:true
                 },              
@@ -188,22 +220,76 @@ loadCourses() {
                   css:"subCourseMenu",
                   header: "Bulk",
                   body: {
-                    id: "menuItemAdminInstructorBulk",
-                    body: "temp"
+                    view: "template",
+                    template: "bulk"
                   }
                 },
                 {
                   css:"subCourseMenu",
                   header: "Settings",
                   body: {
-                    id: "menuItemAdminInstructorSettings",
-                    body: "temp"
+                     view: "template",
+                    template: "settings"
+                  }
+                }              
+              ]
+            }],window.webix.$$("coursesTabView"+courseID));
+
+        }  
+        else{
+           return ( 
+            [
+              {
+                id:"coursesTabView"+courseID,
+                view: "tabview",
+                css:"subCourseTabMenu",
+                multiview:{
+                   animate:true
+                },
+              cells: [
+              {
+             	  css:"subCourseMenu",
+                  header: "Students",
+                  id:"AdminInstructorSubListItem",
+                  body: {
+                    view: "template",
+                    template: "Default de"
+
+                  },
+                  autoheight:true,
+                  collapsed:true,
+                  gravity:1
+                },
+                {
+                  css:"subCourseMenu",
+                  header: "Assignments",
+                  body: {
+                    view: "template",
+                    template: "Assignments"
+                  },
+                  collapsed:true
+                },              
+                {
+                  css:"subCourseMenu",
+                  header: "Bulk",
+                  body: {
+                    view: "template",
+                    template: "bulk"
+                  }
+                },
+                {
+                  css:"subCourseMenu",
+                  header: "Settings",
+                  body: {
+                     view: "template",
+                    template: "settings"
                   }
                 }              
               ]
             }
-        ]
-      );
+       	 ]
+      	);
+      }
     }
     else if (this.state.role === "Student"){
       return ( [{
@@ -245,8 +331,10 @@ loadCourses() {
             "scroll" : "y",
             "multi":false,
             "css":"webix_dark",
-            "id" : "courses", 
-            "rows":Array.from(this.state.Courses)}
+            "id" : "courses",
+            "rows" : []
+
+            }
         ]   
       }
 
@@ -255,10 +343,11 @@ loadCourses() {
     let data = null;
      return(
       <div id="Courses">
-       
+        
         <Webix ui={ui} data={data}/>
         {this.renderAdminInstructorStudentsList()}
-        {this.drawCourses()}
+       
+        
       </div>
       );
   }

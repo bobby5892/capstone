@@ -226,6 +226,7 @@ class Portal extends Component {
           {this.renderAdminManageCourses()}
           {this.renderAdminSettings()}
         </div>
+
       </div>
     );
   }

@@ -67,7 +67,7 @@ namespace PeerIt.Repositories
             modelBuilder.Entity<Course>()
                 .HasOne(c => c.FK_INSTRUCTOR)
                 .WithMany().OnDelete(DeleteBehavior.Restrict);
-
+            
             modelBuilder.Entity<CourseAssignment>()
                 .HasOne(c => c.FK_COURSE)
                 .WithMany().OnDelete(DeleteBehavior.Restrict);

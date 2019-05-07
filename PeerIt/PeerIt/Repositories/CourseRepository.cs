@@ -4,19 +4,33 @@ using System.Linq;
 using System.Threading.Tasks;
 using PeerIt.Interfaces;
 using PeerIt.Models;
+using Microsoft.EntityFrameworkCore;
 namespace PeerIt.Repositories
 {
     public class CourseRepository : IGenericRepository<Course, int>
     {
         AppDBContext context;
 
-        public List<Course> Courses { get { return this.context.Courses.ToList<Course>(); } }
+        //public List<Course> Courses { get { return this.context.Courses.ToList<Course>(); } }
+        public List<Course> Courses { get {
+                return context.Courses
+                    .Include(courses => courses.FK_INSTRUCTOR)
+                    .ToList();
+            } }
         /// <summary>
         /// Overloaded Constructor for passing a context to Course Repository
         /// </summary>
         /// <param name="context"></param>
         public CourseRepository(AppDBContext context)
         {
+/*            using (var specialContext = context)
+            {
+                var coursesAndUsers = context.Courses
+                    .Include(courses => courses.FK_INSTRUCTOR)
+                    .ToList();
+
+            }*/
+
             this.context = context;
         }
         /// <summary>

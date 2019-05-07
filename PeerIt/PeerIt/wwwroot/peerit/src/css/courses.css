@@ -1,0 +1,30 @@
+.subCourseMenu{ 
+	/*background-color:red; */
+}
+.courseMenuItem .webix_accordionitem_label{
+	font-size:12pt;
+	background-color:black;
+}
+.subCourseTabMenu{
+	padding:0;
+	margin:0;
+}
+.subCourseTabMenu .webix_item_tab { 
+	padding:0;
+	font-size:10pt;
+	margin:0; 
+	background-color:gray;
+}
+.subCourseTabMenu  .webix_selected { 
+	padding:0;
+	font-size:11pt;
+	margin:0; 
+	background-color:green;
+}
+.subCourseTabMenu .webix_item_tab:hover {
+	background-color:yellow;
+	color:black;
+}
+.studentTable{ 
+	background-color:gray; 
+}

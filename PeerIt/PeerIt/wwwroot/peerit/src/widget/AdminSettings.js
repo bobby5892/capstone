@@ -3,7 +3,7 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import Webix from '../webix';
+//import Webix from '../webix';
 
 class AdminSettings extends Component {
 
@@ -37,6 +37,7 @@ class AdminSettings extends Component {
     this.loadSettings();
   }
 
+
   loadSettings(){
     // This reaches out and grabs the settings
     // in the final then - it sets this.renderWindow = true
@@ -44,6 +45,7 @@ class AdminSettings extends Component {
       this.getData("Settings/GetSettings");
     }
   }
+
 
   getData(src){
     let scope = this;

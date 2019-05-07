@@ -9,6 +9,9 @@ class InstructorToolbar extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      viewingCourse: null,
+      currentUser: props.currentUser,
+      role: props.role,
       data: null
     };
     this.logout = props.logout;
@@ -16,8 +19,11 @@ class InstructorToolbar extends Component {
     this.showCreateCourse = props.handleCreateCourse;
 
   }
+  handleCourseViewer(statechange){
+    this.setState(statechange);
+  }
   renderCourses() {
-       return <Courses currentUser={this.state.currentUser} role={this.state.role} />
+       return <Courses currentUser={this.state.currentUser} role={this.state.role} handleCourseViewer={this.handleCourseViewer.bind(this)} viewingCourse={this.state.viewingCourse}/>
   }
   renderCreateCourseButton() {
        return <CreateCourse currentUser={this.state.currentUser} role={this.state.role} showCreateCourse={this.showCreateCourse} />

@@ -28,7 +28,6 @@ class AdminInstructorStudentsList extends Component {
 	     
   }
   componentWillReceiveProps(props){
-  	console.log("checking receive props:child" + JSON.stringify(props));;
   		this.setState({viewingCourse : props.viewingCourse});
 
 
@@ -51,7 +50,11 @@ class AdminInstructorStudentsList extends Component {
   ]
 };
 	
-	 return(<div id="AdminInstructorStudentsList">
+let courseID = (this.state.viewingCourse !== null) ? this.state.viewingCourse : "";
+
+
+ 	 return(<div id="AdminInstructorStudentsList">
+    thing
         <Webix ui={ui} data={data}/>
       </div>
       );

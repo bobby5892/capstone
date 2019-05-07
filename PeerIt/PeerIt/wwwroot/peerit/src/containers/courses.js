@@ -20,7 +20,7 @@ class Courses extends Component {
       currentUser: props.currentUser,
       role: props.role,
       data: null,
-      viewingCourse: null,
+      viewingCourse: props.viewingCourse,
       Courses: [{
               view: "accordionitem",
               header: "No Courses",
@@ -30,6 +30,8 @@ class Courses extends Component {
               collapsed: false
             }]
     };
+    console.log("Receiving course view" + props.viewingCourse);
+    this.handleCourseViewer = props.handleCourseViewer;
     this.component = {};
     window.webix.protoUI({
       name:"react",
@@ -67,6 +69,13 @@ renderStudentGroupAssignments(){
 renderStudentYourAssignments(){
   return <StudentYourAssignments currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
 }
+  componentWillReceiveProps(props){
+	this.setState(props);
+	this.loadCourses();
+	console.log("reload courses");
+  		// Trigger Webix to Redraw the component
+  		//window.webix.$$().setHTML("<h1>YEP</h1>");
+  } 
 loadCourses() {
  let scope = this;
     //let accord = [];
@@ -80,54 +89,80 @@ loadCourses() {
     }).then(res => res.json())
       .then(response => {
         if (response.success) {
-          let accord = {};
-          response.data.forEach(element => {
-            accord = {
-              view: "accordionitem",
-              header: element.name,
-              id: element.id,
-              padding: 0,
-              css: "courseMenuItem",
-              body:{ 
-                cols : this.renderSubMenu(element.id)
-              },
-              on:{
-                'onItemClick' : function (i){
-                    console.log("clicked" + i);
-                    scope.setState({"viewingCourse" : i});
-                    // Attempt to render
-                 }
-              },
-              collapsed: true,
-              height:200
-            };
-            window.webix.$$("courses").addView(accord);
-
-          })
-
-           this.setState({"Courses":accord});
-           window.webix.$$("courses").removeView("noCourse");
-          
-          window.webix.$$("coursesTabView").attachEvent("onViewShow", function(){
-              // your handler here
-              
-          });
-          // We need to watch for a click on the header - then load content based on the header
-        } else {
-
-        }
+        	this.setState({courses: response.data});
+        	scope.drawCourses();
+        } 
       })
       .catch(error => console.error('Error:', error));
 
   }
+  drawCourses(){
+
+  	let scope=this;
+  	   let accord = {};
+  	   if(this.state.courses != null && this.state.courses.length>0){
+	        this.state.courses.forEach(element => {
+	            accord = {
+	              view: "accordionitem",
+	              header: element.name,
+	              id: element.id,
+	              padding: 0,
+	              css: "courseMenuItem",
+	              body:{ 
+	                cols : this.renderSubMenu(element.id)
+	              },
+	              on:{
+	                'onItemClick' : function (i){
+	                    scope.handleCourseViewer({"viewingCourse" : parseInt(i)});
+	                    scope.drawCourses();
+	                 }
+	              },
+	              collapsed: true,
+	              height:200
+	            };
+	            window.webix.$$("courses").addView(accord);
+
+	      	});
+
+		 
+		    window.webix.$$("courses").removeView("noCourse");
+		      
+	        window.webix.$$("coursesTabView").attachEvent("onViewShow", function(){
+	              // your handler here
+	          });
+	          // We need to watch for a click on the header - then load content based on the header
+		}     
+  }
+
   renderSubMenu(courseID){
+
     if(this.state.role === "Administrator" || this.state.role === "Instructor"){
       let renderObjects = {
         'Students' : null
       };
+      console.log("check : " + this.state.viewingCourse+ " " +  courseID);
       if(this.state.viewingCourse === courseID){
-        renderObjects.Students =  {content: "AdminInstructorStudentsList"};
+      	console.log("trying content");
+        renderObjects.studentList =  {
+                  css:"subCourseMenu",
+                  header: "Students",
+                  content: "AdminInstructorStudentsList",
+                  autoheight:true,
+                  collapsed:true,
+                  gravity:1
+                };
       }
+      else{
+		   renderObjects.studentList =  {
+                  css:"subCourseMenu",
+                  header: "Students",
+                  template: "Not visible",
+                  autoheight:true,
+                  collapsed:true,
+                  gravity:1
+                };
+      }
+
 
           return ( 
             [
@@ -138,31 +173,8 @@ loadCourses() {
                 multiview:{
                    animate:true
                 },
-              /*  on:{
-                    'onViewShow' : function (){
-                      let courseMenuItems = this.getParentView().getParentView().getParentView().getChildViews();
-                      for(let i=0; i<courseMenuItems.length;i++){
-                          console.log(i + ":" + Object.keys(courseMenuItems[i]));
-                      }
-                      console.log("numberOfItems: " + courseMenuItems.length);
-                      console.log("there are " + this.getChildViews().length + "things");
-                      console.log("clicked a thing" + this.getChildViews()[0].collapsed);
-                    }
-                    
-                    
-                  },*/
               cells: [
-                {
-                  css:"subCourseMenu",
-                  header: "Students",
-                  autoheight:true,
-                  body:{
-                    id: "subCourseMenuAdminInstructorStudentList" + courseID,
-                    height:200
-                  },
-                  collapsed:true,
-                  gravity:1
-                },
+               renderObjects.studentList,
                 {
                   css:"subCourseMenu",
                   header: "Assignments",
@@ -215,7 +227,9 @@ loadCourses() {
       }]);
     }
   }
- 
+   componentWillReceiveProps(props){
+  		this.setState(props);
+  }
   render() {
     let ui = {
 
@@ -241,9 +255,10 @@ loadCourses() {
     let data = null;
      return(
       <div id="Courses">
-        {this.renderAdminInstructorStudentsList()}
+       
         <Webix ui={ui} data={data}/>
-        }
+        {this.renderAdminInstructorStudentsList()}
+        {this.drawCourses()}
       </div>
       );
   }

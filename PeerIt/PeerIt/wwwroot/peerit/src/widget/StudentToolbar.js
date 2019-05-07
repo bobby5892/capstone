@@ -7,13 +7,18 @@ class StudentToolbar extends Component {
 	constructor(props) {
 	      super(props);
 	      this.state = {
+          currentUser: props.currentUser,
+          role: props.role,
 	        data : null
 	      };
 	this.logout = props.logout;
 
   }
+  handleCourseViewer(statechange){
+      this.setState(statechange);
+  }  
   renderCourses() {
-       return <Courses currentUser={this.state.currentUser} role={this.state.role} />
+       return <Courses currentUser={this.state.currentUser} role={this.state.role} handleCourseViewer={this.handleCourseViewer.bind(this)} viewingCourse={this.state.viewingCourse}/>
   }
 	render(){
 		let data = null;

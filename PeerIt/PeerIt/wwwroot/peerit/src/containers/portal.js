@@ -48,6 +48,7 @@ class Portal extends Component {
     }, window.webix.ui.view)
 
   }
+
   /* Listed Render - this is so we can control what gets passed to what widget/container */
   renderLiveFeed() {
     if (this.state.currentContentWidgets.includes("LiveFeed")) {

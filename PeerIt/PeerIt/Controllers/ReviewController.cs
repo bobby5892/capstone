@@ -30,7 +30,9 @@ namespace PeerIt.Controllers
         private IGenericRepository<Review, int> reviewRepo;
         private IGenericRepository<PFile, string> pFileRepo;
         private IGenericRepository<CourseGroup, int> courseGroupRepo;
-
+        private PFile downloadFile;
+        private StudentAssignment studentAssignment;
+        private JsonResponse<Review> response;
         private UserManager<AppUser> userManager;
 
         private bool isAdmin;
@@ -58,179 +60,155 @@ namespace PeerIt.Controllers
             studentAssignmentRepo = sRepo;
             courseGroupRepo = cgRepo;
 
-            //this.isAdmin = HttpContext.User.IsInRole("Administrator");
-            //this.isInstructor = HttpContext.User.IsInRole("Instructor");
-            //this.isStudent = HttpContext.User.IsInRole("Student");
+            this.isAdmin = HttpContext.User.IsInRole("Administrator");
+            this.isInstructor = HttpContext.User.IsInRole("Instructor");
+            this.isStudent = HttpContext.User.IsInRole("Student");
         }
 
         #endregion Constructors
 
         #region Methods That Return Json
+        public async Task<JsonResult> GetReviewsByAssignmentId(int assignmentId)
+        {
+            response = new JsonResponse<Review>();
+            studentAssignment = studentAssignmentRepo.FindByID(assignmentId);
+            List<Review> reviews = reviewRepo.GetAll();
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-        // Currently working on this.
-        /// <summary>
-        /// Gets all the reviews with the passed assignment id
-        /// </summary>
-        /// <param name="assignmentId"></param>
-        /// <returns></returns>
-        //public async Task<JsonResult> GetReviewsByAssignmentId(int assignmentId)
-        //{
-        //    JsonResponse<List<Review>> response = new JsonResponse<List<Review>>();
-        //    studentAssignment = studentAssignmentRepository.FindByID(assignmentId);
-        //    AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            if (studentAssignment != null)
+            {
+                if (this.isAdmin || this.isInstructor && studentAssignment.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
+                {
+                    foreach (Review r in reviews)
+                    {
+                        if (r.FK_STUDENT_ASSIGNMENT == studentAssignment)
+                        {
+                            response.Data.Add(r);
+                        }
+                    }
+                    return Json(response);
+                }
+                else if (this.isStudent)
+                {
+                    foreach (Review r in reviews)
+                    {
+                        if (r.FK_APP_USER == user && r.FK_STUDENT_ASSIGNMENT == studentAssignment)
+                        {
+                            response.Data.Add(r);
+                        }
+                    }
+                    return Json(response);
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+                }
+            }
+            else
+            {
+                response.Error.Add(new Error("No assignment ", "The student assignment was not found"));
+            }
+            return Json(response);
+        }
 
-        //    if (studentAssignment != null)
-        //    {
-        //        if (this.isAdmin || this.isInstructor && studentAssignment.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
-        //        {
-        //            List<Review> reviews = reviewRepository.GetReviewsByAssignment(assignmentId);
-        //            response.Data.Add(reviews);
-        //            return Json(response);
-        //        }
-        //        else if (this.isStudent)
-        //        {
-        //            if (studentAssignment.AppUser.Id == user.Id)
-        //            {
-        //                List<Review> reviews = reviewRepository.GetReviewsByAssignment(assignmentId);
-        //                response.Data.Add(reviews);
-        //                return Json(response);
-        //            }
-        //            else
-        //            {
-        //                response.Error.Add(new Error("forbidden", "This is not your assignment."));
-        //            }
-        //        }
-        //        else
-        //        {
-        //            response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-        //        }
-        //    }
-        //    else
-        //    {
-        //        response.Error.Add(new Error("NotFound", "The student assignment was not found"));
-        //    }
-        //    // Add an error to the list (there can be more than one)
-        //    response.Error.Add(new Error() { Name = "No Reviews", Description = "No reviews found for that assignment" });
-        //    return Json(response);
-        //}
-        ///// <summary>
-        ///// Gets the review at the passed id
-        ///// </summary>
-        ///// <param name="id"></param>
-        ///// <returns></returns>
-        //public async Task<JsonResult> GetReviewById(int id)
-        //{
-        //    JsonResponse<Review> response = new JsonResponse<Review>();
-        //    Review review = reviewRepository.FindByID(id);
-        //    AppUser user = await userManager.GetUserAsync(HttpContext.User);
+        public async Task<JsonResult> GetReviewById(int id)
+        {
+            JsonResponse<Review> response = new JsonResponse<Review>();
+            Review review = reviewRepo.FindByID(id);
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-        //    if (review != null)
-        //    {
-        //        if (this.isAdmin || this.isInstructor && review.FK_STUDENT_ASSIGNMENT.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
-        //        {
-        //            response.Data.Add(review);
-        //            return Json(response);
-        //        }
-        //        else if (this.isStudent)
-        //        {
-        //            if (review.FK_APP_USER.Id == user.Id)
-        //            {
-        //                response.Data.Add(review);
-        //                return Json(response);
-        //            }
-        //            else if (review.FK_STUDENT_ASSIGNMENT.AppUser.Id == user.Id)
-        //            {
-        //                response.Data.Add(review);
-        //                return Json(response);
-        //            }
-        //            else
-        //            {
-        //                response.Error.Add(new Error("Forbidden", "This Review is not for you or by you."));
-        //            }
-        //        }
-        //        else
-        //        {
-        //            response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-        //        }
-        //    }
-        //    else
-        //    {
-        //        response.Error.Add(new Error("NotFound", "The review was not found."));
-        //    }
-        //    return Json(response);
-        //}
-        ///// <summary>
-        ///// Creates a new review and adds it to the database
-        ///// </summary>
-        ///// <param name="contents"></param>
-        ///// <param name="studentAssignmentId"></param>
-        ///// <returns></returns>
-        //public async Task<JsonResult> CreateReview(string contents, int studentAssignmentId)
-        //{
-        //    JsonResponse<Review> response = new JsonResponse<Review>();
-        //    //AppUser user = await GetCurrentUserById(userId);
-        //    AppUser user = await userManager.GetUserAsync(HttpContext.User);
-        //    studentAssignment = studentAssignmentRepository.FindByID(studentAssignmentId);
-        //    Course course = studentAssignment.CourseAssignment.FK_COURSE;
-        //    AppUser assignUser = studentAssignment.AppUser;
+            if (review != null)
+            {
+                if (this.isAdmin || this.isInstructor && review.FK_STUDENT_ASSIGNMENT.CourseAssignment.FK_COURSE.FK_INSTRUCTOR == user)
+                {
+                    response.Data.Add(review);
+                    return Json(response);
+                }
+                else if (this.isStudent)
+                {
+                    if (review.FK_APP_USER == user)
+                    {
+                        response.Data.Add(review);
+                        return Json(response);
+                    }
+                    else if (review.FK_STUDENT_ASSIGNMENT.AppUser == user)
+                    {
+                        response.Data.Add(review);
+                        return Json(response);
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("Forbidden", "This Review is not for you or by you."));
+                    }
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+                }
+            }
+            else
+            {
+                response.Error.Add(new Error("NotFound", "The review was not found."));
+            }
+            return Json(response);
+        }
 
-        //    if (studentAssignment != null)
-        //    {
-        //        if (this.isAdmin || this.isInstructor && studentAssignment.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
-        //        {
-        //            Review review = new Review() {FK_APP_USER = user, FK_STUDENT_ASSIGNMENT = studentAssignment };
-        //            Review newReview = reviewRepository.Add(review);
-        //            if (newReview != null)
-        //            {
-        //                response.Data.Add(newReview);
-        //            }
-        //            else
-        //            {
-        //                response.Error.Add(new Error("NotSuccessful", "the data was not successfully written."));
-        //            }
-        //        }
-        //        else if (this.isStudent)
-        //        {
-        //            CourseGroup courseGroupCurrentUser = courseGroupRepository.GetByUserAndCourseID(user.Id, course.ID);
-        //            CourseGroup courseGroupAssignmentUser = courseGroupRepository.GetByUserAndCourseID(assignUser.Id, course.ID);
-        //            if (courseGroupCurrentUser.ReviewGroup == courseGroupCurrentUser.ReviewGroup)
-        //            {
-        //                Review review = new Review() { FK_APP_USER = user, FK_STUDENT_ASSIGNMENT = studentAssignment };
-        //                Review newReview = reviewRepository.Add(review);
-        //                if (newReview != null)
-        //                {
-        //                    response.Data.Add(newReview);
-        //                }
-        //                else
-        //                {
-        //                    response.Error.Add(new Error("NotSuccessful", "the data was not successfully written."));
-        //                }
-        //            }
-        //            else
-        //            {
-        //                response.Error.Add(new Error("Forbidden", "you are not in this group."));
-        //            }
-        //        }
-        //        else
-        //        {
-        //            response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-        //        }
-        //    }
-        //    else
-        //    {
-        //        response.Error.Add(new Error("NotFound", "The assignment was not found."));
-        //    }
-        //    return Json(response);
-        //}
+        public async Task<JsonResult> CreateReview(Review review)
+        {
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            studentAssignment = studentAssignmentRepo.FindByID(review.FK_STUDENT_ASSIGNMENT.ID);
+            Review newReview = new Review();
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="files"></param>
-        /// <param name="studentAssignmentId"></param>
-        /// <returns></returns>
+            if (studentAssignment != null)
+            {
+                if (this.isAdmin || this.isInstructor && studentAssignment.CourseAssignment.FK_COURSE.FK_INSTRUCTOR == user)
+                {
+                    newReview = reviewRepo.Add(review);
+                    if (newReview != null)
+                    {
+                        response.Data.Add(newReview);
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("Not Successful", "the review was not successfully added to the database."));
+                    }
+                }
+                else if (this.isStudent)
+                {
+                    CourseGroup courseGroupForAssignmentBeingReviewed = courseGroupRepo.FindByID(review.FK_STUDENT_ASSIGNMENT.CourseAssignment.FK_COURSE.ID);
+
+                    if (await CurrentUserIsInSameReviewGroup(courseGroupForAssignmentBeingReviewed))
+                    {
+                        newReview = reviewRepo.Add(review);
+                        if (newReview != null)
+                        {
+                            response.Data.Add(newReview);
+                        }
+                        else
+                        {
+                            response.Error.Add(new Error("NotSuccessful", "the data was not successfully written."));
+                        }
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("Forbidden", "you are not in this review group."));
+                    }
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+                }
+            }
+            else
+            {
+                response.Error.Add(new Error("NotFound", "The assignment was not found."));
+            }
+            return Json(response);
+        }
+
+
         [HttpPost]
-        public async Task<IActionResult> UploadReview(List<IFormFile> files, int studentAssignmentId)
+        public async Task<JsonResult> UploadReview(List<IFormFile> files, int studentAssignmentId)
         {
             PFile newPFile;
             StudentAssignment studentAssignment;
@@ -255,15 +233,109 @@ namespace PeerIt.Controllers
                     {
                         await formFile.CopyToAsync(stream);
                     }
+
+                    newPFile = new PFile(guidFileId.ToString(), name, ext, user);
+                    pFileRepo.Add(newPFile);
+                    newReview = new Review() { FK_STUDENT_ASSIGNMENT = studentAssignment, FK_APP_USER = user, FK_PFile = newPFile, TimestampCreated = System.DateTime.Now };
+
+                    string jsonReview = JsonConvert.SerializeObject(await CreateReview(newReview));
+                    newReview = JsonConvert.DeserializeObject<Review>(jsonReview);
+                    response.Data.Add(newReview);
                 }
-                newPFile = new PFile(guidFileId.ToString(), name, ext, user);
-                pFileRepo.Add(newPFile);
-                newReview = new Review() { FK_STUDENT_ASSIGNMENT = studentAssignment, FK_APP_USER = user, FK_PFile = newPFile, TimestampCreated = System.DateTime.Now };
-                reviewRepo.Add(newReview);
+                else
+                {
+                    response.Error.Add(new Error("No File", "No file to upload"));
+                    return Json(response);
+                }
             }
+            return Json(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadReview(string pFileId)
+        {
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+
+            if (pFileId == null)
+                return Content("filename not present");
+            downloadFile = pFileRepo.FindByID(pFileId);
+            if (user != downloadFile.AppUser)
+                return Content("file not available to you");
+            string pathToFile = "Data/" + downloadFile.ID + "." + downloadFile.Ext;
+            Stream memory = new MemoryStream();
+
+            using (var stream = new FileStream(pathToFile, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+
+            string downFileName = downloadFile.Name + "." + downloadFile.Ext;
+            return File(memory, GetContentType(), downFileName);
+        }
+
+        ///Delete a file
+        [HttpDelete]
+        public JsonResult DeleteReview(string id)
+        {
+            JsonResponse<string> jsonResponse = new JsonResponse<string>();
+            downloadFile = pFileRepo.FindByID(id);
+            System.IO.File.Delete("Data/" + downloadFile.ID + "." + downloadFile.Ext);
+
+            if (pFileRepo.Delete(downloadFile) == true)
+            {
+                jsonResponse.Data.Add("File Deleted");
+                return Json(jsonResponse);
+            }
+            jsonResponse.Error.Add(new Error() { Name = "Not Deleted", Description = "File not deleted" });
+            return Json(jsonResponse);
+        }
+
+        ///Helpers
+        private string GetContentType()
+        {
+            var types = GetMimeTypes();
+            var ext = "." + downloadFile.Ext;
+            return types[ext];
+        }
 
 
-            return Ok(new { count = files.Count, size, }); //filePath
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
+        }
+        public async Task<bool> CurrentUserIsInSameReviewGroup(CourseGroup courseGroup)
+        {
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            string reviewGroupForAssignment = courseGroup.ReviewGroup;
+            string reviewGroupForUser = "";
+
+            List<CourseGroup> courseGroups = courseGroupRepo.GetAll();
+            //List<CourseGroup> courseGroupUserIsInForCourse = new List<CourseGroup>();
+
+            foreach(CourseGroup cg in courseGroups)
+            {
+                if(cg.FK_AppUser == user && cg.ID == courseGroup.ID)
+                {
+                    reviewGroupForUser = cg.ReviewGroup;
+                }
+            }
+            if (reviewGroupForUser == reviewGroupForAssignment)
+                return true;
+            else 
+            return false;
         }
         #endregion Methods That Return Json
     }

@@ -6,10 +6,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PeerIt.Models
 {
+    /// <summary>
+    /// Review
+    /// </summary>
     public class Review
     {
+        /// <summary>
+        /// Id 
+        /// </summary>
     	public int ID {get; set;}
 
+        /// <summary>
+        /// FK_PFile
+        /// </summary>
         [Required]
         public PFile FK_PFile { get; set; }
 
@@ -18,9 +27,6 @@ namespace PeerIt.Models
 
     	[Required]    	
     	public StudentAssignment FK_STUDENT_ASSIGNMENT {get; set;}
-
-    	//[Required(ErrorMessage ="Content is a required field"),StringLength(100000, ErrorMessage = "Must be less than 100,000 characters")]    	
-    	//public string Content {get; set;}
 
     	public DateTime TimestampCreated {get; set;}
     }

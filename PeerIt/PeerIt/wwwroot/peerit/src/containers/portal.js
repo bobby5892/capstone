@@ -11,6 +11,7 @@ import ManageUsers from '../widget/ManageUsers';
 import ManageCourses from '../widget/ManageCourses';
 import AdminSettings from '../widget/AdminSettings';
 import LiveFeed from '../widget/LiveFeed';
+import CourseContent from '../containers/CourseContent';
 class Portal extends Component {
 
   constructor(props) {
@@ -70,12 +71,29 @@ class Portal extends Component {
       return <InstructorToolbar currentUser={this.state.currentUser}
         role={this.state.role}
         logout={this.logout.bind(this)}
+        handleMenuClick={this.handleMenuClick.bind(this)}
         />
     }
   }
   renderStudentToolbar() {
     if (this.state.role === "Student") {
-      return <StudentToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)} />
+      return <StudentToolbar 
+      currentUser={this.state.currentUser} 
+      role={this.state.role} 
+      logout={this.logout.bind(this)}  
+      handleMenuClick={this.handleMenuClick.bind(this)} />
+    }
+  }
+  renderCourseContent() {
+    if (
+        ((this.state.role === "Instructor") ||  (this.state.role === "Administrator")) 
+        && (this.state.currentContentWidgets.includes("CourseContent"))
+      )
+      {
+        return <CourseContent 
+        currentUser={this.state.currentUser} 
+        role={this.state.role} 
+        handleMenuClick={this.handleMenuClick.bind(this)} />
     }
   }
   renderAdminManageUsers() {
@@ -225,6 +243,7 @@ class Portal extends Component {
           {this.renderAdminManageUsers()}
           {this.renderAdminManageCourses()}
           {this.renderAdminSettings()}
+          {this.renderCourseContent()}
         </div>
 
       </div>

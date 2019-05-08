@@ -7,10 +7,11 @@ class AdminInstructorStudentsList extends Component {
 	constructor(props) {
 	      super(props);
 	      this.state = {
-	        viewingCourse : props.viewingCourse
+	        viewingCourse : props.viewingCourse,
+          students : []
 	      };
 
-
+    this.loadStudents();
     window.webix.protoUI({
       name:"react",
       defaults:{
@@ -25,7 +26,26 @@ class AdminInstructorStudentsList extends Component {
         });
       }
     }, window.webix.ui.view)
-	     
+	 this.loadStudents();  
+  }
+  loadStudents(){
+      fetch("Course/GetCourses", {
+        method: 'GET', // or 'PUT'
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: "include",
+        mode: "no-cors"
+      }).then(res => res.json())
+        .then(response => {
+          if (response.success) {
+            this.setState({courses: response.data});
+          //  console.log("response.data: " + JSON.stringify(response.data));
+            
+            
+          } 
+        })
+        .catch(error => console.error('Error:', error));
   }
   componentWillReceiveProps(props){
   		this.setState({viewingCourse : props.viewingCourse});
@@ -35,7 +55,7 @@ class AdminInstructorStudentsList extends Component {
   		//window.webix.$$().setHTML("<h1>YEP</h1>");
   } 
 	render(){
-		console.log("AdminInstructorStudentList Loading " + this.state.viewingCourse);
+		//console.log("AdminInstructorStudentList Loading " + this.state.viewingCourse);
 		let data = null;
 		let ui = {
   view:"list",
@@ -62,7 +82,7 @@ let courseID = (this.state.viewingCourse !== null) ? this.state.viewingCourse : 
       );
 	}
 	componentDidMount() {
-		console.log("after load");
+		//console.log("after load");
 	
   	}
 }

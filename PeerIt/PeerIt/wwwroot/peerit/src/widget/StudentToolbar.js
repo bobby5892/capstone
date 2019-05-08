@@ -11,14 +11,21 @@ class StudentToolbar extends Component {
           role: props.role,
 	        data : null
 	      };
-	this.logout = props.logout;
+  	this.logout = props.logout;
+    this.handleMenuClick = props.handleMenuClick;
 
   }
   handleCourseViewer(statechange){
       this.setState(statechange);
   }  
   renderCourses() {
-       return <Courses currentUser={this.state.currentUser} role={this.state.role} handleCourseViewer={this.handleCourseViewer.bind(this)} viewingCourse={this.state.viewingCourse}/>
+       return <Courses 
+       currentUser={this.state.currentUser} 
+       role={this.state.role} 
+       handleCourseViewer={this.handleCourseViewer.bind(this)} 
+       viewingCourse={this.state.viewingCourse}
+       handleMenuClick={this.handleMenuClick}
+       />
   }
 	render(){
 		let data = null;

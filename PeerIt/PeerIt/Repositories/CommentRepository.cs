@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PeerIt.Models;
 using PeerIt.Interfaces;
+using Microsoft.EntityFrameworkCore;
 namespace PeerIt.Repositories
 {
     public class CommentRepository  : IGenericRepository<Comment, int>
@@ -12,7 +13,18 @@ namespace PeerIt.Repositories
         /// <summary>
         /// Returns List of Comments
         /// </summary>
-        public List<Comment> Comments { get { return this.context.Comments.ToList<Comment>(); } }
+        //public List<Comment> Comments { get { return this.context.Comments.ToList<Comment>(); } }
+        public List<Comment> Comments
+        {
+            get
+            {
+                return this.context.Comments
+                    .Include(comments => comments.FK_STUDENT_ASSIGNMENT.CourseAssignment.FK_COURSE.FK_INSTRUCTOR)
+                    .Include(comments => comments.FK_STUDENT_ASSIGNMENT.AppUser)
+                    .Include(comments => comments.FK_APP_USER)
+                    .ToList();
+            }
+        }
         /// <summary>
         /// Overloaded Constructor that accepts an AppDBContext
         /// </summary>

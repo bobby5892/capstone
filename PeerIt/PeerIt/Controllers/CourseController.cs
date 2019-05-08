@@ -38,20 +38,29 @@ namespace PeerIt.Controllers
         /// </summary>
         /// <returns></returns>
         ///
-        
         [HttpGet]
         [Authorize(Roles = "Administrator,Instructor,Student")]
         public async Task<JsonResult> GetCourses()
         {
             SetRoles();
-            JsonResponse<Course> response = new JsonResponse<Course>();
-          
-
+            JsonResponse<CourseDataOut> response = new JsonResponse<CourseDataOut>();
+            
             if (this.isAdmin)
             {
                 // Show all courses
-                response.Data = this.courseRepository.GetAll().ToList<Course>();
-
+                List<CourseDataOut> courseDataOuts = new List<CourseDataOut>();
+                this.courseRepository.GetAll().ToList<Course>().ForEach(course =>
+                {
+                    CourseDataOut dataOut = new CourseDataOut
+                    {
+                        ID = course.ID,
+                        Name = course.Name,
+                        IsActive = course.IsActive,
+                        FK_INSTRUCTOR_NAME = course.FK_INSTRUCTOR.FirstName + " " + course.FK_INSTRUCTOR.LastName
+                    };
+                    courseDataOuts.Add(dataOut);
+                });
+                response.Data = courseDataOuts;
             }
             else if (this.isInstructor)
             {
@@ -61,21 +70,38 @@ namespace PeerIt.Controllers
                     {
                         if (course.FK_INSTRUCTOR == await usrMgr.GetUserAsync(HttpContext.User))
                         {
-                            response.Data.Add(course);
+                            CourseDataOut dataOut = new CourseDataOut
+                            {
+                                ID = course.ID,
+                                Name = course.Name,
+                                IsActive = course.IsActive,
+                                FK_INSTRUCTOR_NAME = course.FK_INSTRUCTOR.FirstName + " " + course.FK_INSTRUCTOR.LastName
+                            };
+                            response.Data.Add(dataOut);
                         }
                     });
             }
             else if (this.isStudent)
             {
+                List<CourseDataOut> courseDataOuts = new List<CourseDataOut>();
+                AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
                 // Look at Course Groups and add courses that the student is in
                 this.courseGroupRepository.GetAll().ToList<CourseGroup>().ForEach(
-                    async courseGroup =>
+                    courseGroup =>
                     {
-                        if (courseGroup.FK_AppUser == await usrMgr.GetUserAsync(HttpContext.User))
+                        if (courseGroup.FK_AppUser == currentUser)
                         {
-                            response.Data.Add(courseGroup.FK_Course);
+                            AppUser instructor = courseGroup.FK_Course.FK_INSTRUCTOR;
+                            courseDataOuts.Add(new CourseDataOut
+                            {
+                                ID = courseGroup.FK_Course.ID,
+                                Name = courseGroup.FK_Course.Name,
+                                IsActive = courseGroup.FK_Course.IsActive,
+                                FK_INSTRUCTOR_NAME = instructor.FirstName + " " + instructor.LastName
+                            });
                         }
                     });
+                response.Data = courseDataOuts;
             }
             else
             {

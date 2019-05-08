@@ -9,6 +9,8 @@ using PeerIt.Interfaces;
 using PeerIt.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace PeerIt.Controllers
 {
@@ -23,6 +25,8 @@ namespace PeerIt.Controllers
         private CourseGroupRepository courseGroupRepository;
         private CourseRepository courseRepository;
         private UserManager<AppUser> userManager;
+        private IGenericRepository<PFile, int> pFileRepo;
+        private List<PFile> pFiles;
 
         private bool isAdmin;
         private bool isInstructor;
@@ -41,10 +45,12 @@ namespace PeerIt.Controllers
         /// <param name="courseGroupRepo"></param>
         /// <param name="courseRepo"></param>
         /// <param name="userMgr"></param>
+        /// <param name="pFileRepository"></param>
         public CourseAssignmentController(CourseAssignmentRepository courseAssignmentRepo,
                                           CourseGroupRepository courseGroupRepo,
                                           CourseRepository courseRepo,
-                                          UserManager<AppUser> userMgr)
+                                          UserManager<AppUser> userMgr,
+                                          IGenericRepository<PFile, int> pFileRepository)
         {
             this.isAdmin = HttpContext.User.IsInRole("Administrator");
             this.isInstructor = HttpContext.User.IsInRole("Instructor");
@@ -54,6 +60,7 @@ namespace PeerIt.Controllers
             courseGroupRepository = courseGroupRepo;
             courseRepository = courseRepo;
             userManager = userMgr;
+            pFileRepo = pFileRepository;
         }
 
         #endregion Constructors
@@ -64,39 +71,54 @@ namespace PeerIt.Controllers
         /// Creates an Assignment, and returns if successful.
         /// </summary>
         /// <param name="courseID"></param>
-        /// <param name="name"></param>
+        /// <param name="assignmentname"></param>
         /// <param name="dueDate"></param>
-        /// <param name="instructions"></param>
-        /// <param name="instructionUrl"></param>
-        /// <param name="rubric"></param>
-        /// <param name="rubricUrl"></param>
+        /// <param name="files"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> CreateAssignment(int courseID, string name, 
-                                           DateTime dueDate, 
-                                           string instructions, 
-                                           string instructionUrl,
-                                           string rubric,
-                                           string rubricUrl)
+        public async Task<JsonResult> CreateAssignment(int courseID, string assignmentname, List<IFormFile> files,
+                                           DateTime dueDate)
         {
             JsonResponse<CourseAssignment> response = new JsonResponse<CourseAssignment>();
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
             Course course = courseRepository.FindByID(courseID);
-
+            PFile newPFile = new PFile();
             if (course != null)
             {
+                Stream stream;
+                Guid guidFileId;
+                long size = files.Sum(f => f.Length);
+                foreach (var formFile in files)
+                {
+                    guidFileId = Guid.NewGuid();
+                    string ext = formFile.FileName.Split(".")[1];
+                    string filename = formFile.FileName.Split(".")[0];
+                    //AppUser user = await userManager.GetUserAsync(HttpContext.User);
+
+                    string destinationFolder = "Data/" + guidFileId + "." + ext;
+
+
+                    if (formFile.Length > 0)
+                    {
+                        using (stream = new FileStream(destinationFolder, FileMode.Create))
+                        {
+                            await formFile.CopyToAsync(stream);
+                        }
+                    }
+                    newPFile = new PFile(guidFileId.ToString(), filename, ext, user);
+                    pFileRepo.Add(newPFile);
+                    pFiles = pFileRepo.GetAll();
+                }
                 if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
                 {
                     if (ModelState.IsValid)
                     {
                         CourseAssignment newAssignment = new CourseAssignment
                         {
-                            Name = name,
+                            Name = assignmentname,
                             FK_COURSE = course,
-                            InstructionText = instructions,
-                            InstructionsUrl = instructionUrl,
-                            RubricText = rubric,
-                            RubricUrl = rubricUrl
+                            PFile = newPFile,
+                            DueDate = dueDate
                         };
 
                         if (courseAssignmentRepository.Add(newAssignment) != null)
@@ -120,6 +142,7 @@ namespace PeerIt.Controllers
                 response.Error.Add(new Error("NotFound", "The course was not found."));
             }
             return Json(response);
+
         }
 
         /// <summary>
@@ -242,186 +265,186 @@ namespace PeerIt.Controllers
         /// <param name="assignmentID"></param>
         /// <param name="instructions"></param>
         /// <returns></returns>
-        [HttpPatch]
-        public async Task<JsonResult> SetAssignmentInstructions(int courseID, int assignmentID, string instructions)
-        {
-            JsonResponse<bool> response = new JsonResponse<bool>();
-            Course course = courseRepository.FindByID(courseID);
-            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+        //[HttpPatch]
+        //public async Task<JsonResult> SetAssignmentInstructions(int courseID, int assignmentID, string instructions)
+        //{
+        //    JsonResponse<bool> response = new JsonResponse<bool>();
+        //    Course course = courseRepository.FindByID(courseID);
+        //    AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
-            {
-                if (course != null)
-                {
-                    CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
+        //    if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
+        //    {
+        //        if (course != null)
+        //        {
+        //            CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
 
-                    if (assignment != null)
-                    {
-                        assignment.InstructionText = instructions;
-                        if (courseAssignmentRepository.Edit(assignment))
-                        {
-                            return Json(response);
-                        }
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("NotFound", "Assignment was not Found."));
-                    }
-                }
-                else
-                {
-                    response.Error.Add(new Error("NotFound", "Course was not Found."));
-                }
-            }
-            else
-            {
-                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-            }
-            return Json(response);
-        }
+        //            if (assignment != null)
+        //            {
+        //                assignment.InstructionText = instructions;
+        //                if (courseAssignmentRepository.Edit(assignment))
+        //                {
+        //                    return Json(response);
+        //                }
+        //            }
+        //            else
+        //            {
+        //                response.Error.Add(new Error("NotFound", "Assignment was not Found."));
+        //            }
+        //        }
+        //        else
+        //        {
+        //            response.Error.Add(new Error("NotFound", "Course was not Found."));
+        //        }
+        //    }
+        //    else
+        //    {
+        //        response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+        //    }
+        //    return Json(response);
+        //}
 
-        /// <summary>
-        /// Sets the instructionsUrl property of a CourseAssignment.
-        /// </summary>
-        /// <param name="courseID"></param>
-        /// <param name="assignmentID"></param>
-        /// <param name="instructionUrl"></param>
-        /// <returns></returns>
-        [HttpPatch]
-        public async Task<JsonResult> SetAssignmentInstructionUrl(int courseID, int assignmentID, string instructionUrl)
-        {
-            JsonResponse<bool> response = new JsonResponse<bool>();
-            Course course = courseRepository.FindByID(courseID);
-            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+        ///// <summary>
+        ///// Sets the instructionsUrl property of a CourseAssignment.
+        ///// </summary>
+        ///// <param name="courseID"></param>
+        ///// <param name="assignmentID"></param>
+        ///// <param name="instructionUrl"></param>
+        ///// <returns></returns>
+        //[HttpPatch]
+        //public async Task<JsonResult> SetAssignmentInstructionUrl(int courseID, int assignmentID, string instructionUrl)
+        //{
+        //    JsonResponse<bool> response = new JsonResponse<bool>();
+        //    Course course = courseRepository.FindByID(courseID);
+        //    AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
-            {
-                if (course != null)
-                {
-                    CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
+        //    if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
+        //    {
+        //        if (course != null)
+        //        {
+        //            CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
 
-                    if (assignment != null)
-                    {
-                        assignment.InstructionsUrl = instructionUrl;
-                        if (courseAssignmentRepository.Edit(assignment))
-                        {
-                            return Json(response);
-                        }
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("NotFound", "Assignment was not Found."));
-                    }
-                }
-                else
-                {
-                    response.Error.Add(new Error("NotFound", "Course was not Found."));
-                }
-            }
-            else
-            {
-                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-            }
-            return Json(response);
-        }
+        //            if (assignment != null)
+        //            {
+        //                assignment.InstructionsUrl = instructionUrl;
+        //                if (courseAssignmentRepository.Edit(assignment))
+        //                {
+        //                    return Json(response);
+        //                }
+        //            }
+        //            else
+        //            {
+        //                response.Error.Add(new Error("NotFound", "Assignment was not Found."));
+        //            }
+        //        }
+        //        else
+        //        {
+        //            response.Error.Add(new Error("NotFound", "Course was not Found."));
+        //        }
+        //    }
+        //    else
+        //    {
+        //        response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+        //    }
+        //    return Json(response);
+        //}
 
-        /// <summary>
-        /// Sets the RubricText property of a CourseAssignment.
-        /// </summary>
-        /// <param name="courseID"></param>
-        /// <param name="assignmentID"></param>
-        /// <param name="rubric"></param>
-        /// <returns></returns>
-        [HttpPatch]
-        public async Task<JsonResult> SetAssignmentRubric(int courseID, int assignmentID, string rubric)
-        {
-            JsonResponse<bool> response = new JsonResponse<bool>();
-            Course course = courseRepository.FindByID(courseID);
-            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+        ///// <summary>
+        ///// Sets the RubricText property of a CourseAssignment.
+        ///// </summary>
+        ///// <param name="courseID"></param>
+        ///// <param name="assignmentID"></param>
+        ///// <param name="rubric"></param>
+        ///// <returns></returns>
+        //[HttpPatch]
+        //public async Task<JsonResult> SetAssignmentRubric(int courseID, int assignmentID, string rubric)
+        //{
+        //    JsonResponse<bool> response = new JsonResponse<bool>();
+        //    Course course = courseRepository.FindByID(courseID);
+        //    AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
-            {
-                if (course != null)
-                {
-                    CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
+        //    if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
+        //    {
+        //        if (course != null)
+        //        {
+        //            CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
 
-                    if (assignment != null)
-                    {
-                        assignment.RubricText = rubric;
-                        if (courseAssignmentRepository.Edit(assignment))
-                        {
-                            return Json(response);
-                        }
-                        else
-                        {
-                            response.Error.Add(new Error("NotSuccessful", " The data was not successfully written."));
-                        }
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("NotFound", "Assignment was not Found."));
-                    }
-                }
-                else
-                {
-                    response.Error.Add(new Error("NotFound", "Course was not Found."));
-                }
-            }
-            else
-            {
-                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-            }
-            return Json(response);
-        }
+        //            if (assignment != null)
+        //            {
+        //                assignment.RubricText = rubric;
+        //                if (courseAssignmentRepository.Edit(assignment))
+        //                {
+        //                    return Json(response);
+        //                }
+        //                else
+        //                {
+        //                    response.Error.Add(new Error("NotSuccessful", " The data was not successfully written."));
+        //                }
+        //            }
+        //            else
+        //            {
+        //                response.Error.Add(new Error("NotFound", "Assignment was not Found."));
+        //            }
+        //        }
+        //        else
+        //        {
+        //            response.Error.Add(new Error("NotFound", "Course was not Found."));
+        //        }
+        //    }
+        //    else
+        //    {
+        //        response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+        //    }
+        //    return Json(response);
+        //}
 
-        /// <summary>
-        /// Sets the RubricUrl property of a CourseAssignment.
-        /// </summary>
-        /// <param name="courseID"></param>
-        /// <param name="assignmentID"></param>
-        /// <param name="rubricUrl"></param>
-        /// <returns></returns>
-        [HttpPatch]
-        public async Task<JsonResult> SetAssignmentRubricUrl(int courseID, int assignmentID, string rubricUrl)
-        {
-            JsonResponse<bool> response = new JsonResponse<bool>();
-            Course course = courseRepository.FindByID(courseID);
-            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+        ///// <summary>
+        ///// Sets the RubricUrl property of a CourseAssignment.
+        ///// </summary>
+        ///// <param name="courseID"></param>
+        ///// <param name="assignmentID"></param>
+        ///// <param name="rubricUrl"></param>
+        ///// <returns></returns>
+        //[HttpPatch]
+        //public async Task<JsonResult> SetAssignmentRubricUrl(int courseID, int assignmentID, string rubricUrl)
+        //{
+        //    JsonResponse<bool> response = new JsonResponse<bool>();
+        //    Course course = courseRepository.FindByID(courseID);
+        //    AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
-            {
-                if (course != null)
-                {
-                    CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
+        //    if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
+        //    {
+        //        if (course != null)
+        //        {
+        //            CourseAssignment assignment = courseAssignmentRepository.FindByID(assignmentID);
 
-                    if (assignment != null)
-                    {
-                        assignment.RubricUrl = rubricUrl;
-                        if (courseAssignmentRepository.Edit(assignment))
-                        {
-                            return Json(response);
-                        }
-                        else
-                        {
-                            response.Error.Add(new Error("NotSuccessful", "The data was not successfully written."));
-                        }
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("NotFound", "Assignment was not Found."));
-                    }
-                }
-                else
-                {
-                    response.Error.Add(new Error("NotFound", "Course was not Found."));
-                }
-            }
-            else
-            {
-                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-            }
-            return Json(response);
-        }
+        //            if (assignment != null)
+        //            {
+        //                assignment.RubricUrl = rubricUrl;
+        //                if (courseAssignmentRepository.Edit(assignment))
+        //                {
+        //                    return Json(response);
+        //                }
+        //                else
+        //                {
+        //                    response.Error.Add(new Error("NotSuccessful", "The data was not successfully written."));
+        //                }
+        //            }
+        //            else
+        //            {
+        //                response.Error.Add(new Error("NotFound", "Assignment was not Found."));
+        //            }
+        //        }
+        //        else
+        //        {
+        //            response.Error.Add(new Error("NotFound", "Course was not Found."));
+        //        }
+        //    }
+        //    else
+        //    {
+        //        response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+        //    }
+        //    return Json(response);
+        //}
 
         #endregion Methods that return Json
     }

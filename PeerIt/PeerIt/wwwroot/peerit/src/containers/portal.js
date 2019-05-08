@@ -191,7 +191,9 @@ class Portal extends Component {
             elements: [
               { view: "label", label: "Upload your Assignment form here: ", name: "", labelWidth: 100, value: "" },
               {
-                view: "uploader", inputName: "files", upload: "/PFile/Upload",/*urlData:{studentAssignmentId:35} ,*/
+                
+                view: "uploader", inputName: "files", upload: "/CourseAssignment/CreateAssignment", 
+                urlData:{assignmentname:"",courseID:1,dueDate:Date("07/08/2019")} ,
                 id: "AssignmentFile", link: "mylist", value: "Click here to upload your Course Assignment file", autosend: false
               },
               {
@@ -206,12 +208,17 @@ class Portal extends Component {
                   window.webix.$$("AssignmentFile").send(function(response) {
                     console.log("upload send: " + JSON.stringify(response));
                     if (response != null){
+                      console.log(Date("07/08/2019"));
                       window.webix.message("Succsess");
-                      window.webix.$$("uploadAssignmentWindow").close(); 
+                      //window.webix.$$("uploadAssignmentWindow").attachEvent("onUploadComplete", function(response){
+                        window.webix.$$("uploadAssignmentWindow").close();
+                        //window.webix.message("done");
+                    //}); 
                     }
-                    else 
+                    else {
+                    console.log(Date("07/08/2019"));
                     alert("Nothing to Submit");
-                  })
+                  }})
 
                 }
               }

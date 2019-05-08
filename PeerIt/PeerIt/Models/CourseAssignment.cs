@@ -15,8 +15,13 @@ namespace PeerIt.Models
         public string Name { get; set; }
         
         [Required]        
-        public Course FK_COURSE { get; set; } 
-        
+        public Course FK_COURSE { get; set; }
+
+        public DateTime DueDate { get; set; }
+
+        public PFile PFile { get; set; }
+
+        /*
         [StringLength(100000, ErrorMessage = "Must be less than 100,000 characters")]            
         public string InstructionText { get; set; }
         
@@ -28,6 +33,7 @@ namespace PeerIt.Models
 
         [StringLength(200, ErrorMessage = "Must be less than 200 characters")]
         public string RubricUrl { get; set; }
+        */
         #endregion Variables and Properties
     }
 }

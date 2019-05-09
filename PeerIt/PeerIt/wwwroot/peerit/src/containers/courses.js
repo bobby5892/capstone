@@ -193,30 +193,28 @@ loadCourses() {
 		                		try {
 		                			let index = window.webix.$$("courses").index(i);
 		                			//Check if the next index is a thing
-		                			console.log("Detected a click on self " + i);
+		                			//console.log("Detected a click on self " + i);
 		                			
 		                			let nextChild = scope.webixGetNextChild(i);
-		                			console.log("next child is: " + nextChild + " compared to " + i);
+		                			//console.log("next child is: " + nextChild + " compared to " + i);
 		                			if(nextChild != false){
-		                				console.log("setting view to next child");
+		                				//console.log("setting view to next child");
 		                				let stateChange = {"viewingCourse" : parseInt(nextChild)};
 		                				console.log("CHANGING STATE: " + JSON.stringify(stateChange));
 		                				this.handleCourseViewer(stateChange);
-
 		                			}
-		                				// Lets set the one we're viewing up to what the accordion is showing
-		                				
-		                			
+	                				// Lets set the one we're viewing up to what the accordion is showing
 		                		}
 		                		catch(e){
 		                			console.log("error" + e);
 		                		}
 		                	}
 		                	// Update the viewing course
-		                	this.handleCourseViewer({"viewingCourse" : parseInt(i)});
+		                	
 		                //	console.log("i: " + i + " viewingCourse: " + scope.state.viewingCourse);
 		                	// Check if clicking on self and its already viewable - if so do nothing
 		                	if(redraw){
+		                		this.handleCourseViewer({"viewingCourse" : parseInt(i)});
 		                    		//console.log(" I clicked on a " + i + " and the currentViewed is " + scope.state.viewingCourse);
 		                    		//scope.handleCourseViewer({"viewingCourse" : parseInt(i)});
 		                    		this.drawCourses();

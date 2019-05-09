@@ -105,30 +105,32 @@ loadCourses() {
  	// this needs to shift the webix content to the new accordion item if it exists - the condition its still missing is when there is no childView
 
  	let indexCount = -1;
- 	let numberOfViews = function (){
+
+ 	let numberOfViews;
 		try {
 			console.log("CoursesCheck: " + typeof(window.webix.$$("courses")) );
  			if(typeof(window.webix.$$("courses")) != undefined){
- 				return window.webix.$$("courses").getChildViews().length;	
+ 				numberOfViews =  window.webix.$$("courses").getChildViews().length;	
  			}
  		}
  		catch(e){
- 			return 0;
+ 			numberOfViews= 0;
  		}
- 	}
+ 	
+ 	//console.log("webixGetNextChild Number of Views: " + numberOfViews);
  	for(let i=0; i<numberOfViews;i++){
- 		//console.log("considering " + this.state.viewingCourse + " vs " +  window.webix.$$("courses").getChildViews()[i].config.id);
+ 		//console.log("webixGetNextChild: considering " + this.state.viewingCourse + " vs " +  window.webix.$$("courses").getChildViews()[i].config.id);
  		if(this.state.viewingCourse	== window.webix.$$("courses").getChildViews()[i].config.id){
- 		//	console.log("found current child");
+ 			//console.log("webixGetNextChildfound current child");
  			indexCount = i;
  		}
  	}
- 	//console.log("indexCount : " + indexCount);
- 	//console.log("NextChildType : " + typeof(window.webix.$$("courses").getChildViews()[(indexCount)+1]) !== "undefined");
+ 	//console.log("webixGetNextChild: indexCount : " + indexCount);
+ 	//console.log("webixGetNextChild NextChildType : " + typeof(window.webix.$$("courses").getChildViews()[(indexCount)+1]) !== "undefined");
  	if(
  		(indexCount != -1 ) && (typeof(window.webix.$$("courses").getChildViews()[(indexCount)+1]) !== "undefined")
  	 ){
- 		//console.log("bout to send it back" + indexCount);
+ 		//console.log("webixGetNextChild: bout to send it back" + indexCount);
  		let nextChildID = window.webix.$$("courses").getChildViews()[(indexCount)+1].config.id;
  	//	console.log("bout to send it back" + nextChildID);
 		return nextChildID;
@@ -182,7 +184,7 @@ loadCourses() {
 		                'onItemClick' : function (i){
 		                	let redraw = false;
 		                	// Check if it should redraw
-		                	if(parseInt(i) != parseInt(scope.state.viewingCourse)){
+		                	if(parseInt(i) != parseInt(this.state.viewingCourse)){
 		                		redraw = true;
 		                	}
 		                	else{
@@ -191,13 +193,15 @@ loadCourses() {
 		                		try {
 		                			let index = window.webix.$$("courses").index(i);
 		                			//Check if the next index is a thing
-		                			//console.log("bout to try something crazy on " + i);
+		                			console.log("Detected a click on self " + i);
 		                			
 		                			let nextChild = scope.webixGetNextChild(i);
-		                			//console.log("next child is: " + nextChild + " compared to " + i);
+		                			console.log("next child is: " + nextChild + " compared to " + i);
 		                			if(nextChild != false){
-		                				//console.log("setting view to next child");
-		                				scope.handleCourseViewer({"viewingCourse" : parseInt(nextChild)});
+		                				console.log("setting view to next child");
+		                				let stateChange = {"viewingCourse" : parseInt(nextChild)};
+		                				console.log("CHANGING STATE: " + JSON.stringify(stateChange));
+		                				this.handleCourseViewer(stateChange);
 
 		                			}
 		                				// Lets set the one we're viewing up to what the accordion is showing
@@ -209,15 +213,15 @@ loadCourses() {
 		                		}
 		                	}
 		                	// Update the viewing course
-		                	scope.handleCourseViewer({"viewingCourse" : parseInt(i)});
+		                	this.handleCourseViewer({"viewingCourse" : parseInt(i)});
 		                //	console.log("i: " + i + " viewingCourse: " + scope.state.viewingCourse);
 		                	// Check if clicking on self and its already viewable - if so do nothing
 		                	if(redraw){
 		                    		//console.log(" I clicked on a " + i + " and the currentViewed is " + scope.state.viewingCourse);
 		                    		//scope.handleCourseViewer({"viewingCourse" : parseInt(i)});
-		                    		scope.drawCourses();
+		                    		this.drawCourses();
 		                    }
-		                 }
+		                 }.bind(this)
 		              },
 		              collapsed: true,
 		              height:200
@@ -243,8 +247,37 @@ loadCourses() {
       let renderObjects = {
         'Students' : null
       };
+
+      // Remove all event handlers on accordians
+      // add new click event handlers on accordians
+
     //  console.log("check : " + this.state.viewingCourse+ " " +  courseID);
-        if(this.state.viewingCourse === courseID){
+        if(courseID != null && this.state.viewingCourse === courseID ){
+        	//console.loog("CheckCollapsed: "  + window.webix.$$("courses").index)
+        		// Lets check if its already collapsed or not
+        		try{
+        		/*	let accordIndex = window.webix.$$("courses").index(courseID);
+        			//console.log("Debug: " + JSON.stringify(accordID));
+        			console.log("Drawing: " + courseID + " in index position" + accordIndex);
+        			console.log("CollapseCheck "+ accordIndex+ " : " + window.webix.$$("courses").getChildViews()[accordIndex].config.collapsed);
+        			// "collapsed":true,;
+        		// Lets try and clear the content in  all the children that we're not drawing
+        			let countAccords = window.webix.$$("courses").getChildViews().length;
+        			for(let i=0; i<countAccords;i++){
+
+        				 Close - but this is actually in tabular - so gotta figure that out
+        				window.webix.$$("courses").getChildViews()[i].define("body", {
+        					"view" : "template",
+        					"template" : "not shown"
+        				});*/
+        				//window.webix.$$("courses").getChildViews()[i].define("content", null);
+        			//}
+        			
+        		}
+        		catch(e) {
+        			 console.log("Error" + e); 
+        		}
+
         		// Need to focus on the next line - its whats causing the fault..
                window.webix.ui([{
                 id:"coursesTabView"+courseID,

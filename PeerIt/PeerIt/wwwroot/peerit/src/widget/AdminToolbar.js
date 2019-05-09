@@ -20,6 +20,7 @@ class AdminToolbar extends Component {
 		this.showCreateCourse = props.handleCreateCourse;
 	}
 	handleCourseViewer(statechange){
+		console.log("changing state" + JSON.stringify(statechange));
     	this.setState(statechange);
  	}
 	renderCourses() {

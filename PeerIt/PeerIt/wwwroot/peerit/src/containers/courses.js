@@ -105,7 +105,17 @@ loadCourses() {
  	// this needs to shift the webix content to the new accordion item if it exists - the condition its still missing is when there is no childView
 
  	let indexCount = -1;
- 	let numberOfViews = window.webix.$$("courses").getChildViews().length;
+ 	let numberOfViews = function (){
+		try {
+			console.log("CoursesCheck: " + typeof(window.webix.$$("courses")) );
+ 			if(typeof(window.webix.$$("courses")) != undefined){
+ 				return window.webix.$$("courses").getChildViews().length;	
+ 			}
+ 		}
+ 		catch(e){
+ 			return 0;
+ 		}
+ 	}
  	for(let i=0; i<numberOfViews;i++){
  		//console.log("considering " + this.state.viewingCourse + " vs " +  window.webix.$$("courses").getChildViews()[i].config.id);
  		if(this.state.viewingCourse	== window.webix.$$("courses").getChildViews()[i].config.id){
@@ -235,7 +245,7 @@ loadCourses() {
       };
     //  console.log("check : " + this.state.viewingCourse+ " " +  courseID);
         if(this.state.viewingCourse === courseID){
-
+        		// Need to focus on the next line - its whats causing the fault..
                window.webix.ui([{
                 id:"coursesTabView"+courseID,
                 view: "tabview",

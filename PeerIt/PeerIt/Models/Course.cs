@@ -24,6 +24,5 @@ namespace PeerIt.Models
         /// </summary>
        // public ICollection<AppUser> Students { get; set; }
         #endregion Variables and Properties
-
     }
 }

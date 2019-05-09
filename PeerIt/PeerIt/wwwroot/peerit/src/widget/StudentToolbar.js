@@ -12,6 +12,7 @@ class StudentToolbar extends Component {
 	        data : null
 	      };
   this.logout = props.logout;
+  this.renderAccountWindow = props.renderAccountWindow;
   this.uploadReview = props.uploadReview;
   }
   handleCourseViewer(statechange){

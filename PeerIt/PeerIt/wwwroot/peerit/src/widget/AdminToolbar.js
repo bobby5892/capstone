@@ -18,6 +18,7 @@ class AdminToolbar extends Component {
 		// Receive the function handle for handleManageUsersMenuClick
 		this.handleMenuClick = props.handleMenuClick;
 		this.showCreateCourse = props.handleCreateCourse;
+    this.accountClick = props.accountClick;
 	}
 	handleCourseViewer(statechange){
     	this.setState(statechange);
@@ -47,7 +48,7 @@ class AdminToolbar extends Component {
 						scroll: false,
 						margin:0,
 						height:225,
-						data: ["Admin",  "Manage Users", "Settings", "Logout"],
+						data: ["Admin", "Account", "Manage Users", "Settings", "Logout"],
 						ready: function () {
 							// Highlight the first one
 							this.select(this.getFirstId());
@@ -69,6 +70,10 @@ class AdminToolbar extends Component {
 							else if (a === "Admin") {
 								this.handleMenuClick("LiveFeed");
 							}
+              else if( a === "Account"){
+								this.accountClick();
+            		//this.renderAccountWindow();
+            	}    
 
 						}.bind(this),
 						select: true,
@@ -92,7 +97,6 @@ class AdminToolbar extends Component {
 		}
 
 		return (
-
 			<div id="AdminToolbar" >
 				{this.renderCreateCourseButton()}
 				{this.renderCourses()}

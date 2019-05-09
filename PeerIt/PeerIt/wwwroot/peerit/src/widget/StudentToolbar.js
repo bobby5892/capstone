@@ -11,8 +11,8 @@ class StudentToolbar extends Component {
           role: props.role,
 	        data : null
 	      };
-	this.logout = props.logout;
-
+  this.logout = props.logout;
+  this.uploadReview = props.uploadReview;
   }
   handleCourseViewer(statechange){
       this.setState(statechange);
@@ -33,7 +33,7 @@ class StudentToolbar extends Component {
             rows: [
                     {
                         view:"list", 
-                        data:["Student", "Reports", "Settings","Logout"],
+                        data:["Student", "Reports", "Settings","upload Review","Logout"],
                         ready:function(){ 
                           this.select(this.getFirstId()); 
                         },
@@ -42,6 +42,10 @@ class StudentToolbar extends Component {
                         		//Attempt to call the logout chain
                         		this.logout();
                         	}
+                     else if(a === "Upload Review"){
+            		//Attempt to call the logout chain
+            		this.uploadReview();
+            	}
                         }.bind(this),
                         select:true,
                         scroll:false,

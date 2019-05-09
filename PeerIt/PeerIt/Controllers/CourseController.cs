@@ -47,6 +47,7 @@ namespace PeerIt.Controllers
             
             if (this.isAdmin)
             {
+                SetRoles();
                 // Show all courses
                 List<CourseDataOut> courseDataOuts = new List<CourseDataOut>();
                 this.courseRepository.GetAll().ToList<Course>().ForEach(course =>
@@ -115,7 +116,6 @@ namespace PeerIt.Controllers
             this.isAdmin = HttpContext.User.IsInRole("Administrator");
             this.isInstructor = HttpContext.User.IsInRole("Instructor");
             this.isStudent = HttpContext.User.IsInRole("Student");
-
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace PeerIt.Controllers
         {
             SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
- 
+            JsonResponse<CourseDataOut> responseStudent = new JsonResponse<CourseDataOut>();
 
             if (this.isAdmin)
             {
@@ -157,20 +157,36 @@ namespace PeerIt.Controllers
                 //Lets see if the student is in the course]
                AppUser curentUser = await usrMgr.GetUserAsync(HttpContext.User);
 
-               response.Data.Add(this.courseGroupRepository.GetAll().ToList<CourseGroup>().Find(
+               Course course = this.courseGroupRepository.GetAll().ToList<CourseGroup>().Find(
                     // Look for the user
                      x =>
                         {
                             if ((x.FK_AppUser ==  curentUser) && 
-                                    (x.FK_Course == this.courseRepository.FindByID(courseID))) {
+                                    (x.FK_Course == this.courseRepository.FindByID(courseID)))
+                            {
                                 return true;
                             }
-                            else {
+                            else
+                            {
                                 return false;
                             }
                         }
-               ).FK_Course);
-  
+                ).FK_Course;
+
+                AppUser instructor = course.FK_INSTRUCTOR;
+                CourseDataOut dataOut = new CourseDataOut
+                {
+                    ID = course.ID,
+                    Name = course.Name,
+                    IsActive = course.IsActive,
+                    FK_INSTRUCTOR_NAME = instructor.FirstName + " " + instructor.LastName
+                };
+
+                if (responseStudent.Data.Count > 0)
+                {
+                    responseStudent.Data.Add(dataOut);
+                    return Json(responseStudent);
+                }
             }
             // If we didn't find the course show error
             if(response.Data.Count == 0)
@@ -178,7 +194,6 @@ namespace PeerIt.Controllers
                 response.Error.Add(new Error() { Name = "GetCourse", Description = "You have not been added to any courses" });
             }
             return Json(response);
-            
         }
         [HttpGet]
         [Authorize(Roles = "Administrator,Instructor")]
@@ -186,8 +201,8 @@ namespace PeerIt.Controllers
         {
             SetRoles();
             JsonResponse<AppUser> response = new JsonResponse<AppUser>();
-
             bool authorizedToSee = false;
+
             if (this.isAdmin)
             {
                 // This is a list of courseGroup - for that course / Could be optimized by adding a repo method
@@ -223,7 +238,6 @@ namespace PeerIt.Controllers
                 // Add the Students from the courseGroups to the response
                 courseGroups.ForEach(x => response.Data.Add(x.FK_AppUser));
             }
-
             return Json(response);
         }
         [HttpGet]
@@ -239,7 +253,8 @@ namespace PeerIt.Controllers
         {
             SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
-              AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
+            JsonResponse<CourseDataOut> responseStudent = new JsonResponse<CourseDataOut>();
+            AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
 
             // Depending on who they are changes what is expected
             if (isAdmin)
@@ -272,7 +287,16 @@ namespace PeerIt.Controllers
                     else { return true; }
                 });
                 // Add the courses to response
-                courseGroups.ForEach(courseGroup => response.Data.Add(courseGroup.FK_Course));
+                courseGroups.ForEach(courseGroup => responseStudent.Data.Add(
+                    new CourseDataOut
+                    {
+                        ID = courseGroup.FK_Course.ID,
+                        Name = courseGroup.FK_Course.Name,
+                        IsActive = courseGroup.FK_Course.IsActive,
+                        FK_INSTRUCTOR_NAME = courseGroup.FK_Course.FK_INSTRUCTOR.FirstName + " " +
+                            courseGroup.FK_Course.FK_INSTRUCTOR.LastName
+                    }
+                ));
             }
             return Json(response);
         }
@@ -283,7 +307,6 @@ namespace PeerIt.Controllers
             SetRoles();
             JsonResponse<bool> response = new JsonResponse<bool>();
             bool actionApproved = false;
-
             Course courseToChange = this.courseRepository.FindByID(courseID);
             // If course not found
             if (courseToChange == null)
@@ -360,7 +383,6 @@ namespace PeerIt.Controllers
             //save it
             this.courseRepository.Edit(lookupCourse);
             return Json(response);
-
         }
         [Authorize(Roles = "Administrator,Instructor")]
         [HttpPost]
@@ -406,7 +428,6 @@ namespace PeerIt.Controllers
                     this.courseRepository.Delete(lookupCourse);
                     return Json(response);
                 }
-                
             }
             else if (this.isInstructor)
             {
@@ -416,14 +437,10 @@ namespace PeerIt.Controllers
                     courseName == lookupCourse.Name)){
                     this.courseRepository.Delete(lookupCourse);
                     return Json(response);
-
                 }
             }
             response.Error.Add(new Error() { Name = "courseDelete", Description = "Course Name confirmation delete failed" });
             return Json(response);
-
-
         }
-
     }
 }

@@ -5,17 +5,66 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 namespace PeerIt.Models
 {
+    /*
+    The following classes are used for modelling return data to students.
+    Currently, the data being used by the controllers contain more info
+    than what a student should be allowed to have. Therefore, these models
+    take the data relevant to the student, leaving out the data that is
+    potentially a security risk.
+    */
     public class CourseDataOut
     {
         public int ID { get; set; }
-
-        [Required]
+        
         public string Name { get; set; }
-
-        [Required]
+        
         public bool IsActive { get; set; }
-
-        [Required]
+        
         public string FK_INSTRUCTOR_NAME { get; set; }
+    }
+
+    public class CourseAssignmentDataOut
+    {
+        public int ID { get; set; }
+        
+        public string Name { get; set; }
+        
+        public int FK_COURSE_ID { get; set; }
+        
+        public string InstructionText { get; set; }
+        
+        public string InstructionsUrl { get; set; }
+        
+        public string RubricText { get; set; }
+        
+        public string RubricUrl { get; set; }
+    }
+
+    public class StudentAssignmentDataOut
+    {
+        public int ID { get; set; }
+        
+        public int CourseAssignment_ID { get; set; }
+        
+        public string Student_Name { get; set; }
+
+        public DateTime TimestampCreated { get; set; }
+        
+        public string Content { get; set; }
+        
+        public string Status { get; set; }
+        
+        public int Score { get; set; }
+    }
+
+    public class CommentDataOut
+    {
+        public int ID { get; set; }
+        
+        public int FK_STUDENT_ASSIGNMENT_ID { get; set; }
+        
+        public DateTime TimestampCreated { get; set; }
+        
+        public string Content { get; set; }
     }
 }

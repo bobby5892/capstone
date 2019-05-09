@@ -31,3 +31,10 @@
     transform: rotate(360deg);
   }
 }
+
+.subCourseMenu{
+  background-color:red;
+}
+.webix_all_tabs{
+  font-size:10pt;
+}

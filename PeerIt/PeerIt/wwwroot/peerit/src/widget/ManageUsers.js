@@ -66,7 +66,7 @@ class ManageUsers extends Component {
     let scope = this;
     let formValues = window.webix.$$("editUserForm").getValues();
     let isEnabled = function() {
-      if(scope.state.editUser.isEnabled == 1){
+      if(scope.state.editUser.isEnabled === 1){
         return true;
       }
       return false;
@@ -139,7 +139,7 @@ class ManageUsers extends Component {
       }
       return 0;
     };
-    var newWindow = window.webix.ui({
+    window.webix.ui({
             view:"window",
             id:"editUserWindow",
             width: 500,
@@ -167,7 +167,7 @@ class ManageUsers extends Component {
                       id:"editUserForm",
                       width:400,
                       elements:[
-                          { view:"checkbox", value: 0, label:"Active", name: "IsEnabled", value : isEnabled() },
+                          { view:"checkbox", label:"Active", name: "IsEnabled", value : isEnabled() },
                           { view:"text", label:"First Name", name:"FirstName", labelWidth:100,invalidMessage: "First Name can not be empty", value: this.state.editUser.firstName}, 
                           { view:"text", label:"Last Name", name:"LastName", labelWidth:100,invalidMessage: "Last Name can not be empty",value: this.state.editUser.lastName },
                           { view:"text", label:"Email", name:"Email", labelWidth:100,invalidMessage: "Must be valid email address",value: this.state.editUser.email },
@@ -188,7 +188,7 @@ class ManageUsers extends Component {
                           "Email": window.webix.rules.isEmail,
                           "LastName": window.webix.rules.isNotEmpty,
                           "FirstName": window.webix.rules.isNotEmpty,
-                          "Password" :  window.webix.rules.isNotEmpty
+                          "Password" : window.webix.rules.isNotEmpty
                       }
                     }
                 ]
@@ -264,7 +264,7 @@ class ManageUsers extends Component {
                         click: function (){
                           // Lets only allow once
                           if(window.webix.$$("newUserWindow") == null){
-                            var newWindow = window.webix.ui({
+                            window.webix.ui({
                                     view:"window",
                                     id:"newUserWindow",
                                     width: 500,

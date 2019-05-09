@@ -65,7 +65,32 @@ namespace PeerIt.Migrations
                  columns: new[] { "UserId", "RoleId" },
                  values: new object[] { AdminUserId, AdminRoleId }
              );
-
+            // Add Settings
+            migrationBuilder.InsertData(
+                table: "Settings",
+                 columns: new[] { "ID", "StringValue", "NumericValue" },
+                 values: new object[] { "SMTP_HOST", "localhost", 0}
+                );
+            migrationBuilder.InsertData(
+                table: "Settings",
+                 columns: new[] { "ID", "NumericValue" },
+                 values: new object[] { "SMTP_Port", 25 }
+                );
+            migrationBuilder.InsertData(
+                table: "Settings",
+                 columns: new[] { "ID", "StringValue", "NumericValue" },
+                 values: new object[] { "SMTP_Password", "something", 0 }
+                );
+            migrationBuilder.InsertData(
+               table: "Settings",
+                columns: new[] { "ID", "NumericValue" },
+                values: new object[] { "SMTP_Enabled", 0 }
+               );
+            migrationBuilder.InsertData(
+               table: "Settings",
+                columns: new[] { "ID", "StringValue", "Numericvalue" },
+                values: new object[] { "SMTP_USERNAME", "root", 0 }
+               );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

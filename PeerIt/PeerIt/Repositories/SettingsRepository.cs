@@ -53,11 +53,15 @@ namespace PeerIt.Repositories
         public bool Edit(Setting model)
         {
          try { 
-               Setting setting = FindByID(model.ID);
-                // Need Replace
-                if (context.SaveChanges() > 0)
+                Setting setting = FindByID(model.ID);
+                if (setting != null)
                 {
-                    return true;
+                    setting = model;
+                    context.Settings.Update(setting);
+                    if (context.SaveChanges() > 0)
+                    {
+                        return true;
+                    }
                 }
             }
             catch(Exception e) {

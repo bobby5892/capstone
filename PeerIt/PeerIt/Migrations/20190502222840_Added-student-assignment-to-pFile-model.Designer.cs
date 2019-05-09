@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PeerIt.Repositories;
 
 namespace PeerIt.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20190502222840_Added-student-assignment-to-pFile-model")]
+    partial class AddedstudentassignmenttopFilemodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -398,9 +400,13 @@ namespace PeerIt.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<int?>("StudentAssignmentID");
+
                     b.HasKey("ID");
 
                     b.HasIndex("AppUserId");
+
+                    b.HasIndex("StudentAssignmentID");
 
                     b.ToTable("PFiles");
                 });
@@ -411,10 +417,11 @@ namespace PeerIt.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("FK_APP_USERId")
-                        .IsRequired();
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(100000);
 
-                    b.Property<string>("FK_PFileID")
+                    b.Property<string>("FK_APP_USERId")
                         .IsRequired();
 
                     b.Property<int>("FK_STUDENT_ASSIGNMENTID");
@@ -424,8 +431,6 @@ namespace PeerIt.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("FK_APP_USERId");
-
-                    b.HasIndex("FK_PFileID");
 
                     b.HasIndex("FK_STUDENT_ASSIGNMENTID");
 
@@ -619,6 +624,10 @@ namespace PeerIt.Migrations
                     b.HasOne("PeerIt.Models.AppUser", "AppUser")
                         .WithMany()
                         .HasForeignKey("AppUserId");
+
+                    b.HasOne("PeerIt.Models.StudentAssignment", "StudentAssignment")
+                        .WithMany()
+                        .HasForeignKey("StudentAssignmentID");
                 });
 
             modelBuilder.Entity("PeerIt.Models.Review", b =>
@@ -627,11 +636,6 @@ namespace PeerIt.Migrations
                         .WithMany()
                         .HasForeignKey("FK_APP_USERId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PeerIt.Models.PFile", "FK_PFile")
-                        .WithMany()
-                        .HasForeignKey("FK_PFileID")
-                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PeerIt.Models.StudentAssignment", "FK_STUDENT_ASSIGNMENT")
                         .WithMany()

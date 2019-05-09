@@ -27,10 +27,7 @@ namespace PeerIt.Controllers
             IGenericRepository<CourseAssignment, int> courseAssignmentRepository,
             UserManager<AppUser> usrMgr)
         {
-            this.isAdmin = HttpContext.User.IsInRole("Administrator");
-            this.isInstructor = HttpContext.User.IsInRole("Instructor");
-            this.isStudent = HttpContext.User.IsInRole("Student");
-
+            
             this.courseRepository = courseRepository;
             this.courseGroupRepository = courseGroupRepository;
             this.courseAssignmentRepository = courseAssignmentRepository;
@@ -40,11 +37,13 @@ namespace PeerIt.Controllers
         /// Get a List of courses
         /// </summary>
         /// <returns></returns>
-        /// 
+        ///
+        
         [HttpGet]
         [Authorize(Roles = "Administrator,Instructor,Student")]
         public async Task<JsonResult> GetCourses()
         {
+            SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
           
 
@@ -84,6 +83,15 @@ namespace PeerIt.Controllers
             }
             return  Json(response);
         }
+
+        void SetRoles()
+        {
+            this.isAdmin = HttpContext.User.IsInRole("Administrator");
+            this.isInstructor = HttpContext.User.IsInRole("Instructor");
+            this.isStudent = HttpContext.User.IsInRole("Student");
+
+        }
+
         /// <summary>
         /// getCourse
         /// </summary>
@@ -91,8 +99,9 @@ namespace PeerIt.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize(Roles = "Administrator,Instructor,Student")]
-        public async Task<JsonResult> GetCourse(int courseID)
+        public async Task<JsonResult> GetCourse(int courseID = -1)
         {
+            SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
  
 
@@ -149,6 +158,7 @@ namespace PeerIt.Controllers
         [Authorize(Roles = "Administrator,Instructor")]
         public async Task<JsonResult> GetStudents(int courseID)
         {
+            SetRoles();
             JsonResponse<AppUser> response = new JsonResponse<AppUser>();
 
             bool authorizedToSee = false;
@@ -201,6 +211,7 @@ namespace PeerIt.Controllers
         [Authorize(Roles = "Administrator,Instructor,Student")]
         public async Task<JsonResult> GetCoursesByUser(string userID)
         {
+            SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
               AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
 
@@ -243,6 +254,7 @@ namespace PeerIt.Controllers
         [HttpPatch]
         public async Task<JsonResult> ToggleEnabled(int courseID)
         {
+            SetRoles();
             JsonResponse<bool> response = new JsonResponse<bool>();
             bool actionApproved = false;
 
@@ -277,6 +289,7 @@ namespace PeerIt.Controllers
         [HttpPut]
         [Authorize(Roles = "Administrator")]
         async Task<JsonResult> SetInstructor(int courseID, string userId) {
+            SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
             Course lookupCourse = this.courseRepository.FindByID(courseID);
 
@@ -306,6 +319,7 @@ namespace PeerIt.Controllers
         [Authorize(Roles = "Administrator")]
         JsonResult SetName(int courseID, string name)
         {
+            SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
             Course lookupCourse = this.courseRepository.FindByID(courseID);
             // Check if course exists
@@ -324,11 +338,21 @@ namespace PeerIt.Controllers
         }
         [Authorize(Roles = "Administrator,Instructor")]
         [HttpPost]
-        async Task<JsonResult> CreateCourse(string courseName)
+        public async Task<JsonResult> CreateCourse(string courseName)
         {
+            JsonResponse<Course> response = new JsonResponse<Course>();
+            SetRoles();
             Course newCourse = new Course() {Name=courseName,FK_INSTRUCTOR = await usrMgr.GetUserAsync(HttpContext.User) };
             newCourse = this.courseRepository.Add(newCourse);
-            return Json(newCourse);
+            if (newCourse == null)
+            {
+                response.Error.Add(new Error() { Description = "Course not created", Name = "CourseController" });
+            }
+            else
+            {
+                response.Data.Add(newCourse);
+            }
+            return Json(response);
         }
         /// <summary>
         /// Delete a course [admin/instructor]
@@ -340,6 +364,7 @@ namespace PeerIt.Controllers
         [HttpPost]
         async Task<JsonResult>  DeleteCourse(int courseID, string courseName)
         {
+            SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
             Course lookupCourse = this.courseRepository.FindByID(courseID);
             if (lookupCourse == null)

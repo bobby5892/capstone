@@ -82,6 +82,7 @@ class CreateCourse extends Component {
                     {
                       view: "button", value: "Create Course", type: "form", click: function () {
                         scope.createCourse();
+                        window.webix.$$("newCourseWindow").close();
                       }
                     }
                   ]

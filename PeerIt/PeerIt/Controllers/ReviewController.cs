@@ -313,7 +313,8 @@ namespace PeerIt.Controllers
                 {".jpg", "image/jpeg"},
                 {".jpeg", "image/jpeg"},
                 {".gif", "image/gif"},
-                {".csv", "text/csv"}
+                {".csv", "text/csv"},
+                {".zip", "application/zip" }
             };
         }
         public async Task<bool> CurrentUserIsInSameReviewGroup(CourseGroup courseGroup)
@@ -323,7 +324,6 @@ namespace PeerIt.Controllers
             string reviewGroupForUser = "";
 
             List<CourseGroup> courseGroups = courseGroupRepo.GetAll();
-            //List<CourseGroup> courseGroupUserIsInForCourse = new List<CourseGroup>();
 
             foreach(CourseGroup cg in courseGroups)
             {

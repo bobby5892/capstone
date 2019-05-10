@@ -250,10 +250,10 @@ loadCourses() {
       // add new click event handlers on accordians
 
     //  console.log("check : " + this.state.viewingCourse+ " " +  courseID);
-        if(courseID != null && this.state.viewingCourse === courseID ){
+      //  if(courseID != null && this.state.viewingCourse === courseID ){
         	//console.loog("CheckCollapsed: "  + window.webix.$$("courses").index)
         		// Lets check if its already collapsed or not
-        		try{
+        //	try{
         		/*	let accordIndex = window.webix.$$("courses").index(courseID);
         			//console.log("Debug: " + JSON.stringify(accordID));
         			console.log("Drawing: " + courseID + " in index position" + accordIndex);
@@ -271,13 +271,13 @@ loadCourses() {
         				//window.webix.$$("courses").getChildViews()[i].define("content", null);
         			//}
         			
-        		}
-        		catch(e) {
-        			 console.log("Error" + e); 
-        		}
+        	//	}
+        	//	catch(e) {
+        	//		 console.log("Error" + e); 
+        	//	}
 
         		// Need to focus on the next line - its whats causing the fault..
-               window.webix.ui([{
+              /* window.webix.ui([{
                 id:"coursesTabView"+courseID,
                 view: "tabview",
                 css:"subCourseTabMenu",
@@ -290,7 +290,8 @@ loadCourses() {
                   header: "Students",
                   id:"AdminInstructorSubListItem",
                   body: {
-                   		content: "AdminInstructorStudentsList",
+                   		//view:"template",
+                   		container: "AdminInstructorSubListItem" + courseID,
                    		scroll: "y",
                   		width:250
                   },
@@ -336,14 +337,14 @@ loadCourses() {
 							
 						}.bind(this)
 					}
-                     */
+                    
                    }              
                 }              
               ]
-            }],window.webix.$$("coursesTabView"+courseID));
+            }],window.webix.$$("coursesTabView"+courseID));*/
 
-        }  
-        else{
+    //    }  
+    //    else{
            return ( 
             [
               {
@@ -359,10 +360,18 @@ loadCourses() {
                   header: "Students",
                   id:"AdminInstructorSubListItem",
                   body: {
-                    view: "template",
-                    template: "Default de"
-
-                  },
+					  view:"list",
+					  width:250,
+					  height:200,
+					  template:"#title#",
+					  select:true,
+					 /* data:[
+					    { id:1, title:"Item 1"},
+					    { id:2, title:"Item 2"},
+					    { id:3, title:"Item 3"}
+					  ]*/
+					  url:"/Course/GetStudents?courseID=" + courseID
+					},
                   autoheight:true,
                   collapsed:true,
                   gravity:1
@@ -396,7 +405,7 @@ loadCourses() {
             }
        	 ]
       	);
-      }
+      //}
     }
     else if (this.state.role === "Student"){
       return ( [{
@@ -452,7 +461,7 @@ loadCourses() {
       <div id="Courses">
         
         <Webix ui={ui} data={data}/>
-        {this.renderAdminInstructorStudentsList()}
+        
         {this.renderAdminInstructorSettings()}
        
         

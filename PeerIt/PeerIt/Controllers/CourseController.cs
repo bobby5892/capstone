@@ -47,7 +47,6 @@ namespace PeerIt.Controllers
             
             if (this.isAdmin)
             {
-                SetRoles();
                 // Show all courses
                 List<CourseDataOut> courseDataOuts = new List<CourseDataOut>();
                 this.courseRepository.GetAll().ToList<Course>().ForEach(course =>
@@ -65,18 +64,19 @@ namespace PeerIt.Controllers
             }
             else if (this.isInstructor)
             {
+                var currentUser = await usrMgr.GetUserAsync(HttpContext.User);
                 // Lookup the course the instructor is teaching
                 this.courseRepository.GetAll().ToList<Course>()
-                    .ForEach(async course =>
+                    .ForEach(course =>
                     {
-                        if (course.FK_INSTRUCTOR == await usrMgr.GetUserAsync(HttpContext.User))
+                        if (course.FK_INSTRUCTOR.Id == currentUser.Id)
                         {
                             CourseDataOut dataOut = new CourseDataOut
                             {
                                 ID = course.ID,
                                 Name = course.Name,
                                 IsActive = course.IsActive,
-                                FK_INSTRUCTOR_NAME = course.FK_INSTRUCTOR.FirstName + " " + course.FK_INSTRUCTOR.LastName
+                              //  FK_INSTRUCTOR_NAME = course.FK_INSTRUCTOR.FirstName + " " + course.FK_INSTRUCTOR.LastName
                             };
                             response.Data.Add(dataOut);
                         }
@@ -92,13 +92,13 @@ namespace PeerIt.Controllers
                     {
                         if (courseGroup.FK_AppUser == currentUser)
                         {
-                            AppUser instructor = courseGroup.FK_Course.FK_INSTRUCTOR;
+                            //AppUser instructor = courseGroup.FK_Course.FK_INSTRUCTOR;
                             courseDataOuts.Add(new CourseDataOut
                             {
                                 ID = courseGroup.FK_Course.ID,
                                 Name = courseGroup.FK_Course.Name,
                                 IsActive = courseGroup.FK_Course.IsActive,
-                                FK_INSTRUCTOR_NAME = instructor.FirstName + " " + instructor.LastName
+                              //  FK_INSTRUCTOR_NAME = instructor.FirstName + " " + instructor.LastName
                             });
                         }
                     });

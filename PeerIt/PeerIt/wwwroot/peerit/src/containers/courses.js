@@ -16,14 +16,7 @@ class Courses extends Component {
       role: props.role,
       data: null,
       viewingCourse: props.viewingCourse,
-      Courses: [{
-        view: "accordionitem",
-        header: "No Courses",
-        id: "noCourse",
-        padding: 0,
-        body: "No Courses",
-        collapsed: false
-      }]
+      Courses: []
     };
     console.log("Receiving course view" + props.viewingCourse);
     this.handleCourseViewer = props.handleCourseViewer;
@@ -65,7 +58,9 @@ class Courses extends Component {
     }).then(res => res.json())
       .then(response => {
         if (response.success) {
-          this.setState({ courses: response.data });
+          if(response.data.length > 0){
+          	this.setState({ courses: response.data });
+          }
           this.drawCourses();
         }
       })
@@ -74,6 +69,7 @@ class Courses extends Component {
   }
 
   drawCourses() {
+  
     if (this.state.courses != null && this.state.courses.length > 0) {
 
       this.state.courses.forEach(element => {
@@ -134,6 +130,25 @@ class Courses extends Component {
           console.log("error" + e);
         }
       });
+    }
+    else{
+    	// No Courses
+    	if(window.webix.$$("courses").getChildViews().length == 0){
+	    	let ui = {
+	    	  view: "accordionitem",
+	          header: "No Courses",
+	          padding: 0,
+	          css: "courseMenuItem",
+	          autoheight:true,
+	          body: {
+	             view:"template",
+	             template: "No Courses"
+	          }
+	        };
+	    	 window.webix.$$("courses").addView(ui);
+	    }
+    	
+    	
     }
   }
 

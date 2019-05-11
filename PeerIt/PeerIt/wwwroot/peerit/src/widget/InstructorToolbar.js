@@ -19,7 +19,7 @@ class InstructorToolbar extends Component {
     this.handleCreateCourseWindow = props.handleCreateCourse;
     this.handleMenuClick = props.handleMenuClick;
     this.showCreateCourse = props.handleCreateCourse;
-
+    this.accountClick = props.accountClick;
   }
   handleCourseViewer(statechange) {
     this.setState(statechange);
@@ -54,12 +54,15 @@ class InstructorToolbar extends Component {
         [
           {
             view: "list",
-            data: ["Instructor", "Reports", "Settings", "Logout"],
+            data: ["Instructor", "My Account", "Logout"],
             ready: function () {
               this.select(this.getFirstId());
             },
             click: function (a) {
-              if (a === "Logout") {
+              if(a == "My Account"){
+                this.accountClick();
+              }
+              else if (a === "Logout") {
                 //Attempt to call the logout chain
                 this.logout();
               }

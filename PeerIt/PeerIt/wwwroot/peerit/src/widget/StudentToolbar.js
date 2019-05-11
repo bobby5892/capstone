@@ -16,6 +16,7 @@ class StudentToolbar extends Component {
     this.handleMenuClick = props.handleMenuClick;
     this.renderAccountWindow = props.renderAccountWindow;
     this.uploadReview = props.uploadReview;
+    this.accountClick = props.accountClick;
   }
   handleCourseViewer(statechange) {
     this.setState(statechange);
@@ -42,19 +43,18 @@ class StudentToolbar extends Component {
       rows: [
         {
           view: "list",
-          data: ["Student", "Reports","UploadReview", "Settings", "Logout"],
+          data: ["Student", "My Account", "Logout"],
           ready: function () {
             this.select(this.getFirstId());
           },
           click: function (a) {
-            if (a === "Logout") {
+            if( a === "My Account"){
+              this.accountClick();
+            }
+            else if (a === "Logout") {
               //Attempt to call the logout chain
               this.logout();
             }
-            else if(a === "UploadReview"){
-            		//Attempt to call the logout chain
-            		this.uploadReview();
-            	}            
           }.bind(this),
           select: true,
           scroll: false,
@@ -69,7 +69,7 @@ class StudentToolbar extends Component {
         }
       ]
     }
-    console.log("attempted render");
+    
     return (<div id="StudentToolbar">
       <Webix ui={ui} data={data} />
       {this.renderCourses()}

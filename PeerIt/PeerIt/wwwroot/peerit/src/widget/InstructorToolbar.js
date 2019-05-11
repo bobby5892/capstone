@@ -20,21 +20,24 @@ class InstructorToolbar extends Component {
     this.showCreateCourse = props.handleCreateCourse;
 
   }
-  handleCourseViewer(statechange){
+  handleCourseViewer(statechange) {
     this.setState(statechange);
   }
   renderCourses() {
-       return <Courses 
-       currentUser={this.state.currentUser} 
-       role={this.state.role} 
-       handleCourseViewer={this.handleCourseViewer.bind(this)} 
-       viewingCourse={this.state.viewingCourse}
-       handleMenuClick={this.handleMenuClick}
-       />
+    return <Courses
+      currentUser={this.state.currentUser}
+      role={this.state.role}
+      handleCourseViewer={this.handleCourseViewer.bind(this)}
+      viewingCourse={this.state.viewingCourse}
+      handleMenuClick={this.handleMenuClick}
+    />
   }
   renderCreateCourseButton() {
-       return <CreateCourse currentUser={this.state.currentUser} role={this.state.role} showCreateCourse={this.showCreateCourse} />
-  } 
+    return <CreateCourse 
+    currentUser={this.state.currentUser} 
+    role={this.state.role} 
+    showCreateCourse={this.showCreateCourse} />
+  }
 
   render() {
     //let scope = this;
@@ -67,21 +70,21 @@ class InstructorToolbar extends Component {
           },
           // This is where we would render courses        
           {
-            
+
             view: "template",
-              scroll: true,
-              template: "right",
-              content: "Courses",
-              align:"right"
-            },
-            {
-              gravity: 1,
-              view: "template",
-              scroll: true,
-              template: "right",
-              content: "CreateCourse",
-              align:"right"
-          }      
+            scroll: true,
+            template: "right",
+            content: "Courses",
+            align: "right"
+          },
+          {
+            gravity: 1,
+            view: "template",
+            scroll: true,
+            template: "right",
+            content: "CreateCourse",
+            align: "right"
+          }
         ]
     };
 

@@ -398,11 +398,11 @@ namespace PeerIt.Controllers
         }
         [Authorize(Roles = "Administrator,Instructor")]
         [HttpPost]
-        async Task<JsonResult> AddStudentToCourse(int courseID, string studentID) {
+        public async Task<JsonResult> AddStudentToCourse(int courseID, string studentEmail) {
             SetRoles();
             JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
             Course lookupCourse = this.courseRepository.FindByID(courseID);
-            AppUser student = await usrMgr.FindByIdAsync(studentID);
+            AppUser student = await usrMgr.FindByEmailAsync(studentEmail);
             if(student == null)
             {
                 response.Error.Add(new Error() { Name = "addStudentToCourse", Description = "Student doesn't exist" });
@@ -415,7 +415,7 @@ namespace PeerIt.Controllers
             }
             // Lets see if this student is already in the course
             bool alreadyEnrolled = this.courseGroupRepository.GetAll().Exists((x) => {
-                if(x.FK_Course.ID == courseID && x.FK_AppUser.Id == studentID)
+                if(x.FK_Course.ID == courseID && x.FK_AppUser.Id == student.Id)
                 {
                     return true;
                 }
@@ -450,7 +450,7 @@ namespace PeerIt.Controllers
         }
         [Authorize(Roles = "Administrator,Instructor")]
         [HttpDelete]
-        async Task<JsonResult> RemoveStudentToCourse(int courseID, string studentID)
+        public async Task<JsonResult> RemoveStudentToCourse(int courseID, string studentID)
         {
             SetRoles();
             JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();

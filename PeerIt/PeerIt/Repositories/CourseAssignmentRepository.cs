@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PeerIt.Models;
 using PeerIt.Interfaces;
+using Microsoft.EntityFrameworkCore;
 namespace PeerIt.Repositories
 {
     public class CourseAssignmentRepository : IGenericRepository<CourseAssignment, int>
@@ -14,7 +15,16 @@ namespace PeerIt.Repositories
         /// Returns all of the CourseAssignment objects in the dbcontext
         /// </summary>
         /// <returns></returns>
-        public List<CourseAssignment> CourseAssignments { get { return this.context.CourseAssignments.ToList<CourseAssignment>(); } }
+        //public List<CourseAssignment> CourseAssignments { get { return this.context.CourseAssignments.ToList<CourseAssignment>(); } }
+        public List<CourseAssignment> CourseAssignments
+        {
+            get
+            {
+                return context.CourseAssignments
+                    .Include(cAssignments => cAssignments.FK_COURSE.FK_INSTRUCTOR)
+                    .ToList();
+            }
+        }
         public CourseAssignmentRepository(AppDBContext context)
         {
             this.context = context;

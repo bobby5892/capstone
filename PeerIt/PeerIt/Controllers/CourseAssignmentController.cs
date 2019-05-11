@@ -151,8 +151,24 @@ namespace PeerIt.Controllers
                     CourseGroup courseGroup = courseGroupRepository.GetByUserAndCourseID(user.Id, courseID);
                     if (courseGroup != null)
                     {
-                        response.Data.Add(courseAssignmentRepository.GetByCourseID(courseID));
-                        return Json(response);
+                        var responseStudent = new JsonResponse<CourseAssignmentDataOut>();
+                        List<CourseAssignment> cAssigns = courseAssignmentRepository.GetByCourseID(courseID);
+                        cAssigns.ForEach(cAssign =>
+                        {
+                            responseStudent.Data.Add(
+                                new CourseAssignmentDataOut
+                                {
+                                    ID = cAssign.ID,
+                                    Name = cAssign.Name,
+                                    FK_COURSE_ID = cAssign.ID,
+                                    InstructionText = cAssign.InstructionText,
+                                    InstructionsUrl = cAssign.InstructionsUrl,
+                                    RubricText = cAssign.RubricText,
+                                    RubricUrl = cAssign.RubricUrl
+                                }
+                            );
+                        });
+                        return Json(responseStudent);
                     }
                     else
                     {
@@ -203,6 +219,7 @@ namespace PeerIt.Controllers
                 }
                 else if (this.isStudent)
                 {
+                    var responseStudent = new JsonResponse<CourseAssignmentDataOut>();
                     CourseGroup sCourse = courseGroupRepository.GetByUserAndCourseID(user.Id, courseID);
                     if (sCourse != null)
                     {
@@ -210,7 +227,18 @@ namespace PeerIt.Controllers
 
                         if (courseAssignment != null)
                         {
-                            response.Data.Add(courseAssignment);
+                            responseStudent.Data.Add(
+                                new CourseAssignmentDataOut
+                                {
+                                    ID = courseAssignment.ID,
+                                    Name = courseAssignment.Name,
+                                    FK_COURSE_ID = courseAssignment.FK_COURSE.ID,
+                                    InstructionText = courseAssignment.InstructionText,
+                                    InstructionsUrl = courseAssignment.InstructionsUrl,
+                                    RubricText = courseAssignment.RubricText,
+                                    RubricUrl = courseAssignment.RubricUrl
+                                }    
+                            );
                             return Json(response);
                         }
                         else

@@ -25,13 +25,7 @@ namespace PeerIt.Models
         /// </summary>
         public AppUser AppUser { get; set; }
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="extension"></param>
-        /// <param name="user"></param>
-        //public PFile(string id, string extension, AppUser user)
+
 
         ///
         public PFile() { }

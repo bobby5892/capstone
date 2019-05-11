@@ -4,16 +4,18 @@ import Webix from '../webix';
 import Courses from '../containers/courses.js';
 class StudentToolbar extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentUser: props.currentUser,
-      role: props.role,
-      data: null
-    };
+
+	constructor(props) {
+	      super(props);
+	      this.state = {
+          currentUser: props.currentUser,
+          role: props.role,
+	        data : null
+	      };
     this.logout = props.logout;
     this.handleMenuClick = props.handleMenuClick;
-
+    this.renderAccountWindow = props.renderAccountWindow;
+    this.uploadReview = props.uploadReview;
   }
   handleCourseViewer(statechange) {
     this.setState(statechange);
@@ -40,7 +42,7 @@ class StudentToolbar extends Component {
       rows: [
         {
           view: "list",
-          data: ["Student", "Reports", "Settings", "Logout"],
+          data: ["Student", "Reports","UploadReview", "Settings", "Logout"],
           ready: function () {
             this.select(this.getFirstId());
           },
@@ -49,6 +51,10 @@ class StudentToolbar extends Component {
               //Attempt to call the logout chain
               this.logout();
             }
+            else if(a === "UploadReview"){
+            		//Attempt to call the logout chain
+            		this.uploadReview();
+            	}            
           }.bind(this),
           select: true,
           scroll: false,

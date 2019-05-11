@@ -15,21 +15,27 @@ import CourseContent from '../containers/CourseContent';
 class Portal extends Component {
 
   constructor(props) {
-    super(props);
-    this.state = {
-      currentUser: props.currentUser,
-      role: props.role,
-      data: null,
-      viewingCourse: props.viewingCourse,
-      currentContentWidgets: ["LiveFeed"]
-     
-    };
+      super(props);
+      this.state = {
+        currentUser : props.currentUser,
+        role : props.role,
+        data : null,
+        account : null,
+        viewingCourse: props.viewingCourse,
+        currentContentWidgets : ["LiveFeed"]
+      };
+    this.handleCourseViewer = props.handleCourseViewer;
     // Used to change user state from App.js
     this.handleLogin = props.handleLogin;
-    this.handleCourseViewer = props.handleCourseViewer;
     // Logout Function
     this.logout.bind(this);
 
+      //Account menu click
+      this.accountClick.bind(this);
+      this.fetchAccountFormData.bind(this);
+
+      //Upload a review
+      this.uploadReview.bind(this);
     // Handle Menu Users Click
     this.handleMenuClick.bind(this);
 
@@ -52,6 +58,7 @@ class Portal extends Component {
     }, window.webix.ui.view)
 
   }
+
  componentWillReceiveProps(props){
   this.setState(props);
  }
@@ -69,6 +76,7 @@ class Portal extends Component {
         handleMenuClick={this.handleMenuClick.bind(this)}
         viewingCourse={this.state.viewingCourse}
         handleCourseViewer={this.handleCourseViewer.bind(this)}
+        accountClick={this.accountClick.bind(this)}
         />
     }
   }
@@ -79,6 +87,7 @@ class Portal extends Component {
         logout={this.logout.bind(this)}
         handleMenuClick={this.handleMenuClick.bind(this)}
         viewingCourse={this.state.viewingCourse}
+        accountClick={this.accountClick.bind(this)}
         />
     }
   }
@@ -90,6 +99,7 @@ class Portal extends Component {
       logout={this.logout.bind(this)}  
       handleMenuClick={this.handleMenuClick.bind(this)} 
       viewingCourse={this.state.viewingCourse}
+      accountClick={this.accountClick.bind(this)}
       />
     }
   }
@@ -122,20 +132,159 @@ class Portal extends Component {
       return <AdminSettings currentUser={this.state.currentUser} role={this.state.role} />
     }
   }
-  handleMenuClick(contentWidget) {
-    this.setState({ 'currentContentWidgets': contentWidget });
+}
+handleMenuClick(contentWidget){
+  this.setState({'currentContentWidgets' : contentWidget});
+}
+fetchAccountFormData(){
+  fetch("/Account/PopulateFormData", {
+    method: 'GET',
+    headers:{
+      'Content-Type': 'application/json'
+    },
+    credentials: "include",
+    mode:"no-cors"
+  }).then(res => res.json())
+    .then(response => {
+    console.log('POPULATE-FORM-DATA:', JSON.stringify(response))
+
+    //create an account object and assign its value to the "account" property of the state object.
+    if(response.success){
+      let account = {
+        "FirstName" : response.data[0].firstName,
+        "LastName" : response.data[0].lastName,
+        "Email" : response.data[0].email
+      }
+      this.setState({"account":account});
+
+      console.log("Account after setting the state " +  JSON.stringify(this.state.account));
+        return true;
+    }else{
+      let errors = "";
+      return false;
+    }
+  }).then(shouldRender => {
+    if(shouldRender){
+      this.renderAccountWindow();
+    }
+  })
+  .catch(error => console.error('Error:', error));
+}
+//Click event for the "Account" link in the toolbar.
+accountClick(){
+  this.fetchAccountFormData();
+}
+renderAccountWindow(){
+   let scope = this;
+   console.log("Checking State @ Time of Window: " + JSON.stringify(this.state));
+   var newWindow = window.webix.ui({
+           view:"window",
+           id:"accountWindow",
+           width: 900,
+           height: 600,
+           move:true,
+           position:"center",
+           head:{
+               type:"space",
+               cols:[
+                   { view:"label", label: "Edit My Account" },
+                   {
+                     view:"button", label:"Close", width:70,left:250,
+                     click:function(){
+                       scope.setState({"editUser" : null });
+                       window.webix.$$("accountWindow").close();
+                     } 
+                   }
+                ]   
+           },
+           body:{
+               type:"space",
+               rows:[
+                   { 
+                     view:"form", 
+                     id:"editAccountForm",
+                     width:900,
+                     elements:[
+                       { view:"label", label:"Your Email: "+this.state.account.Email, name:"Email", labelWidth:100,invalidMessage: "Must be valid email address",value:this.state.account.Email },
+                         { view:"text", label:"First Name", name:"FirstName", labelWidth:100,invalidMessage: "First Name can not be empty", value:this.state.account.FirstName }, 
+                         { view:"text", label:"Last Name", name:"LastName", labelWidth:100,invalidMessage: "Last Name can not be empty",value:this.state.account.LastName},
+                         { view:"text", type:"password", label:"New Password", name:"Password1", labelWidth:160, invalidMessage: "Password can not be empty" },
+                         { view:"text", type:"password", label:"Confirm Password", name:"Password2", labelWidth:160, invalidMessage: "Password can not be empty" },
+                         
+                         { margin:5, cols:[
+                             { view:"button", value:"Save Changes" , type:"form", click:function(){
+                               scope.saveAccountChanges();
+                             }}
+                         ]}
+                     ],
+                     rules:{
+                         "Email": window.webix.rules.isEmail,
+                         "LastName": window.webix.rules.isNotEmpty,
+                         "FirstName": window.webix.rules.isNotEmpty,
+                         "Password" :  window.webix.rules.isNotEmpty
+                     }
+                   }
+               ]
+           }
+  }).show();
+}
+saveAccountChanges(){
+  let properties = window.webix.$$("editAccountForm").getValues();
+ // console.log(properties);
+  console.log(JSON.stringify(properties));
+
+  if(properties.Password1 != "" && properties.Password1 == properties.Password2)
+  {
+    var newPassword = properties.Password2;
   }
-  // Handles the sub content Widgts 
-  renderMultipleContentWidgets() {
-    if (this.state.currentContentWidgets != null) {
-      let output = [];
-      // Lets go thru each of the requested widgets
-      for (let i = 0; i <= this.state.currentContentWidgets.Length; i++) {
-        // lets build the webix template that will get stacked in the portal
-        output.push(
-          {
-            view: "template",
-            scroll: false,
+  else{
+    var newPassword = "";
+  }
+
+  fetch("/Account/UpdateAccountInfo?email="+properties.Email+"&firstName="+properties.FirstName+
+      "&lastName="+properties.LastName+"&password="+newPassword, {
+    method: 'POST',
+    headers:{
+    'Content-Type': 'application/json'
+    },
+    credentials: "include",
+    mode:"no-cors"
+    }).then(res => res.json())
+    .then(response => {
+      if(response.success){
+        let account = {
+          "FirstName" : response.data[0].firstName,
+          "LastName" : response.data[0].lastName,
+          "Email" : response.data[0].email,
+        }
+        this.setState({"account":account});
+
+        console.log("After Setting: " +  JSON.stringify(this.state.account));
+          return true;
+      }else
+      {
+        let errors = "";
+        return false;
+      }
+    }).then(isChanged => {
+      if(isChanged){
+        window.webix.$$("accountWindow").close();
+        this.logout();
+      }
+    })
+    .catch(error => console.error('Error:', error));
+}
+// Handles the sub content Widgts 
+renderMultipleContentWidgets(){
+  if(this.state.currentContentWidgets != null){
+    let output = [];
+// Lets go thru each of the requested widgets
+    for(let i=0; i<= this.state.currentContentWidgets.Length; i++){
+      // lets build the webix template that will get stacked in the portal
+      output.push( 
+          {  
+            view:"template", 
+            scroll:false,
             content: this.state.currentContentWidgets[i]
           });
       }
@@ -159,11 +308,72 @@ class Portal extends Component {
       return ui;
     }
   }
-  
-  // Portal additional methods
- 
-  logout() {
-    fetch("/Account/Logout", {
+}
+// Portal additional methods
+
+//Upload a review
+uploadReview(){
+  console.log("upload a revew");
+  this.renderUploadReviewWindow();
+}
+
+renderUploadReviewWindow(){
+    let scope = this;
+
+    var newWindow = window.webix.ui({
+            view:"window",
+            id:"uploadReviewWindow",
+            width: 900,
+            height: 600,
+            move:true,
+            position:"center",
+            head:{
+                type:"space",
+                cols:[
+                    { view:"label", label: "Upload a Review" },
+                    {
+                      view:"button", label:"Close", width:70,left:250,
+                      click:function(){
+                        //scope.setState({"editUser" : null });
+                        window.webix.$$("uploadReviewWindow").close();
+                      } 
+                    }
+                 ]   
+            },
+            body:{
+                type:"space",
+                rows:[
+                    { 
+                      view:"form", 
+                      id:"uploadReviewForm",
+                      width:900,
+                      elements:[
+                        { view:"label", label:"Upload your review form here: ", name:"", labelWidth:100,value:"" },
+                        { view:"uploader",inputName:"files",upload:"/Review/UploadReview" ,urlData:{studentAssignmentId:35} ,name:"ReviewFile",value:"Click here to upload your review file"},
+                        { view:"text", label:"Course", name:"Course", labelWidth:100, value:""}, 
+                        { view:"text", label:"Assignment", name:"Assignment", labelWidth:100, value:""},
+                          
+                          // { margin:5, cols:[
+                          //     { view:"button", value:"Upload" , type:"form", click:function(){
+                          //       scope.uploadTheReviewDoc();
+                          //     }}
+                          // ]}
+                      ],
+                      rules:{
+                          "Email": window.webix.rules.isEmail,
+                          "LastName": window.webix.rules.isNotEmpty,
+                          "FirstName": window.webix.rules.isNotEmpty,
+                          "Password" :  window.webix.rules.isNotEmpty
+                      }
+                    }
+                ]
+            }
+   }).show();
+}
+
+logout(){
+  fetch("/Account/Logout", {
+
       method: 'GET', // or 'PUT'
       headers: {
         'Content-Type': 'application/json'

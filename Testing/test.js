@@ -1,7 +1,7 @@
 import LWAT from './index.js';
 
 
-//* Example Unit Tests */
+/* Example Unit Tests */
 
 // Testing Logout
 let lwat = new LWAT();
@@ -20,7 +20,7 @@ lwat.post("http://localhost:8080/Account/Login",{
 
 // Testing GetCurrentUserRole. It must log in first before it attempts getting the role.
 lwat.post("http://localhost:8080/Account/Login",{ 
-			"Email" : "admin@example.com",
+			"Email" : "admin@exam.com",
 			"Password" : "password",
 			"returnUrl" : ""
 	}).then((response) => { 
@@ -29,3 +29,11 @@ lwat.post("http://localhost:8080/Account/Login",{
 			lwat.assert(res.data[0].role,"Administrator","Check That current role is admin");
 	}).catch(console.log("Promise Rejection at GetCurrentUserRole portion of User Role Getter."));
 }).catch(console.log("Promise Rejection at login portion of Current User Role Getter."));
+
+// Testing Create Course
+lwat.post("http://localhost:8080/Course/CreateCourse",
+			{"courseName" : "blep"})
+		.then((response) => {
+			console.log(JSON.stringify(response.data[0]));
+			//lwat.assert(response.data[0].)
+		});

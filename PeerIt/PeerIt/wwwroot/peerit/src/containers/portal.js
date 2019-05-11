@@ -114,6 +114,7 @@ class Portal extends Component {
         role={this.state.role} 
         handleMenuClick={this.handleMenuClick.bind(this)} 
         viewingCourse={this.state.viewingCourse}
+        handleCourseViewer={this.handleCourseViewer.bind(this)}
         />
     }
   }

@@ -472,7 +472,7 @@ namespace PeerIt.Controllers
                 response.Error.Add(new Error() { Name = "addStudentToCourse", Description = "Student is already in class" });
                 return Json(response);
             }
-            var newCourseGroup = new CourseGroup() { FK_AppUser = student, FK_Course = lookupCourse, ReviewGroup = "ClassGroup" };
+            var newCourseGroup = new CourseGroup() { FK_AppUser = student, FK_Course = lookupCourse, ReviewGroup = "1" };
             if (this.isAdmin)
             {
                 this.courseGroupRepository.Add(newCourseGroup);

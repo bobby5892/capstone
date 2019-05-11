@@ -11,7 +11,8 @@ class CourseContent extends Component {
       viewingCourse: props.viewingCourse,
       addingStudent: false
     }
-
+    this.handleCourseViewer = props.handleCourseViewer;
+    this.handleMenuClick = props.handleMenuClick;
     window.webix.protoUI({
       name: "react",
       defaults: {
@@ -107,6 +108,8 @@ class CourseContent extends Component {
             // Should reload student list
             console.log("Added Student");
             window.webix.$$("addStudentWindow").close();
+            this.handleMenuClick("LiveFeed");
+
           }
         })
         .catch(error => console.error('Error:', error));
@@ -114,6 +117,23 @@ class CourseContent extends Component {
   }
   componentWillReceiveProps(props) {
     this.setState(props);
+  }
+  removeStudent(studentID){
+     fetch("/Course/RemoveStudentToCourse?courseID=" + this.state.viewingCourse + "&studentID=" + studentID, {
+          method: 'DELETE', // or 'PUT'
+          headers:{
+            'Content-Type': 'application/json'
+          },
+          credentials: "include"
+          
+        }).then(res => res.json())
+        .then(response => {
+          if(response.success){
+            // Should reload student list
+            this.handleMenuClick("LiveFeed");
+          }
+        })
+        .catch(error => console.error('Error:', error));
   }
   render() {
     console.log("render course content");
@@ -132,16 +152,18 @@ class CourseContent extends Component {
               header: "Assignments",
               body: {
                 autoheight: true,
-                view: "datatable",
-                columns: [
-                  { id: "rank", header: "", width: 50 },
-                  { id: "title", header: "Film title", width: 200 },
-                  { id: "year", header: "Released", width: 80 },
-                  { id: "votes", header: "Votes", width: 100 }
-                ],
-                data: [
-                  { id: 1, title: "The Shawshank Redemption", year: 1994, votes: 678790, rank: 1 },
-                  { id: 2, title: "The Godfather", year: 1972, votes: 511495, rank: 2 }
+                rows: [
+                  {
+                    autoheight: true,
+                    view: "datatable",
+                    columns: [
+                      { id: "rank", header: "", width: 50 },
+                      { id: "firstName", header: "First Name", width: 200 },
+                      { id: "lastName", header: "Last Name", width: 80 },
+
+                    ],
+                    url: "/Course/GetStudents?courseID=" + this.state.viewingCourse
+                  }
                 ]
               }
             },
@@ -149,16 +171,23 @@ class CourseContent extends Component {
               header: "Groups",
               body: {
                 autoheight: true,
-                view: "datatable",
-                columns: [
-                  { id: "rank", header: "", width: 50 },
-                  { id: "title", header: "Film title", width: 200 },
-                  { id: "year", header: "Released", width: 80 },
-                  { id: "votes", header: "Votes", width: 100 }
-                ],
-                data: [
-                  { id: 1, title: "The Shawshank Redemption", year: 1994, votes: 678790, rank: 1 },
-                  { id: 2, title: "The Godfather", year: 1972, votes: 511495, rank: 2 }
+                rows: [
+                  {
+                    autoheight: true,
+                    view: "datatable",
+                    columns: [
+                      { id: "rank", header: "", width: 50 },
+                      { id: "firstName", header: "First Name", width: 200 },
+                      { id: "lastName", header: "Last Name", width: 80 },
+
+                    ],
+                    url: "/Course/GetStudents?courseID=" + this.state.viewingCourse
+
+                    /* data: [
+                         { id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rank:1},
+                         { id:2, title:"The Godfather", year:1972, votes:511495, rank:2}
+                     ]*/
+                  }
                 ]
               }
             },
@@ -189,14 +218,22 @@ class CourseContent extends Component {
                       { id: "rank", header: "", width: 50 },
                       { id: "firstName", header: "First Name", width: 200 },
                       { id: "lastName", header: "Last Name", width: 80 },
-
+                      { header: "Enrollment", width: 100 ,   template:"<input type='button' value='Remove' class='remove_button'>"}
+                        
+                      
                     ],
+                    onClick : {
+                      remove_button:function (i,ev){
+                             // Don't remove the comment below - its actually functional.
+                             //eslint-disable-next-line
+                             let confirmCheck = confirm("Are you sure you want to remove this student?");
+                             if(confirmCheck){
+                                console.log("I want to remove " + ev.row);
+                                this.removeStudent(ev.row);
+                             }
+                          }.bind(this)
+                    },
                     url: "/Course/GetStudents?courseID=" + this.state.viewingCourse
-
-                    /* data: [
-                         { id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rank:1},
-                         { id:2, title:"The Godfather", year:1972, votes:511495, rank:2}
-                     ]*/
                   }
                 ]
               }

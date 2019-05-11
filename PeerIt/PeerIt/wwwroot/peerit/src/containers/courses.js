@@ -85,6 +85,7 @@ class Courses extends Component {
           id: element.id,
           padding: 0,
           css: "courseMenuItem",
+          autoheight:true,
           body: {
             cols: this.renderSubMenu(element.id)
           },
@@ -153,19 +154,23 @@ class Courses extends Component {
                 css: "subCourseMenu",
                 header: "Students",
                 id: "AdminInstructorSubListItem",
-                body: {
-                  view: "template",
-                  width: 250,
-                  height: 200,
-                  template: "aerf#title#",
-                  select: true,
-                  /* data:[
-                     { id:1, title:"Item 1"},
-                     { id:2, title:"Item 2"},
-                     { id:3, title:"Item 3"}
-                   ]*/
-                  // url:"/Course/GetStudents?courseID=" + courseID
-                },
+                autoheight:true,
+                body:  {
+                    autoheight: true,
+                    view: "datatable",
+                    columns: [
+                      { id: "rank", header: "", width: 50 },
+                      { id: "firstName", header: "First Name", width: 200 },
+                      { id: "lastName", header: "Last Name", width: 80 },
+
+                    ],
+                    url: "/Course/GetStudents?courseID=" + courseID
+
+                    /* data: [
+                         { id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rank:1},
+                         { id:2, title:"The Godfather", year:1972, votes:511495, rank:2}
+                     ]*/
+                  },
                 autoheight: true,
                 collapsed: true,
                 gravity: 1
@@ -235,11 +240,12 @@ class Courses extends Component {
       view: "scrollview",
       id: "verses",
       scroll: "y", // vertical scrolling
-      height: 350,
+      height:500,
       width: 250,
       body: {
         rows: [
           {
+          	autoheight:true,
             "view": "accordion",
             "gravity": 3,
             "scroll": "y",
@@ -247,7 +253,6 @@ class Courses extends Component {
             "css": "webix_dark",
             "id": "courses",
             "rows": []
-
           }
         ]
       }

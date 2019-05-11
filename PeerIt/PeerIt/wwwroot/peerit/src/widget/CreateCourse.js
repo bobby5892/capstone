@@ -62,7 +62,7 @@ class CreateCourse extends Component {
                 window.webix.$$("newCourseWindow").close();
                 //temp fix - if more time add a cleaner reload
                 
-              }.bind(this)
+              }
             }
           ]
         },

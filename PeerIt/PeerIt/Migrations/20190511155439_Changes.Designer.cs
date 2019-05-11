@@ -10,8 +10,8 @@ using PeerIt.Repositories;
 namespace PeerIt.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20190507202552_AddedFK_PfileToReview")]
-    partial class AddedFK_PfileToReview
+    [Migration("20190511155439_Changes")]
+    partial class Changes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

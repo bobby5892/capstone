@@ -45,7 +45,6 @@ class CourseContent extends Component {
               this.setState({ addingStudent: false });
               window.webix.$$("addStudentWindow").close();
             }.bind(this)
-
           }
         ]
       },
@@ -81,7 +80,7 @@ class CourseContent extends Component {
 
     console.log("Does button have click: " + window.webix.$$("AddStudentFormButton").hasEvent("onItemClick"));
     // If its not already bound lets do it
-    if (window.webix.$$("AddStudentFormButton").hasEvent("onItemClick")== false) {
+    if (window.webix.$$("AddStudentFormButton").hasEvent("onItemClick")=== false) {
       console.log("binding function to button");
       window.webix.$$("AddStudentFormButton").attachEvent("onItemClick", function (i) {
 

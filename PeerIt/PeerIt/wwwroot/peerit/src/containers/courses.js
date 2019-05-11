@@ -54,7 +54,6 @@ class Courses extends Component {
     //window.webix.$$().setHTML("<h1>YEP</h1>");
   }
   loadCourses() {
-    let scope = this;
     //let accord = [];
     fetch("Course/GetCourses", {
       method: 'GET', // or 'PUT'
@@ -67,8 +66,6 @@ class Courses extends Component {
       .then(response => {
         if (response.success) {
           this.setState({ courses: response.data });
-          //console.log("response.data: " + JSON.stringify(response.data));
-
           this.drawCourses();
         }
       })
@@ -77,9 +74,6 @@ class Courses extends Component {
   }
 
   drawCourses() {
-
-    let scope = this;
-    let accordArray = [];
     if (this.state.courses != null && this.state.courses.length > 0) {
 
       this.state.courses.forEach(element => {
@@ -98,23 +92,19 @@ class Courses extends Component {
             'onItemClick': function (i) {
               let redraw = false;
               // Check if it should redraw
-              if (parseInt(i) != parseInt(this.state.viewingCourse)) {
+              if (parseInt(i) !== parseInt(this.state.viewingCourse)) {
                 redraw = true;
               }
               else {
                 // They clicked on self
                 // Check and see if there is another view passed to change the active view to
                 try {
-                  let index = window.webix.$$("courses").index(i);
-                  //Check if the next index is a thing
-                  //console.log("Detected a click on self " + i);
-
-                  let nextChild = scope.webixGetNextChild(i);
+                  //let index = window.webix.$$("courses").index(i);
+                  let nextChild = this.webixGetNextChild(i);
                   //console.log("next child is: " + nextChild + " compared to " + i);
-                  if (nextChild != false) {
+                  if (nextChild !== false) {
                     //console.log("setting view to next child");
                     let stateChange = { "viewingCourse": parseInt(nextChild) };
-                    console.log("CHANGING STATE: " + JSON.stringify(stateChange));
                     this.handleCourseViewer(stateChange);
                   }
                   // Lets set the one we're viewing up to what the accordion is showing
@@ -126,7 +116,6 @@ class Courses extends Component {
 
               if (redraw) {
                 this.handleCourseViewer({ "viewingCourse": parseInt(i) });
-
                 this.drawCourses();
               }
             }.bind(this)
@@ -136,15 +125,13 @@ class Courses extends Component {
         };
         // Lets try if it doesnt exisit
         try {
-          if (window.webix.$$("courses").index(element.id) == -1) {
+          if (window.webix.$$("courses").index(element.id) === -1) {
             window.webix.$$("courses").addView(accord);
           }
         }
         catch (e) {
           console.log("error" + e);
-
         }
-
       });
     }
   }
@@ -152,9 +139,6 @@ class Courses extends Component {
   renderSubMenu(courseID) {
 
     if (this.state.role === "Administrator" || this.state.role === "Instructor") {
-      let renderObjects = {
-        'Students': null
-      };
       return (
         [
           {
@@ -244,9 +228,6 @@ class Courses extends Component {
         ]
       }]);
     }
-  }
-  componentWillReceiveProps(props) {
-    this.setState(props);
   }
   render() {
     let ui = {

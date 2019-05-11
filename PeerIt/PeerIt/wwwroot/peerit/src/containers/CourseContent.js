@@ -9,8 +9,11 @@ class CourseContent extends Component {
       currentUser: props.currentUser,
       role: props.role,
       viewingCourse: props.viewingCourse,
-      addingStudent: false
+      addingStudent: false,
+      seed : props.seed
+
     }
+    this.redrawAll = props.redrawAll;
     this.handleCourseViewer = props.handleCourseViewer;
     this.handleMenuClick = props.handleMenuClick;
     window.webix.protoUI({
@@ -108,7 +111,8 @@ class CourseContent extends Component {
             // Should reload student list
             console.log("Added Student");
             window.webix.$$("addStudentWindow").close();
-            this.handleMenuClick("LiveFeed");
+            //this.handleMenuClick("LiveFeed");
+             this.redrawAll();
 
           }
         })
@@ -130,7 +134,8 @@ class CourseContent extends Component {
         .then(response => {
           if(response.success){
             // Should reload student list
-            this.handleMenuClick("LiveFeed");
+            // this.handleMenuClick("LiveFeed");
+             this.redrawAll();
           }
         })
         .catch(error => console.error('Error:', error));

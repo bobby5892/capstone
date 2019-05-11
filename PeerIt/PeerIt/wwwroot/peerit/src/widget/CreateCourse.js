@@ -9,9 +9,12 @@ class CreateCourse extends Component {
     this.state = {
       currentUser: props.currentUser,
       role: props.role,
-      data: null
+      data: null,
+      seed: props.seed
+
       
     };
+    this.redrawAll = props.redrawAll;
 
   }
    createCourse() {
@@ -24,12 +27,12 @@ class CreateCourse extends Component {
         'Content-Type': 'application/json'
       },
       credentials: "include",
-      mode: "cors"
+      mode: "no-cors"
     }).then(res => res.json())
       .then(response => {
         if (response.success) {
           this.setState({"data" : 0});
-          
+          this.redrawAll();
         } else {
        //   let errors = "";
           //response.error.forEach(error => {

@@ -10,7 +10,8 @@ class App extends Component {
     this.state = {
       currentUser: null,
       role: null,
-      viewingCourse: null
+      viewingCourse: null,
+      seed : (new Date).getTime()
     };
     // Bind handle Login
     this.handleLogin = this.updateLogin.bind(this);
@@ -46,13 +47,13 @@ class App extends Component {
           response.error.forEach(error => {
             console.log(error);
           });
-
         }
-
       })
       .catch(error => console.error('Error:', error));
-
-
+  }
+  redrawAll(){
+  	console.log("REDRAW ALL TRIGGERED");
+  	this.setState({seed : (new Date).getTime()});
   }
   handleCourseViewer(statechange) {
     console.log("changing state" + JSON.stringify(statechange));
@@ -67,6 +68,9 @@ class App extends Component {
         handleLogin={this.handleLogin}
         viewingCourse={this.state.viewingCourse}
         handleCourseViewer={this.handleCourseViewer.bind(this)}
+        redrawAll={this.redrawAll.bind(this)}
+        seed={this.state.seed}
+
       />
     }
   }

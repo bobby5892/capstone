@@ -10,13 +10,18 @@ class StudentToolbar extends Component {
 	      this.state = {
           currentUser: props.currentUser,
           role: props.role,
-	        data : null
+	        data : null,
+          seed : props.seed
 	      };
     this.logout = props.logout;
     this.handleMenuClick = props.handleMenuClick;
     this.renderAccountWindow = props.renderAccountWindow;
     this.uploadReview = props.uploadReview;
     this.accountClick = props.accountClick;
+    this.redrawAll = props.redrawAll;
+  }
+  componentWillReceiveProps(props) {
+      this.setState(props);
   }
   handleCourseViewer(statechange) {
     this.setState(statechange);
@@ -28,6 +33,8 @@ class StudentToolbar extends Component {
       handleCourseViewer={this.handleCourseViewer.bind(this)}
       viewingCourse={this.state.viewingCourse}
       handleMenuClick={this.handleMenuClick}
+      accountClick={this.accountClick.bind(this)}
+      redrawAll={this.redrawAll} seed={this.state.seed}
     />
   }
   render() {
@@ -37,7 +44,7 @@ class StudentToolbar extends Component {
       type: "space",
       scroll: "auto",
       height: window.innerHeight,
-      width: 275,
+      width: 350,
       padding: 0,
       responsive: "a1",
       rows: [

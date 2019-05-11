@@ -11,7 +11,8 @@ class AdminToolbar extends Component {
 			currentUser: props.currentUser,
 			role: props.role,
 			viewingCourse: props.viewingCourse,
-			data: null
+			data: null,
+			seed : props.seed
 			
 		};
 		this.logout = props.logout;
@@ -20,8 +21,11 @@ class AdminToolbar extends Component {
 		this.showCreateCourse = props.handleCreateCourse;
 	    this.accountClick = props.accountClick;
 	    this.handleCourseViewer = props.handleCourseViewer;
+	    this.redrawAll = props.redrawAll;
 	}
-
+    componentWillReceiveProps(props) {
+    	this.setState(props);
+    }
 	renderCourses() {
        return <Courses 
        currentUser={this.state.currentUser} 
@@ -29,10 +33,13 @@ class AdminToolbar extends Component {
        handleCourseViewer={this.handleCourseViewer.bind(this)} 
        viewingCourse={this.state.viewingCourse}
        handleMenuClick={this.handleMenuClick}
+       accountClick={this.accountClick.bind(this)}
+       redrawAll={this.redrawAll} seed={this.state.seed}
        />
 	}
 	renderCreateCourseButton() {
-       return <CreateCourse currentUser={this.state.currentUser} role={this.state.role} showCreateCourse={this.showCreateCourse} />
+       return <CreateCourse currentUser={this.state.currentUser} role={this.state.role} showCreateCourse={this.showCreateCourse}
+       redrawAll={this.redrawAll} seed={this.state.seed} />
 	}			
 	render() {
 		//let scope = this;
@@ -40,9 +47,9 @@ class AdminToolbar extends Component {
 		let ui =
 		{
 			type: "space",
-            scroll: "auto",
+            scroll: "false",
             height: window.innerHeight,
-            width:275,
+            
             padding: 0,
             responsive: "a1",
 			rows: [
@@ -92,7 +99,7 @@ class AdminToolbar extends Component {
                 	{
 						gravity: 1,
 					 	view: "template",
-                 		scroll: true,
+                 		scroll: false,
                  		template: "right",
                  		content: "CreateCourse",
                  		align:"right"

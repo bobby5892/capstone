@@ -22,8 +22,10 @@ class Portal extends Component {
         data : null,
         account : null,
         viewingCourse: props.viewingCourse,
-        currentContentWidgets : ["LiveFeed"]
+        currentContentWidgets : ["LiveFeed"],
+        seed : props.seed
       };
+    this.redrawAll = props.redrawAll;
     this.handleCourseViewer = props.handleCourseViewer;
     // Used to change user state from App.js
     this.handleLogin = props.handleLogin;
@@ -65,7 +67,7 @@ class Portal extends Component {
   /* Listed Render - this is so we can control what gets passed to what widget/container */
   renderLiveFeed() {
     if (this.state.currentContentWidgets.includes("LiveFeed")) {
-      return <LiveFeed currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)} />
+      return <LiveFeed currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}  redrawAll={this.redrawAll} seed={this.state.seed}/>
     }
   }
   renderAdminToolbar() {
@@ -77,6 +79,7 @@ class Portal extends Component {
         viewingCourse={this.state.viewingCourse}
         handleCourseViewer={this.handleCourseViewer.bind(this)}
         accountClick={this.accountClick.bind(this)}
+        redrawAll={this.redrawAll} seed={this.state.seed}
         />
     }
   }
@@ -85,9 +88,11 @@ class Portal extends Component {
       return <InstructorToolbar currentUser={this.state.currentUser}
         role={this.state.role}
         logout={this.logout.bind(this)}
+        handleCourseViewer={this.handleCourseViewer.bind(this)}
         handleMenuClick={this.handleMenuClick.bind(this)}
         viewingCourse={this.state.viewingCourse}
         accountClick={this.accountClick.bind(this)}
+        redrawAll={this.redrawAll} seed={this.state.seed}
         />
     }
   }
@@ -100,6 +105,7 @@ class Portal extends Component {
       handleMenuClick={this.handleMenuClick.bind(this)} 
       viewingCourse={this.state.viewingCourse}
       accountClick={this.accountClick.bind(this)}
+      redrawAll={this.redrawAll} seed={this.state.seed}
       />
     }
   }
@@ -115,6 +121,7 @@ class Portal extends Component {
         handleMenuClick={this.handleMenuClick.bind(this)} 
         viewingCourse={this.state.viewingCourse}
         handleCourseViewer={this.handleCourseViewer.bind(this)}
+        redrawAll={this.redrawAll} seed={this.state.seed}
         />
     }
   }
@@ -409,7 +416,7 @@ class Portal extends Component {
                   view: "template",
                   scroll: false,
                   gravity: 1,
-                  width:300,
+                  width:350,
                   template: "left",
                   content: toolbar()
                 },

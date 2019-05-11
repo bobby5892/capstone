@@ -18,7 +18,7 @@ class Courses extends Component {
       viewingCourse: props.viewingCourse,
       Courses: []
     };
-    console.log("Receiving course view" + props.viewingCourse);
+   
     this.handleCourseViewer = props.handleCourseViewer;
     this.handleMenuClick = props.handleMenuClick;
     this.component = {};
@@ -174,8 +174,7 @@ class Courses extends Component {
                     autoheight: true,
                     view: "datatable",
                     columns: [
-                      { id: "rank", header: "", width: 50 },
-                      { id: "firstName", header: "First Name", width: 200 },
+                      { id: "firstName", header: "First Name", width: 100 },
                       { id: "lastName", header: "Last Name", width: 80 },
 
                     ],
@@ -256,7 +255,7 @@ class Courses extends Component {
       id: "verses",
       scroll: "y", // vertical scrolling
       height:500,
-      width: 250,
+      width: 320,
       body: {
         rows: [
           {

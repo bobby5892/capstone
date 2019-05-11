@@ -370,16 +370,20 @@ class Portal extends Component {
             'Content-Type': 'application/json'
           },
           credentials: "include",
-          mode: "cors"
+          mode: "no-cors"
         }).then(res => res.json())
       .then(response => {
         if (response.success) {
+          this.handleLogin(null, null);
+          // Don't remove the comment below - its actually functional.
+          //eslint-disable-next-line
+          document.location.reload();
         } else {
             console.log(response.error);
         }
       })
       .catch(error => console.error('Error:', error));
-    this.handleLogin(null, null);
+    
   }
   render() {
     /*Portal Container */

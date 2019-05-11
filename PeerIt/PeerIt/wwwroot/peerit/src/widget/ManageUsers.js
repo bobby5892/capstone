@@ -195,7 +195,7 @@ class ManageUsers extends Component {
             }
             
         }).show();
-          }
+  }
   createUser(){
       // check for valid response
       let scope = this;

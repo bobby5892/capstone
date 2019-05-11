@@ -20,16 +20,19 @@ class Portal extends Component {
       currentUser: props.currentUser,
       role: props.role,
       data: null,
+      viewingCourse: props.viewingCourse,
       currentContentWidgets: ["LiveFeed"]
+     
     };
     // Used to change user state from App.js
     this.handleLogin = props.handleLogin;
-
+    this.handleCourseViewer = props.handleCourseViewer;
     // Logout Function
     this.logout.bind(this);
 
     // Handle Menu Users Click
     this.handleMenuClick.bind(this);
+
   }
   renderPortal() {
     //https://forum.webix.com/discussion/31137/reactjs-layout-components
@@ -49,7 +52,9 @@ class Portal extends Component {
     }, window.webix.ui.view)
 
   }
-
+ componentWillReceiveProps(props){
+  this.setState(props);
+ }
   /* Listed Render - this is so we can control what gets passed to what widget/container */
   renderLiveFeed() {
     if (this.state.currentContentWidgets.includes("LiveFeed")) {
@@ -62,7 +67,8 @@ class Portal extends Component {
         role={this.state.role}
         logout={this.logout.bind(this)}
         handleMenuClick={this.handleMenuClick.bind(this)}
-      
+        viewingCourse={this.state.viewingCourse}
+        handleCourseViewer={this.handleCourseViewer.bind(this)}
         />
     }
   }
@@ -72,6 +78,7 @@ class Portal extends Component {
         role={this.state.role}
         logout={this.logout.bind(this)}
         handleMenuClick={this.handleMenuClick.bind(this)}
+        viewingCourse={this.state.viewingCourse}
         />
     }
   }
@@ -81,7 +88,9 @@ class Portal extends Component {
       currentUser={this.state.currentUser} 
       role={this.state.role} 
       logout={this.logout.bind(this)}  
-      handleMenuClick={this.handleMenuClick.bind(this)} />
+      handleMenuClick={this.handleMenuClick.bind(this)} 
+      viewingCourse={this.state.viewingCourse}
+      />
     }
   }
   renderCourseContent() {
@@ -93,7 +102,9 @@ class Portal extends Component {
         return <CourseContent 
         currentUser={this.state.currentUser} 
         role={this.state.role} 
-        handleMenuClick={this.handleMenuClick.bind(this)} />
+        handleMenuClick={this.handleMenuClick.bind(this)} 
+        viewingCourse={this.state.viewingCourse}
+        />
     }
   }
   renderAdminManageUsers() {

@@ -395,9 +395,117 @@ namespace PeerIt.Controllers
             }
             response.Error.Add(new Error() { Name = "courseDelete", Description = "Course Name confirmation delete failed" });
             return Json(response);
-
-
         }
+        [Authorize(Roles = "Administrator,Instructor")]
+        [HttpPost]
+        async Task<JsonResult> AddStudentToCourse(int courseID, string studentID) {
+            SetRoles();
+            JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
+            Course lookupCourse = this.courseRepository.FindByID(courseID);
+            AppUser student = await usrMgr.FindByIdAsync(studentID);
+            if(student == null)
+            {
+                response.Error.Add(new Error() { Name = "addStudentToCourse", Description = "Student doesn't exist" });
+                return Json(response);
+            }
+            if (lookupCourse == null)
+            {
+                response.Error.Add(new Error() { Name = "addStudentToCourse", Description = "Course Not Found" });
+                return Json(response);
+            }
+            // Lets see if this student is already in the course
+            bool alreadyEnrolled = this.courseGroupRepository.GetAll().Exists((x) => {
+                if(x.FK_Course.ID == courseID && x.FK_AppUser.Id == studentID)
+                {
+                    return true;
+                }
+                return false;
+            });
+            if (alreadyEnrolled)
+            {
+                response.Error.Add(new Error() { Name = "addStudentToCourse", Description = "Student is already in class" });
+                return Json(response);
+            }
+            var newCourseGroup = new CourseGroup() { FK_AppUser = student, FK_Course = lookupCourse, ReviewGroup = "ClassGroup" };
+            if (this.isAdmin)
+            {
+                this.courseGroupRepository.Add(newCourseGroup);
+                response.Data.Add(newCourseGroup);
+                return Json(response);
+            }
+            else if (this.isInstructor)
+            {
+                // Check if instructor is teaching the course
+                if 
+                    (lookupCourse.FK_INSTRUCTOR == await usrMgr.GetUserAsync(HttpContext.User))
+                {
+                    this.courseGroupRepository.Add(newCourseGroup);
+                    response.Data.Add(newCourseGroup);
+                    return Json(response);
 
+                }
+            }
+            response.Error.Add(new Error() { Name = "studentAdd", Description = "failed to add student to course" });
+            return Json(response);
+        }
+        [Authorize(Roles = "Administrator,Instructor")]
+        [HttpDelete]
+        async Task<JsonResult> RemoveStudentToCourse(int courseID, string studentID)
+        {
+            SetRoles();
+            JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
+            Course lookupCourse = this.courseRepository.FindByID(courseID);
+            AppUser student = await usrMgr.FindByIdAsync(studentID);
+            if (student == null)
+            {
+                response.Error.Add(new Error() { Name = "RemoveStudentToCourse", Description = "Student doesn't exist" });
+                return Json(response);
+            }
+            if (lookupCourse == null)
+            {
+                response.Error.Add(new Error() { Name = "addStudentToCourse", Description = "Course Not Found" });
+                return Json(response);
+            }
+            // lets find the enrollment
+            var enrollment = this.courseGroupRepository.GetAll().FindAll((x) => {
+                if(x.FK_Course.ID == courseID && x.FK_AppUser.Id == studentID)
+                {
+                    return true;
+                }
+                return false;
+            });
+               
+           
+            if (enrollment.Count == 0)
+            {
+                response.Error.Add(new Error() { Name = "RemoveStudentToCourse", Description = "Student is not in the class" });
+                return Json(response);
+            }
+           
+            if (this.isAdmin)
+            {
+                enrollment.ForEach((x) => {
+                    this.courseGroupRepository.Delete(x);
+                });
+                
+               
+                return Json(response);
+            }
+            else if (this.isInstructor)
+            {
+                // Check if instructor is teaching the course
+                if
+                    (lookupCourse.FK_INSTRUCTOR == await usrMgr.GetUserAsync(HttpContext.User))
+                {
+                    enrollment.ForEach((x) => {
+                        this.courseGroupRepository.Delete(x);
+                    });
+                    return Json(response);
+
+                }
+            }
+            response.Error.Add(new Error() { Name = "RemoveStudentToCourse", Description = "failed to remove student to course" });
+            return Json(response);
+        }
     }
 }

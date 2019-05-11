@@ -9,7 +9,8 @@ constructor(props) {
     super(props);
     this.state = {
     	currentUser : null,
-      role : null
+      role : null,
+      viewingCourse : null
     };
     // Bind handle Login
     this.handleLogin = this.updateLogin.bind(this);
@@ -53,10 +54,20 @@ constructor(props) {
 
 
  }
+  handleCourseViewer(statechange){
+    console.log("changing state" + JSON.stringify(statechange));
+      this.setState(statechange);
+  }
   renderPortal(){
     
   	if(this.state.currentUser != null){
-  		return <Portal currentUser={this.state.currentUser} role={this.state.role} handleLogin={this.handleLogin} />
+  		return <Portal 
+        currentUser={this.state.currentUser} 
+        role={this.state.role} 
+        handleLogin={this.handleLogin} 
+        viewingCourse={this.state.viewingCourse} 
+        handleCourseViewer={this.handleCourseViewer.bind(this)}
+      />
   	}
   }
   renderLogin(){

@@ -5,12 +5,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Webix from '../webix';
 import '../css/courses.css';
-import AdminInstructorAssignments from '../widget/CourseViewer/AdminInstructorAssignments';
-import AdminInstructorSettings from '../widget/CourseViewer/AdminInstructorSettings';
-import AdminInstructorStudentsList from '../widget/CourseViewer/AdminInstructorStudentsList';
-import StudentGroupAssignments from '../widget/CourseViewer/StudentGroupAssignments';
-import StudentYourAssignments from '../widget/CourseViewer/StudentYourAssignments';
-import AdminInstructorBulk from '../widget/CourseViewer/AdminInstructorBulk';
+
 class Courses extends Component {
 
   constructor(props) {
@@ -51,25 +46,6 @@ class Courses extends Component {
     this.loadCourses();
 }
 
-renderAdminInstructorAssignments(){
-  return <AdminInstructorAssignments currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
-}
-renderAdminInstructorBulk(){
-  return <AdminInstructorBulk currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
-}
-renderAdminInstructorSettings(){
-  return <AdminInstructorSettings currentUser={this.state.currentUser} role={this.state.role}  handleMenuClick={this.handleMenuClick} viewingCourse={this.state.viewingCourse}/>
-}
-renderAdminInstructorStudentsList(){
-
-  return  <AdminInstructorStudentsList currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
-}
-renderStudentGroupAssignments(){
-  return <StudentGroupAssignments currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
-}
-renderStudentYourAssignments(){
-  return <StudentYourAssignments currentUser={this.state.currentUser} role={this.state.role} viewingCourse={this.state.viewingCourse}/>
-}
   componentWillReceiveProps(props){
 	this.setState(props);
 	this.loadCourses();
@@ -99,75 +75,13 @@ loadCourses() {
       .catch(error => console.error('Error:', error));
 
   }
- webixGetNextChild(id){
- 	// There is a known bug in this -  process to recreate
- 	// click on a course - then click on the same course 
- 	// this needs to shift the webix content to the new accordion item if it exists - the condition its still missing is when there is no childView
-
- 	let indexCount = -1;
-
- 	let numberOfViews;
-		try {
-			console.log("CoursesCheck: " + typeof(window.webix.$$("courses")) );
- 			if(typeof(window.webix.$$("courses")) != undefined){
- 				numberOfViews =  window.webix.$$("courses").getChildViews().length;	
- 			}
- 		}
- 		catch(e){
- 			numberOfViews= 0;
- 		}
- 	
- 	//console.log("webixGetNextChild Number of Views: " + numberOfViews);
- 	for(let i=0; i<numberOfViews;i++){
- 		//console.log("webixGetNextChild: considering " + this.state.viewingCourse + " vs " +  window.webix.$$("courses").getChildViews()[i].config.id);
- 		if(this.state.viewingCourse	== window.webix.$$("courses").getChildViews()[i].config.id){
- 			//console.log("webixGetNextChildfound current child");
- 			indexCount = i;
- 		}
- 	}
- 	//console.log("webixGetNextChild: indexCount : " + indexCount);
- 	//console.log("webixGetNextChild NextChildType : " + typeof(window.webix.$$("courses").getChildViews()[(indexCount)+1]) !== "undefined");
- 	if(
- 		(indexCount != -1 ) && (typeof(window.webix.$$("courses").getChildViews()[(indexCount)+1]) !== "undefined")
- 	 ){
- 		//console.log("webixGetNextChild: bout to send it back" + indexCount);
- 		let nextChildID = window.webix.$$("courses").getChildViews()[(indexCount)+1].config.id;
- 	//	console.log("bout to send it back" + nextChildID);
-		return nextChildID;
-	}
-	return false;
- 	//console.log("ChildView:" + typeof(window.webix.$$("courses").getChildViews()[++i]));
-
- }
+ 
   drawCourses(){
 
   	let scope=this;
   	   let accordArray =[];
   	   if(this.state.courses != null && this.state.courses.length>0){
-   			// Clear
-   			/*  window.webix.ui([{
-
-		        view:"scrollview",
-		        id:"verses",
-		        scroll:"y", // vertical scrolling
-		        height: 350, 
-		        width: 250,
-		        body:{
-		        rows:[
-		            { 
-		            	"view":"accordion",
-			            "gravity":3,
-			            "scroll" : "y",
-			            "multi":false,
-			            "css":"webix_dark",
-			            "id" : "courses",
-			            "rows" :  []
-		            }
-		        ]   
-		      }        
-		    }],window.webix.$$("courses")); */
-		    // lets remove 
-		    //console.log("Courses" + JSON.stringify(this.state.courses));
+   
 	        this.state.courses.forEach(element => {
 	        	//console.log("considered" + window.webix.$$("courses").index(element.id));
 	       		
@@ -209,14 +123,10 @@ loadCourses() {
 		                			console.log("error" + e);
 		                		}
 		                	}
-		                	// Update the viewing course
-		                	
-		                //	console.log("i: " + i + " viewingCourse: " + scope.state.viewingCourse);
-		                	// Check if clicking on self and its already viewable - if so do nothing
+		
 		                	if(redraw){
 		                		this.handleCourseViewer({"viewingCourse" : parseInt(i)});
-		                    		//console.log(" I clicked on a " + i + " and the currentViewed is " + scope.state.viewingCourse);
-		                    		//scope.handleCourseViewer({"viewingCourse" : parseInt(i)});
+		                    	
 		                    		this.drawCourses();
 		                    }
 		                 }.bind(this)
@@ -245,106 +155,6 @@ loadCourses() {
       let renderObjects = {
         'Students' : null
       };
-
-      // Remove all event handlers on accordians
-      // add new click event handlers on accordians
-
-    //  console.log("check : " + this.state.viewingCourse+ " " +  courseID);
-      //  if(courseID != null && this.state.viewingCourse === courseID ){
-        	//console.loog("CheckCollapsed: "  + window.webix.$$("courses").index)
-        		// Lets check if its already collapsed or not
-        //	try{
-        		/*	let accordIndex = window.webix.$$("courses").index(courseID);
-        			//console.log("Debug: " + JSON.stringify(accordID));
-        			console.log("Drawing: " + courseID + " in index position" + accordIndex);
-        			console.log("CollapseCheck "+ accordIndex+ " : " + window.webix.$$("courses").getChildViews()[accordIndex].config.collapsed);
-        			// "collapsed":true,;
-        		// Lets try and clear the content in  all the children that we're not drawing
-        			let countAccords = window.webix.$$("courses").getChildViews().length;
-        			for(let i=0; i<countAccords;i++){
-
-        				 Close - but this is actually in tabular - so gotta figure that out
-        				window.webix.$$("courses").getChildViews()[i].define("body", {
-        					"view" : "template",
-        					"template" : "not shown"
-        				});*/
-        				//window.webix.$$("courses").getChildViews()[i].define("content", null);
-        			//}
-        			
-        	//	}
-        	//	catch(e) {
-        	//		 console.log("Error" + e); 
-        	//	}
-
-        		// Need to focus on the next line - its whats causing the fault..
-              /* window.webix.ui([{
-                id:"coursesTabView"+courseID,
-                view: "tabview",
-                css:"subCourseTabMenu",
-                multiview:{
-                   animate:true
-                },
-              cells: [
-              {
-             	  css:"subCourseMenu",
-                  header: "Students",
-                  id:"AdminInstructorSubListItem",
-                  body: {
-                   		//view:"template",
-                   		container: "AdminInstructorSubListItem" + courseID,
-                   		scroll: "y",
-                  		width:250
-                  },
-                  autoheight:true,
-                  collapsed:true,
-                  gravity:1,
-                },
-                {
-                  css:"subCourseMenu",
-                  header: "Assignments",
-                  body: {
-                    view: "template",
-                    template: "selected"
-                  },
-                  collapsed:true
-                },              
-                {
-                  css:"subCourseMenu",
-                  header: "Bulk",
-                  body: {
-                    view: "template",
-                    template: "bulk"
-                  }
-                },
-                {
-                  css:"subCourseMenu",
-                  header: "Settings",
-                  body: {
-                  	content: "AdminInstructorSettings",
-					width:250,
-					/*on : {
-						'onFocus' : function (i) {
-							console.log("I WAS click in body");
-							 this.handleMenuClick("CourseContent");
-							
-						}.bind(this)
-					}
-                  },
-                  on : {
-						'onFocus' : function (i) {
-							console.log("I WAS click Outside Body ");
-							 this.handleMenuClick("CourseContent");
-							
-						}.bind(this)
-					}
-                    
-                   }              
-                }              
-              ]
-            }],window.webix.$$("coursesTabView"+courseID));*/
-
-    //    }  
-    //    else{
            return ( 
             [
               {
@@ -360,17 +170,17 @@ loadCourses() {
                   header: "Students",
                   id:"AdminInstructorSubListItem",
                   body: {
-					  view:"list",
+					  view:"template",
 					  width:250,
 					  height:200,
-					  template:"#title#",
+					  template:"aerf#title#",
 					  select:true,
 					 /* data:[
 					    { id:1, title:"Item 1"},
 					    { id:2, title:"Item 2"},
 					    { id:3, title:"Item 3"}
 					  ]*/
-					  url:"/Course/GetStudents?courseID=" + courseID
+					 // url:"/Course/GetStudents?courseID=" + courseID
 					},
                   autoheight:true,
                   collapsed:true,
@@ -396,12 +206,18 @@ loadCourses() {
                 {
                   css:"subCourseMenu",
                   header: "Settings",
-                  body: {
-                     view: "template",
-                    template: "settings"
-                  }
-                }              
-              ]
+                  body:{
+						view:"button",
+						label:"Settings", 
+						type:"standard",
+						on : {
+							'onItemClick' : function (i) {
+								this.handleMenuClick("CourseContent");
+							}.bind(this)
+						}
+					}
+				}
+			]
             }
        	 ]
       	);
@@ -462,7 +278,7 @@ loadCourses() {
         
         <Webix ui={ui} data={data}/>
         
-        {this.renderAdminInstructorSettings()}
+       
        
         
       </div>

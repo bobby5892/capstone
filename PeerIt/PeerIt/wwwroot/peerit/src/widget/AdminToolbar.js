@@ -10,7 +10,7 @@ class AdminToolbar extends Component {
 		this.state = {
 			currentUser: props.currentUser,
 			role: props.role,
-			viewingCourse: null,
+			viewingCourse: props.viewingCourse,
 			data: null
 			
 		};
@@ -19,12 +19,17 @@ class AdminToolbar extends Component {
 		this.handleMenuClick = props.handleMenuClick;
 		this.showCreateCourse = props.handleCreateCourse;
     this.accountClick = props.accountClick;
+    this.handleCourseViewer = props.handleCourseViewer;
 	}
-	handleCourseViewer(statechange){
-    	this.setState(statechange);
- 	}
+
 	renderCourses() {
-       return <Courses currentUser={this.state.currentUser} role={this.state.role}  handleCourseViewer={this.handleCourseViewer.bind(this)} viewingCourse={this.state.viewingCourse}/>
+       return <Courses 
+       currentUser={this.state.currentUser} 
+       role={this.state.role}  
+       handleCourseViewer={this.handleCourseViewer.bind(this)} 
+       viewingCourse={this.state.viewingCourse}
+       handleMenuClick={this.handleMenuClick}
+       />
 	}
 	renderCreateCourseButton() {
        return <CreateCourse currentUser={this.state.currentUser} role={this.state.role} showCreateCourse={this.showCreateCourse} />

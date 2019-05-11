@@ -11,25 +11,22 @@ import ManageUsers from '../widget/ManageUsers';
 import ManageCourses from '../widget/ManageCourses';
 import AdminSettings from '../widget/AdminSettings';
 import LiveFeed from '../widget/LiveFeed';
+import CourseContent from '../containers/CourseContent';
 class Portal extends Component {
 
   constructor(props) {
-
       super(props);
       this.state = {
         currentUser : props.currentUser,
         role : props.role,
         data : null,
         account : null,
+        viewingCourse: props.viewingCourse,
         currentContentWidgets : ["LiveFeed"]
       };
-      console.log(props.role);
-      // Used to change user state from App.js
-      this.handleLogin = props.handleLogin;
-      
-      // Logout Function
-      this.logout.bind(this);
-
+    this.handleCourseViewer = props.handleCourseViewer;
+    // Used to change user state from App.js
+    this.handleLogin = props.handleLogin;
     // Logout Function
     this.logout.bind(this);
 
@@ -41,6 +38,7 @@ class Portal extends Component {
       this.uploadReview.bind(this);
     // Handle Menu Users Click
     this.handleMenuClick.bind(this);
+
   }
   renderPortal() {
     //https://forum.webix.com/discussion/31137/reactjs-layout-components
@@ -60,24 +58,63 @@ class Portal extends Component {
     }, window.webix.ui.view)
 
   }
-}
-renderAdminToolbar(){
-  if(this.state.role === "Administrator"){
-     return   <AdminToolbar accountClick={this.accountClick.bind(this)} currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)} handleMenuClick={this.handleMenuClick.bind(this)}/>
+
+ componentWillReceiveProps(props){
+  this.setState(props);
+ }
+  /* Listed Render - this is so we can control what gets passed to what widget/container */
+  renderLiveFeed() {
+    if (this.state.currentContentWidgets.includes("LiveFeed")) {
+      return <LiveFeed currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)} />
+    }
   }
-}
-renderInstructorToolbar(){
-  if(this.state.role ==="Instructor"){
-   return <InstructorToolbar accountClick={this.accountClick.bind(this)} currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
+  renderAdminToolbar() {
+    if (this.state.role === "Administrator") {
+      return <AdminToolbar currentUser={this.state.currentUser}
+        role={this.state.role}
+        logout={this.logout.bind(this)}
+        handleMenuClick={this.handleMenuClick.bind(this)}
+        viewingCourse={this.state.viewingCourse}
+        handleCourseViewer={this.handleCourseViewer.bind(this)}
+        accountClick={this.accountClick.bind(this)}
+        />
+    }
   }
-}
-renderStudentToolbar(){
-  if(this.state.role === "Student"){
-    return <StudentToolbar accountClick={this.accountClick.bind(this)} currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)}/>
+  renderInstructorToolbar() {
+    if (this.state.role === "Instructor") {
+      return <InstructorToolbar currentUser={this.state.currentUser}
+        role={this.state.role}
+        logout={this.logout.bind(this)}
+        handleMenuClick={this.handleMenuClick.bind(this)}
+        viewingCourse={this.state.viewingCourse}
+        accountClick={this.accountClick.bind(this)}
+        />
+    }
   }
   renderStudentToolbar() {
     if (this.state.role === "Student") {
-      return <StudentToolbar currentUser={this.state.currentUser} role={this.state.role} logout={this.logout.bind(this)} />
+      return <StudentToolbar 
+      currentUser={this.state.currentUser} 
+      role={this.state.role} 
+      logout={this.logout.bind(this)}  
+      handleMenuClick={this.handleMenuClick.bind(this)} 
+      viewingCourse={this.state.viewingCourse}
+      accountClick={this.accountClick.bind(this)}
+      />
+    }
+  }
+  renderCourseContent() {
+    if (
+        ((this.state.role === "Instructor") ||  (this.state.role === "Administrator")) 
+        && (this.state.currentContentWidgets.includes("CourseContent"))
+      )
+      {
+        return <CourseContent 
+        currentUser={this.state.currentUser} 
+        role={this.state.role} 
+        handleMenuClick={this.handleMenuClick.bind(this)} 
+        viewingCourse={this.state.viewingCourse}
+        />
     }
   }
   renderAdminManageUsers() {
@@ -138,7 +175,6 @@ accountClick(){
   this.fetchAccountFormData();
 }
 renderAccountWindow(){
-  // console.log("rendering" + JSON.stringify(this.state.editUser));
    let scope = this;
    console.log("Checking State @ Time of Window: " + JSON.stringify(this.state));
    var newWindow = window.webix.ui({
@@ -428,6 +464,7 @@ logout(){
           {this.renderAdminManageUsers()}
           {this.renderAdminManageCourses()}
           {this.renderAdminSettings()}
+          {this.renderCourseContent()}
         </div>
 
       </div>

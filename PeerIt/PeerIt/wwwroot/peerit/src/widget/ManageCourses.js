@@ -30,43 +30,6 @@ class ManageCourses extends Component {
       }
     }, window.webix.ui.view)
   }
-  Createcourse(){
-  let scope = this;
-      let validResponse = window.webix.$$("newCourseForm").validate();
-      if(validResponse){
-        let newCourse = window.webix.$$("newCourseForm").getValues();
-        fetch("/Course/CreateCourse?courseName=", {
-          method: 'POST', // or 'PUT'
-          //body: JSON.stringify({"FirstName":newUser.FirstName,"LastName":newUser.LastName,"Email":newUser.Email,"Password":newUser.password}), // data can be `string` or {object}!
-          headers:{
-            'Content-Type': 'application/json'
-          },
-          credentials: "include",
-          mode:"no-cors"
-        }).then(res => res.json())
-        .then(response => {
-          if(response.success){
-            //console.log("Attempted to Create UseR: " + JSON.stringify(response));
-            // If the new user window is open close it
-            if(window.webix.$$("newCourseWindow") != null){
-              window.webix.$$("newCourseWindow").close()
-            }
-            console.log("open new window to:  " + response.data[0].id);
-            scope.newEditWindow( response.data[0].id);
-          }else{
-            let errors = "";
-            response.error.forEach( error => {
-              errors += error.description
-            }); 
-            window.webix.$$("newCourseForm").elements.newUserErrorLabel.setValue(errors);
-          }
-
-    })
-    .catch(error => console.error('Error:', error));
-      }
-
-      
-  }
   render(){
 
    // let data = null;

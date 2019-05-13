@@ -269,21 +269,27 @@ namespace PeerIt.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("DueDate");
-
                     b.Property<int>("FK_COURSEID");
+
+                    b.Property<string>("InstructionText")
+                        .HasMaxLength(100000);
+
+                    b.Property<string>("InstructionsUrl")
+                        .HasMaxLength(200);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(60);
 
-                    b.Property<string>("PFileID");
+                    b.Property<string>("RubricText")
+                        .HasMaxLength(100000);
+
+                    b.Property<string>("RubricUrl")
+                        .HasMaxLength(200);
 
                     b.HasKey("ID");
 
                     b.HasIndex("FK_COURSEID");
-
-                    b.HasIndex("PFileID");
 
                     b.ToTable("CourseAssignments");
                 });
@@ -559,10 +565,6 @@ namespace PeerIt.Migrations
                         .WithMany()
                         .HasForeignKey("FK_COURSEID")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PeerIt.Models.PFile", "PFile")
-                        .WithMany()
-                        .HasForeignKey("PFileID");
                 });
 
             modelBuilder.Entity("PeerIt.Models.CourseGroup", b =>

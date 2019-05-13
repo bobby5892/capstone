@@ -67,6 +67,7 @@ namespace PeerIt
             services.AddTransient<IGenericRepository<Course, int>, CourseRepository>();
             services.AddTransient<IGenericRepository<Event, int>, EventRepository>();
             services.AddTransient<IGenericRepository<ForgotPassword, int>, ForgotPasswordRepository>();
+            services.AddTransient<IGenericRepository<CourseAssignment, int>, CourseAssignmentRepository>();
             services.AddTransient<IGenericRepository<Invitation, int>, InvitationRepository>();
             services.AddTransient<IGenericRepository<PFile,string>, PFileRepository>();
             services.AddTransient<IGenericRepository<Review, int>, ReviewRepository>();

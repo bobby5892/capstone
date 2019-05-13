@@ -6,6 +6,7 @@ import CreateCourse from '../widget/CreateCourse.js';
 
 class InstructorToolbar extends Component {
 
+
   constructor(props) {
     super(props);
     this.state = {

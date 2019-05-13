@@ -19,7 +19,10 @@ class Portal extends Component {
       currentUser: props.currentUser,
       role: props.role,
       data: null,
-      currentContentWidgets: ["LiveFeed"]
+      currentContentWidgets: ["LiveFeed"],
+      assignmentName:"",
+      dueDate:"",
+      course:""
     };
     console.log(props.role);
     // Used to change user state from App.js
@@ -164,8 +167,8 @@ class Portal extends Component {
     var newWindow = window.webix.ui({
       view: "window",
       id: "uploadAssignmentWindow",
-      width: 900,
-      height: 600,
+      width:600,
+      //height: 600,
       move: true,
       position: "center",
       head: {
@@ -173,7 +176,9 @@ class Portal extends Component {
         cols: [
           { view: "label", label: "Upload an Assignment" },
           {
-            view: "button", label: "Close", width: 70, left: 250,
+            view: "button", label: "Close", 
+            width: 70, 
+            left: 250,
             click: function () {
               //scope.setState({"editUser" : null });
               window.webix.$$("uploadAssignmentWindow").close();
@@ -187,24 +192,44 @@ class Portal extends Component {
           {
             view: "form",
             id: "uploadAssignmentForm",
-            width: 900,
+            //width: "auto",
             elements: [
-              { view: "label", label: "Upload your Assignment form here: ", name: "", labelWidth: 100, value: "" },
+              { view: "label", label: "Upload your Assignment form here: ", name: "", labelWidth: "auto", value: "" },
               {
                 
                 view: "uploader", inputName: "files", upload: "/CourseAssignment/CreateAssignment", 
-                urlData:{assignmentname:"",courseID:1,dueDate:Date("07/08/2019")} ,
-                id: "AssignmentFile", link: "mylist", value: "Click here to upload your Course Assignment file", autosend: false
+                //urlData:{assignmentname:"new assignment",courseID:13,dueDate:"07/08/2019"} ,
+                id: "AssignmentFile", link: "mylist", value: "Upload File", autosend: false
               },
               {
                 view: "list", id: "mylist", type: "uploader",
                 autoheight: true, borderless: true
               },
-              { view: "text", label: "Course", name: "Course", labelWidth: 100, value: "" },
-              { view: "text", label: "Due Date", name: "Due_Date", labelWidth: 100, value: "" },
+              
+              { view: "text", label: "Assignment Name", name: "Assignment_Name",labelWidth: 200,invalidMessage:"Please enter Assignment Name" },
+              { view: "text", label: "Course", name: "Course", labelWidth: 200,invalidMessage:"What Course is this? " },
+              {view:"calendar",
+              id:"my_calendar",
+              name:"Due_Date",
+              date:new Date(
+                ),
+              weekHeader:true,
+              events:window.webix.Date.isHoliday,
+              width:300,
+              height:250},
+              
+              //{ view: "text", label: "Due Date", name: "Due_Date", labelWidth: 200,invalidMessage:"Please enter Valid Date" }, 
               {
-                view: "button", label: "Submit", name: "submit_button",
+                view: "button",value:"Upload", type:"form", 
                 click: function () {
+                  let validResponse = window.webix.$$("uploadAssignmentForm").validate();
+                  let FormVal = window.webix.$$("uploadAssignmentForm").getValues();
+                  window.webix.$$("AssignmentFile").define({
+                    urlData:{assignmentname:FormVal.Assignment_Name,
+                    courseID:FormVal.Course,
+                    dueDate:(window.webix.$$("my_calendar").config.date).toUTCString()
+                    }
+                  });
                   window.webix.$$("AssignmentFile").send(function(response) {
                     console.log("upload send: " + JSON.stringify(response));
                     if (response != null){
@@ -216,23 +241,16 @@ class Portal extends Component {
                     //}); 
                     }
                     else {
-                    console.log(Date("07/08/2019"));
+                    //console.log(Date("07/08/2019"));
                     alert("Nothing to Submit");
                   }})
-
                 }
               }
-
-
-              // { margin:5, cols:[
-              //     { view:"button", value:"Upload" , type:"form", click:function(){
-              //       scope.uploadTheReviewDoc();
-              //     }}
-              // ]}
             ],
             rules: {
               "Course": window.webix.rules.isNotEmpty,
-              "Due_Date": window.webix.rules.isDate
+              "Due_Date": window.webix.rules.isNotEmpty,
+              "Assignment_Name":window.webix.rules.isNotEmpty
             }
           }
         ]

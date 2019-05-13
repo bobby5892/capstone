@@ -10,8 +10,8 @@ using PeerIt.Repositories;
 namespace PeerIt.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20190424161835_NamePropertyToPFile")]
-    partial class NamePropertyToPFile
+    [Migration("20190511155439_Changes")]
+    partial class Changes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -307,6 +307,8 @@ namespace PeerIt.Migrations
 
                     b.Property<int>("FK_CourseID");
 
+                    b.Property<string>("ReviewGroup");
+
                     b.HasKey("ID");
 
                     b.HasIndex("FK_AppUserId");
@@ -411,11 +413,10 @@ namespace PeerIt.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasMaxLength(100000);
-
                     b.Property<string>("FK_APP_USERId")
+                        .IsRequired();
+
+                    b.Property<string>("FK_PFileID")
                         .IsRequired();
 
                     b.Property<int>("FK_STUDENT_ASSIGNMENTID");
@@ -425,6 +426,8 @@ namespace PeerIt.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("FK_APP_USERId");
+
+                    b.HasIndex("FK_PFileID");
 
                     b.HasIndex("FK_STUDENT_ASSIGNMENTID");
 
@@ -626,6 +629,11 @@ namespace PeerIt.Migrations
                         .WithMany()
                         .HasForeignKey("FK_APP_USERId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PeerIt.Models.PFile", "FK_PFile")
+                        .WithMany()
+                        .HasForeignKey("FK_PFileID")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PeerIt.Models.StudentAssignment", "FK_STUDENT_ASSIGNMENT")
                         .WithMany()

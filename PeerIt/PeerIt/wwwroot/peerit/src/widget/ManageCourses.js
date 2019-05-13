@@ -3,7 +3,7 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import Webix from '../webix';
+//import Webix from '../webix';
 
 class ManageCourses extends Component {
 
@@ -69,7 +69,7 @@ class ManageCourses extends Component {
   }
   render(){
 
-    let data = null;
+   // let data = null;
 
      return(
       <div id="ManageCourses">

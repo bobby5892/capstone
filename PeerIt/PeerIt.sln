@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.28721.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PeerIt", "PeerIt\PeerIt.csproj", "{0E760799-3A6F-4CDB-880A-B3013CAB5D84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{B1F37F1E-AC41-4746-A6C2-62A1AA59D04B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{B1F37F1E-AC41-4746-A6C2-62A1AA59D04B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

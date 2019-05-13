@@ -70,6 +70,7 @@ namespace PeerIt
             services.AddTransient<IGenericRepository<Invitation, int>, InvitationRepository>();
             services.AddTransient<IGenericRepository<PFile,string>, PFileRepository>();
             services.AddTransient<IGenericRepository<Review, int>, ReviewRepository>();
+            services.AddTransient<IGenericRepository<StudentAssignment, int>, StudentAssignmentRepository>();
             services.AddTransient<IGenericRepository<Setting, string>, SettingsRepository>();
 
             // Allow us to turn on and off cors - useful in development when building the react app - its dev env is on a different port then

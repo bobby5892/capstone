@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PeerIt.Interfaces;
 using PeerIt.Models;
+using Microsoft.EntityFrameworkCore;
 namespace PeerIt.Repositories
 {
     /// <summary>
@@ -15,7 +16,18 @@ namespace PeerIt.Repositories
         /// <summary>
         /// List of Reviews
         /// </summary>
-        public List<Review> Reviews { get { return this.context.Reviews.ToList<Review>(); } }
+        //public List<Review> Reviews { get { return this.context.Reviews.ToList<Review>(); } }
+        public List<Review> Reviews
+        {
+            get
+            {
+                return this.context.Reviews
+                    .Include(reviews => reviews.FK_STUDENT_ASSIGNMENT.CourseAssignment.FK_COURSE.FK_INSTRUCTOR)
+                    .Include(reviews => reviews.FK_STUDENT_ASSIGNMENT.AppUser)
+                    .Include(reviews => reviews.FK_APP_USER)
+                    .ToList();
+            }
+        }
         /// <summary>
         /// Overloaded Constructor 
         /// </summary>

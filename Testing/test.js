@@ -54,3 +54,46 @@ lwat.post("http://localhost:8080/Account/Login",{
 	lwat.assert(res.error[0].name,"Null Assignment at Id","Null Assignment at Id");
 	});
 });
+//Testing Comment count for user when the user has no comments
+lwat.post("http://localhost:8080/Account/Login",{
+	"Email":"admin@example.com",
+	"Password":"password",
+	"returnUrl":""
+}).then((response) => {
+	lwat.get("http://localhost:8080/Comment/GetCommentCountForUser").then((res)=>{	
+	lwat.assert(res.totalResults,0, "comment count for user");
+	});
+});
+//Testing comment count for assignment when assignment has no comments
+lwat.post("http://localhost:8080/Account/Login",{
+	"Email":"admin@example.com",
+	"Password":"password",
+	"returnUrl":""
+}).then((response) => {
+	lwat.get("http://localhost:8080/Comment/GetCommentCountForAssignment").then((res)=>{	
+		lwat.assert(res.totalResults,0, "Comment Count for assignment");
+	});
+});
+//Testing Create Comment when failed because assignment was null
+lwat.post("http://localhost:8080/Account/Login",{
+	"Email":"admin@example.com",
+	"Password":"password",
+	"returnUrl":""
+}).then((response) => {
+	lwat.get("http://localhost:8080/Comment/CreateComment").then((res)=>{	
+		lwat.assert(res.error[0].description, "No student assignment for the given Id", "Test Create Comment");
+	});
+});
+//Testing Create Comment when failed because assignment was null
+lwat.post("http://localhost:8080/Account/Login",{
+	"Email":"admin@example.com",
+	"Password":"password",
+	"returnUrl":""
+}).then((response) => {
+	lwat.get("http://localhost:8080/Comment/DeleteComment").then((res)=>{	
+		lwat.assert(res.error[0].description, "No Comment for given Id","Test Delete Comment");
+	});
+});
+
+
+

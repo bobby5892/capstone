@@ -61,7 +61,7 @@ namespace PeerIt.Controllers
         }
 
         #endregion Constructors
-        private void assign_role()
+        private void SetRoles()
         {
             this.isAdmin = HttpContext.User.IsInRole("Administrator");
             this.isInstructor = HttpContext.User.IsInRole("Instructor");
@@ -82,7 +82,7 @@ namespace PeerIt.Controllers
         public async Task<JsonResult> CreateAssignment(int courseID, string assignmentname, List<IFormFile> files,
                                            string dueDate)
         {
-            assign_role();
+            SetRoles();
          //   DateTime.ParseExact(dueDate,"mm/DD/YYYY");
             JsonResponse<CourseAssignment> response = new JsonResponse<CourseAssignment>();
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
@@ -149,7 +149,7 @@ namespace PeerIt.Controllers
             return Json(response);
 
         }
-/*
+
         /// <summary>
         /// Returns a List of CourseAssignments by a Course's ID
         /// </summary>
@@ -158,48 +158,42 @@ namespace PeerIt.Controllers
         [HttpGet]
         public async Task<JsonResult> Assignments(int courseID)
         {
-            JsonResponse<List<CourseAssignment>> response = new JsonResponse<List<CourseAssignment>>();
+            SetRoles();
+            JsonResponse<CourseAssignment> response = new JsonResponse<CourseAssignment>();
             Course course = courseRepository.FindByID(courseID);
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
             if (course != null)
             {
                 if (this.isAdmin)
                 {
-                    response.Data.Add(courseAssignmentRepository.GetByCourseID(courseID));
+                   // response.Data.Add(courseAssignmentRepository.GetByCourseID(courseID));
+                    response.Data = courseAssignmentRepository.GetAll().FindAll((x) => {
+                           if(x.FK_COURSE.ID == courseID) { return true; }
+                        return false;
+                    });
                     return Json(response);
                 }
                 else if (this.isInstructor && course.FK_INSTRUCTOR == user)
                 {
-                    response.Data.Add(courseAssignmentRepository.GetByCourseID(courseID));
+                    response.Data = courseAssignmentRepository.GetAll().FindAll((x) => {
+                        if (x.FK_COURSE.ID == courseID) { return true; }
+                        return false;
+                    });
                     return Json(response);
                 }
                 else if (this.isStudent)
                 {
-                    CourseGroup courseGroup = courseGroupRepository.GetByUserAndCourseID(user.Id, courseID);
-                    if (courseGroup != null)
-                    {
-                        var responseStudent = new JsonResponse<CourseAssignmentDataOut>();
-                        List<CourseAssignment> cAssigns = courseAssignmentRepository.GetByCourseID(courseID);
-                        cAssigns.ForEach(cAssign =>
-                        {
-                            responseStudent.Data.Add(
-                                new CourseAssignmentDataOut
-                                {
-                                    ID = cAssign.ID,
-                                    Name = cAssign.Name,
-                                }
-                            );
-                        });
-                        return Json(responseStudent);
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("Forbidden", "You are not a student of this Course."));
-                    }
+                    response.Data = courseAssignmentRepository.GetAll().FindAll((x) => {
+                        if (x.FK_COURSE.ID == courseID) { return true; }
+                        return false;
+                    });
+
+                    return Json(response);
+                    
                 }
                 else
                 {
-                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here."));
                 }
             }
             else
@@ -208,7 +202,7 @@ namespace PeerIt.Controllers
             }
             return Json(response);
         }
-        */
+       
 
         ///// <summary>
         ///// Returns a CourseAssignment by Assignment ID, using a Course ID to
@@ -218,18 +212,19 @@ namespace PeerIt.Controllers
         ///// <param name="assignmentID"></param>
         ///// <returns></returns>
         //[HttpGet]
-        //public async Task<JsonResult> Assignment(int courseID, int assignmentID)
-        //{
-        //    JsonResponse<CourseAssignment> response = new JsonResponse<CourseAssignment>();
-        //    Course course = courseRepository.FindByID(courseID);
-        //    AppUser user = await userManager.GetUserAsync(HttpContext.User);
+       public async Task<JsonResult> Assignment(int courseID, int assignmentID)
+        {
+            SetRoles();
+            JsonResponse<CourseAssignment> response = new JsonResponse<CourseAssignment>();
+            Course course = courseRepository.FindByID(courseID);
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-        //    if (course != null)
-        //    {
-        //        if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
-        //        {
-        //            CourseAssignment courseAssignment = courseAssignmentRepository.FindByID(assignmentID);
-        /*
+            if (course != null)
+            {
+                if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
+                {
+                    CourseAssignment courseAssignment = courseAssignmentRepository.FindByID(assignmentID);
+        
                     if (courseAssignment != null)
                     {
                         response.Data.Add(courseAssignment);
@@ -242,31 +237,16 @@ namespace PeerIt.Controllers
                 }
                 else if (this.isStudent)
                 {
-                    var responseStudent = new JsonResponse<CourseAssignmentDataOut>();
-                    CourseGroup sCourse = courseGroupRepository.GetByUserAndCourseID(user.Id, courseID);
-                    if (sCourse != null)
-                    {
-                        CourseAssignment courseAssignment = courseAssignmentRepository.FindByID(assignmentID);
+                    CourseAssignment courseAssignment = courseAssignmentRepository.FindByID(assignmentID);
 
-                        if (courseAssignment != null)
-                        {
-                            responseStudent.Data.Add(
-                                new CourseAssignmentDataOut
-                                {
-                                    ID = courseAssignment.ID,
-                                    Name = courseAssignment.Name,
-                                }    
-                            );
-                            return Json(response);
-                        }
-                        else
-                        {
-                            response.Error.Add(new Error("NotFound", "Assignment was not Found."));
-                        }
+                    if (courseAssignment != null)
+                    {
+                        response.Data.Add(courseAssignment);
+                        return Json(response);
                     }
                     else
                     {
-                        response.Error.Add(new Error("Forbidden", "You aren't or weren't enrolled in this course."));
+                        response.Error.Add(new Error("NotFound", "Assignment was not Found."));
                     }
                 }
                 else
@@ -280,7 +260,7 @@ namespace PeerIt.Controllers
             }
             return Json(response);
         }
-        */
+        
 
         /// <summary>
         /// Sets the instructionText property of a CourseAssignment.

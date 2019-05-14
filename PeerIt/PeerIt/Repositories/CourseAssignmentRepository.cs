@@ -22,6 +22,7 @@ namespace PeerIt.Repositories
             {
                 return context.CourseAssignments
                     .Include(cAssignments => cAssignments.FK_COURSE.FK_INSTRUCTOR)
+                    .Include(cAssignments => cAssignments.PFile)
                     .ToList();
             }
         }

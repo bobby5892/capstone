@@ -140,6 +140,105 @@ class CourseContent extends Component {
         })
         .catch(error => console.error('Error:', error));
   }
+  renderUploadAssignmentWindow() {
+    let scope = this;
+
+    var newWindow = window.webix.ui({
+      view: "window",
+      id: "uploadAssignmentWindow",
+      width:600,
+      //height: 600,
+      move: true,
+      position: "center",
+      head: {
+        type: "space",
+        cols: [
+          { view: "label", label: "Upload an Assignment" },
+          {
+            view: "button", label: "Close", 
+            width: 70, 
+            left: 250,
+            click: function () {
+              //scope.setState({"editUser" : null });
+              window.webix.$$("uploadAssignmentWindow").close();
+            }
+          }
+        ]
+      },
+      body: {
+        type: "space",
+        rows: [
+          {
+            view: "form",
+            id: "uploadAssignmentForm",
+            //width: "auto",
+            elements: [
+              { view: "label", label: "Upload your Assignment form here: ", name: "", labelWidth: "auto", value: "" },
+              {
+                
+                view: "uploader", inputName: "files", upload: "/CourseAssignment/CreateAssignment", 
+                //urlData:{assignmentname:"new assignment",courseID:13,dueDate:"07/08/2019"} ,
+                id: "AssignmentFile", link: "mylist", value: "Upload File", autosend: false
+              },
+              {
+                view: "list", id: "mylist", type: "uploader",
+                autoheight: true, borderless: true
+              },
+              
+              { view: "text", label: "Assignment Name", name: "Assignment_Name",labelWidth: 200,invalidMessage:"Please enter Assignment Name" },
+              /*{ view: "text", label: "Course", name: "Course", labelWidth: 200,invalidMessage:"What Course is this? ",value:this.state.viewingCourse },*/
+              {view:"calendar",
+              id:"my_calendar",
+              name:"Due_Date",
+              date:new Date(
+                ),
+              weekHeader:true,
+              events:window.webix.Date.isHoliday,
+              width:300,
+              height:250},
+              
+              //{ view: "text", label: "Due Date", name: "Due_Date", labelWidth: 200,invalidMessage:"Please enter Valid Date" }, 
+              {
+                view: "button",value:"Upload", type:"form", 
+                click: function () {
+                  let validResponse = window.webix.$$("uploadAssignmentForm").validate();
+                  let FormVal = window.webix.$$("uploadAssignmentForm").getValues();
+                  window.webix.$$("AssignmentFile").define({
+                    urlData:{assignmentname:FormVal.Assignment_Name,
+                    courseID:FormVal.Course,
+                    dueDate:(window.webix.$$("my_calendar").config.date).toUTCString()
+                    }
+                  });
+                  window.webix.$$("AssignmentFile").send(function(response) {
+                    console.log("upload send: " + JSON.stringify(response));
+                    if (response != null){
+                      console.log(Date("07/08/2019"));
+                      window.webix.message("Succsess");
+                      //window.webix.$$("uploadAssignmentWindow").attachEvent("onUploadComplete", function(response){
+                        window.webix.$$("uploadAssignmentWindow").close();
+                        //window.webix.message("done");
+                    //}); 
+                    }
+                    else {
+                    //console.log(Date("07/08/2019"));
+                    alert("Nothing to Submit");
+                  }})
+                }
+              }
+            ],
+            rules: {
+              "Course": window.webix.rules.isNotEmpty,
+              "Due_Date": window.webix.rules.isNotEmpty,
+              "Assignment_Name":window.webix.rules.isNotEmpty
+            }
+          }
+        ]
+      }
+    }).show();
+    window.webix.$$("uploadAssignmentForm").setValues(
+         { Course:this.state.viewingCourse}
+     );
+  }
   render() {
     console.log("render course content");
     let ui = {
@@ -147,6 +246,7 @@ class CourseContent extends Component {
         {
           header: "Course Settings (ID: " + this.state.viewingCourse + ")", body: " "
         },
+       
         {
           view: "tabview",
           autoheight: true,
@@ -158,6 +258,17 @@ class CourseContent extends Component {
               body: {
                 autoheight: true,
                 rows: [
+                   {
+                        view: "button",
+                        value: "Add Assignment",
+                        type: "form",
+                        id: "AddAssignmnetButton",
+                        on: {
+                                'onItemClick' : function(i){
+                                    this.renderUploadAssignmentWindow();
+                                 }.bind(this)
+                        }
+                   },
                   {
                     autoheight: true,
                     view: "datatable",

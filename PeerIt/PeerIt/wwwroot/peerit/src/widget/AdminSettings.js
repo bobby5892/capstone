@@ -77,8 +77,8 @@ class AdminSettings extends Component {
   getSetting(setting,data,column){
     for(let i = 0;i<data.length;i++)
     {
-        if(data[i].id == setting){
-            if(column == "numeric"){
+        if(data[i].id === setting){
+            if(column === "numeric"){
                 return data[i].numericValue;
             }
             else{
@@ -89,8 +89,7 @@ class AdminSettings extends Component {
   }
   renderEditWindow(){
     if(this.renderWindow){
-      let scope = this;
-      var newWindow = window.webix.ui({
+      window.webix.ui({
               view:"window",
               id:"settingsWindow",
               width: 500,
@@ -118,15 +117,16 @@ class AdminSettings extends Component {
                         id:"configurationForm",
                         width:400,
                         elements:[
-                            { view:"checkbox", value: scope.state.SMTP_Enabled, label:"Send Emails", name: "IsEnabled", labelWidth:100 },
-                            { view:"text", label:"SMTP Server", name:"serverName", labelWidth:100,invalidMessage: "Server cannot be empty", value:scope.state.SMTP_HOST},
+                            { view:"checkbox", value: this.state.SMTP_Enabled, label:"Send Emails", name: "IsEnabled", labelWidth:100 },
+                            { view:"text", label:"SMTP Server", name:"serverName", labelWidth:100,invalidMessage: "Server cannot be empty", value:this.state.SMTP_HOST},
                             { view:"text", label:"SMTP Port", name:"portNum", width:150, labelWidth:100, invalidMessage:"Port cannot be empty", value:this.state.SMTP_Port},
                             { view:"text", label:"SMTP Login", name:"smtpUsername", labelWidth:100,invalidMessage: "Please login to confirm changes",value: this.state.SMTP_USERNAME},
                             { view:"text", type:"password", label:"SMTP Password", name:"smtpPassword", labelWidth:125, invalidMessage: "Password can not be empty" },
                             { margin:5, cols:[
                                 { view:"button", value:"Save Settings" , type:"form", click:function(){
-                                  scope.saveEditWindow();
-                                }}
+                                  this.saveEditWindow();
+                                }.bind(this)
+                              }
                             ]}
                         ],
                         rules:{
@@ -138,20 +138,19 @@ class AdminSettings extends Component {
                       }
                   ]
               }
-              
           }).show();
     }
   }
 
   saveEditWindow(){
-    let scope = this;
+    
     let formValues = window.webix.$$("configurationForm").getValues();
       // Save the edit window
-      let req = "/Settings/EditSettings" + "?isEnabledId=SMTP_Enabled" + "&isEnabledValue=" + formValues.IsEnabled +
-                "&serverId=SMTP_HOST" + "&serverValue=" + formValues.serverName +
-                "&portId=SMTP_Port" + "&portValue=" + formValues.portNum +
-                "&usernameId=SMTP_USERNAME" + "&usernameValue=" + formValues.smtpUsername +
-                "&passwordId=SMTP_Password" + "&passwordValue=" + formValues.smtpPassword;
+      let req = ("/Settings/EditSettings?isEnabledId=SMTP_Enabled&isEnabledValue=" + formValues.IsEnabled +
+                "&serverId=SMTP_HOST&serverValue=" + formValues.serverName +
+                "&portId=SMTP_Port&portValue=" + formValues.portNum +
+                "&usernameId=SMTP_USERNAME&usernameValue=" + formValues.smtpUsername +
+                "&passwordId=SMTP_Password&passwordValue=" + formValues.smtpPassword);
           console.log("Making Request: " + req);
         fetch(req, {
             method: 'POST', // or 'PUT'
@@ -165,16 +164,11 @@ class AdminSettings extends Component {
             if(response.success){
               alert("All Changes Saved Successfully.")
               console.log("We did it!");
-              //console.log("attempting to open render window");
-              //Dirt Reload Data
-              // Start Data Load 
             }
           })
           .catch(error => console.error('Error:', error));
   }
-
   render(){
-    let data = null;
      return(
       <div id="AdminSettings">
         {this.renderEditWindow()}

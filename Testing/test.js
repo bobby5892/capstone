@@ -1,7 +1,7 @@
 import LWAT from './index.js';
 
 
-//* Example Unit Tests */
+/* Example Unit Tests */
 
 // // Testing Logout
 let lwat = new LWAT();
@@ -83,8 +83,9 @@ lwat.post("http://localhost:8080/Account/Login",{
 	lwat.get("http://localhost:8080/Comment/CreateComment").then((res)=>{	
 		lwat.assert(res.error[0].description, "No student assignment for the given Id", "Test Create Comment");
 	});
-});
-//Testing Create Comment when failed because assignment was null
+});/
+
+//testing Delete Comment with bad Id
 lwat.post("http://localhost:8080/Account/Login",{
 	"Email":"admin@example.com",
 	"Password":"password",
@@ -94,6 +95,4 @@ lwat.post("http://localhost:8080/Account/Login",{
 		lwat.assert(res.error[0].description, "No Comment for given Id","Test Delete Comment");
 	});
 });
-
-
 

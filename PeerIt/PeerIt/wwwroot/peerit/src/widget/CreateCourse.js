@@ -9,9 +9,12 @@ class CreateCourse extends Component {
     this.state = {
       currentUser: props.currentUser,
       role: props.role,
-      data: null
+      data: null,
+      seed: props.seed
+
       
     };
+    this.redrawAll = props.redrawAll;
 
   }
    createCourse() {
@@ -24,12 +27,12 @@ class CreateCourse extends Component {
         'Content-Type': 'application/json'
       },
       credentials: "include",
-      mode: "cors"
+      mode: "no-cors"
     }).then(res => res.json())
       .then(response => {
         if (response.success) {
           this.setState({"data" : 0});
-          window.webix.$$("newCourseWindow").close();
+          this.redrawAll();
         } else {
        //   let errors = "";
           //response.error.forEach(error => {
@@ -43,7 +46,7 @@ class CreateCourse extends Component {
       .catch(error => console.error('Error:', error));
   }
   renderCreateCourseWindow() {
-    let scope = this;
+    
     if (window.webix.$$("newCourseWindow") == null) {
        window.webix.ui({
         view: "window",
@@ -81,8 +84,9 @@ class CreateCourse extends Component {
                   margin: 5, cols: [
                     {
                       view: "button", value: "Create Course", type: "form", click: function () {
-                        scope.createCourse();
-                      }
+                        this.createCourse();
+                        window.webix.$$("newCourseWindow").close();
+                      }.bind(this)
                     }
                   ]
                 }
@@ -97,6 +101,8 @@ class CreateCourse extends Component {
       }).show();
     }
   }
+
+  
 	render(){
     let scope = this;
     let ui = {

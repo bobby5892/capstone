@@ -17,6 +17,16 @@ lwat.post("http://localhost:8080/Account/Login",{
 	}).then((response) => { 
 		lwat.assert(response.success,true,"Check That Login works");
 });
+//Testing Delete Comment when failed because assignment was null
+lwat.post("http://localhost:8080/Account/Login",{
+	"Email":"admin@example.com",
+	"Password":"password",
+	"returnUrl":""
+}).then((response) => {
+	lwat.get("http://localhost:8080/Comment/DeleteComment").then((res)=>{	
+		lwat.assert(res.error[0].description, "No Comment for given Id","Test Delete Comment");
+	});
+});
 
 // Testing GetCurrentUserRole. It must log in first before it attempts getting the role.
 lwat.post("http://localhost:8080/Account/Login",{ 

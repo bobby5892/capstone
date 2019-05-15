@@ -84,7 +84,7 @@ lwat.post("http://localhost:8080/Account/Login",{
 		lwat.assert(res.error[0].description, "No student assignment for the given Id", "Test Create Comment");
 	});
 });
-//Testing Create Comment when failed because assignment was null
+//Testing Delete Comment when failed because assignment was null
 lwat.post("http://localhost:8080/Account/Login",{
 	"Email":"admin@example.com",
 	"Password":"password",

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using PeerIt.Interfaces;
 using PeerIt.Models;
 using PeerIt.Repositories;
 using PeerIt.ViewModels;
@@ -17,8 +16,8 @@ namespace PeerIt.Controllers
     public class CommentController : Controller
     {
 
-        private IGenericRepository<Comment, int> commentRepo;
-        private IGenericRepository<StudentAssignment,int> studentAssignmentRepo;
+        private CommentRepository commentRepo;
+        private StudentAssignmentRepository studentAssignmentRepo;
         private JsonResponse<Comment> response;
         private UserManager<AppUser> userManager;
         private AppUser user;
@@ -31,11 +30,10 @@ namespace PeerIt.Controllers
         /// </summary>
         /// <param name="userMgr"></param>
         /// <param name="repo"></param>
-        public CommentController(UserManager<AppUser> userMgr, IGenericRepository<Comment,int> cRepo, IGenericRepository<StudentAssignment,int> sRepo )
+        public CommentController(UserManager<AppUser> userMgr, CommentRepository repo)
         {
             userManager = userMgr;
-            commentRepo = cRepo;
-            studentAssignmentRepo = sRepo;
+            commentRepo = repo;
         }
 
         /// <summary>
@@ -61,7 +59,7 @@ namespace PeerIt.Controllers
                     response.Data.Add(c);
                 }
             }
-            if (response.Data.Count == 0)
+            if(!response.Success)
             {
                 response.Error.Add(new Error() { Name = "No Comments", Description = "No comments by current user" });
                 return Json(response);
@@ -77,24 +75,19 @@ namespace PeerIt.Controllers
         public JsonResult GetCommentsByAssignmentId(int studentAssignmentId)
         {
             response = new JsonResponse<Comment>();
-            studentAssignment = studentAssignmentRepo.FindByID(studentAssignmentId);
             comments = commentRepo.GetAll();
-            if (studentAssignment != null)
+
+            foreach(Comment c in comments)
             {
-                foreach (Comment c in comments)
+                if(c.FK_STUDENT_ASSIGNMENT.ID == studentAssignmentId)
                 {
-                    if (c.FK_STUDENT_ASSIGNMENT.ID == studentAssignmentId)
-                    {
-                        response.Data.Add(c);
-                    }
-                }
-                if (response.Data.Count == 0)
-                {
-                    response.Error.Add(new Error() { Name = "No Comments", Description = "No comments for the selected assignment" });
+                    response.Data.Add(c);
                 }
             }
-            else
-                response.Error.Add(new Error("Null Assignment at Id", "assignment at given id does not exits"));
+            if(!response.Success)
+            {
+                response.Error.Add(new Error() { Name = "No Comments", Description = "No comments for the selected assignment" });
+            }
             return Json(response);
         }
         

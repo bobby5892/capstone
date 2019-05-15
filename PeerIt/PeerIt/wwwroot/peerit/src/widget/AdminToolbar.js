@@ -10,24 +10,36 @@ class AdminToolbar extends Component {
 		this.state = {
 			currentUser: props.currentUser,
 			role: props.role,
-			viewingCourse: null,
-			data: null
+			viewingCourse: props.viewingCourse,
+			data: null,
+			seed : props.seed
 			
 		};
 		this.logout = props.logout;
 		// Receive the function handle for handleManageUsersMenuClick
 		this.handleMenuClick = props.handleMenuClick;
 		this.showCreateCourse = props.handleCreateCourse;
-    this.accountClick = props.accountClick;
+	    this.accountClick = props.accountClick;
+	    this.handleCourseViewer = props.handleCourseViewer;
+	    this.redrawAll = props.redrawAll;
 	}
-	handleCourseViewer(statechange){
-    	this.setState(statechange);
- 	}
+    componentWillReceiveProps(props) {
+    	this.setState(props);
+    }
 	renderCourses() {
-       return <Courses currentUser={this.state.currentUser} role={this.state.role}  handleCourseViewer={this.handleCourseViewer.bind(this)} viewingCourse={this.state.viewingCourse}/>
+       return <Courses 
+       currentUser={this.state.currentUser} 
+       role={this.state.role}  
+       handleCourseViewer={this.handleCourseViewer.bind(this)} 
+       viewingCourse={this.state.viewingCourse}
+       handleMenuClick={this.handleMenuClick}
+       accountClick={this.accountClick.bind(this)}
+       redrawAll={this.redrawAll} seed={this.state.seed}
+       />
 	}
 	renderCreateCourseButton() {
-       return <CreateCourse currentUser={this.state.currentUser} role={this.state.role} showCreateCourse={this.showCreateCourse} />
+       return <CreateCourse currentUser={this.state.currentUser} role={this.state.role} showCreateCourse={this.showCreateCourse}
+       redrawAll={this.redrawAll} seed={this.state.seed} />
 	}			
 	render() {
 		//let scope = this;
@@ -35,9 +47,9 @@ class AdminToolbar extends Component {
 		let ui =
 		{
 			type: "space",
-            scroll: "auto",
+            scroll: "false",
             height: window.innerHeight,
-            width:275,
+            
             padding: 0,
             responsive: "a1",
 			rows: [
@@ -48,7 +60,7 @@ class AdminToolbar extends Component {
 						scroll: false,
 						margin:0,
 						height:225,
-						data: ["Admin", "Account", "Manage Users", "Settings", "Logout"],
+						data: ["Admin", "My Account", "Manage Users", "Settings", "Logout"],
 						ready: function () {
 							// Highlight the first one
 							this.select(this.getFirstId());
@@ -70,10 +82,10 @@ class AdminToolbar extends Component {
 							else if (a === "Admin") {
 								this.handleMenuClick("LiveFeed");
 							}
-              else if( a === "Account"){
+				            else if( a === "My Account"){
 								this.accountClick();
-            		//this.renderAccountWindow();
-            	}    
+				            
+				            }    
 
 						}.bind(this),
 						select: true,
@@ -87,7 +99,7 @@ class AdminToolbar extends Component {
                 	{
 						gravity: 1,
 					 	view: "template",
-                 		scroll: true,
+                 		scroll: false,
                  		template: "right",
                  		content: "CreateCourse",
                  		align:"right"

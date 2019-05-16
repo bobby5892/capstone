@@ -44,7 +44,7 @@ class CourseContent extends Component {
         cols: [
           { view: "label", label: "Add Student to Course" },
           {
-            view: "button", id: "addStudtentButton", label: "Close", width: 70, left: 250,
+            view: "button", id: "addStudentButton", label: "Close", width: 70, left: 250,
             click: function () {
               this.setState({ addingStudent: false });
               window.webix.$$("addStudentWindow").close();
@@ -275,7 +275,7 @@ class CourseContent extends Component {
                     columns: [
                       { id: "rank", header: "", width: 50 },
                       { id: "firstName", header: "First Name", width: 200 },
-                      { id: "lastName", header: "Last Name", width: 80 },
+                      { id: "lastName", header: "Last Name", width: 200 },
 
                     ],
                     url: "/Course/GetStudents?courseID=" + this.state.viewingCourse
@@ -294,9 +294,21 @@ class CourseContent extends Component {
                     columns: [
                       { id: "rank", header: "", width: 50 },
                       { id: "firstName", header: "First Name", width: 200 },
-                      { id: "lastName", header: "Last Name", width: 80 },
-
+                      { id: "lastName", header: "Last Name", width: 200 },
+                      { id: "groupID", header: "Review Group", width: 200 },
+                      { header: "Change Group", width: 100 }
                     ],
+                    onChange : {
+                      group_change:function (i,ev){
+                             // Don't remove the comment below - its actually functional.
+                             //eslint-disable-next-line
+                             let confirmCheck = confirm("Are you sure you want to change this student's group?");
+                             if(confirmCheck){
+                                console.log("I want to change " + ev.row + "'s group");
+                                this.removeStudent(ev.row);
+                             }
+                          }.bind(this)
+                    },
                     url: "/Course/GetStudents?courseID=" + this.state.viewingCourse
 
                     /* data: [

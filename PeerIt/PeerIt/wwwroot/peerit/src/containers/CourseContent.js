@@ -295,8 +295,17 @@ class CourseContent extends Component {
                       { id: "rank", header: "", width: 50 },
                       { id: "firstName", header: "First Name", width: 200 },
                       { id: "lastName", header: "Last Name", width: 200 },
-                      { id: "groupID", header: "Review Group", width: 200 },
-                      { header: "Change Group", width: 100 }
+                    //  { id: "groupID", header: "Review Group", width: 200 },
+                      //{ header: "Change Group", width: 100, template: "{common.checkbox()}" /*{view:"select", value:1, options:[{"id": 1, "value": 1}]} */ }
+                      {
+                        id: "groupID", header: "Review Group",
+                        subview:"select", 
+                        label:"Branch", 
+                        options:[
+                          { "id":1, "value":"Master" },
+                          { "id":2, "value":"Release" }
+                        ]
+                      }
                     ],
                     onChange : {
                       group_change:function (i,ev){

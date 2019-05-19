@@ -488,7 +488,6 @@ namespace PeerIt.Controllers
                     this.courseGroupRepository.Add(newCourseGroup);
                     response.Data.Add(newCourseGroup);
                     return Json(response);
-
                 }
             }
             response.Error.Add(new Error() { Name = "studentAdd", Description = "failed to add student to course" });
@@ -520,21 +519,16 @@ namespace PeerIt.Controllers
                 }
                 return false;
             });
-               
-           
             if (enrollment.Count == 0)
             {
                 response.Error.Add(new Error() { Name = "RemoveStudentToCourse", Description = "Student is not in the class" });
                 return Json(response);
             }
-           
             if (this.isAdmin)
             {
                 enrollment.ForEach((x) => {
                     this.courseGroupRepository.Delete(x);
                 });
-                
-               
                 return Json(response);
             }
             else if (this.isInstructor)
@@ -547,10 +541,34 @@ namespace PeerIt.Controllers
                         this.courseGroupRepository.Delete(x);
                     });
                     return Json(response);
-
                 }
             }
             response.Error.Add(new Error() { Name = "RemoveStudentToCourse", Description = "failed to remove student to course" });
+            return Json(response);
+        }
+        [Authorize(Roles = "Administrator,Instructor")]
+        [HttpPatch]
+        public async Task<JsonResult> ChangeStudentGroup(string studentID, int courseID, string reviewGroupID)
+        {
+            JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
+            AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
+            CourseGroup courseGroup = null;
+            courseGroupRepository.GetAll().ForEach(cG => 
+            {
+                if (cG.FK_Course.ID == courseID)
+                {
+                    courseGroup = cG;
+                }
+            });
+            SetRoles();
+            if (this.isAdmin || this.isInstructor && courseGroup.FK_Course.FK_INSTRUCTOR.Id == currentUser.Id)
+            {
+
+            }
+            else
+            {
+
+            }
             return Json(response);
         }
     }

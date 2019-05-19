@@ -129,7 +129,6 @@ class CourseContent extends Component {
             'Content-Type': 'application/json'
           },
           credentials: "include"
-          
         }).then(res => res.json())
         .then(response => {
           if(response.success){
@@ -139,6 +138,22 @@ class CourseContent extends Component {
           }
         })
         .catch(error => console.error('Error:', error));
+  }
+  changeStudentGroup(studentID, courseID, groupValue) {
+    fetch("/Course/ChangeStudentGroup?studentID=" + studentID + "&courseID=" + courseID + "&groupValue=" + groupValue,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: "include"
+    })
+    .then(response => {
+      if (response.success) {
+        this.redrawAll();
+      }
+    })
+    .catch(error => console.error('Error:', error));
   }
   renderUploadAssignmentWindow() {
     let scope = this;
@@ -258,17 +273,17 @@ class CourseContent extends Component {
               body: {
                 autoheight: true,
                 rows: [
-                   {
-                        view: "button",
-                        value: "Add Assignment",
-                        type: "form",
-                        id: "AddAssignmnetButton",
-                        on: {
-                                'onItemClick' : function(i){
-                                    this.renderUploadAssignmentWindow();
-                                 }.bind(this)
-                        }
-                   },
+                  {
+                    view: "button",
+                    value: "Add Assignment",
+                    type: "form",
+                    id: "AddAssignmnetButton",
+                    on: {
+                          'onItemClick' : function(i){
+                              this.renderUploadAssignmentWindow();
+                            }.bind(this)
+                    }
+                  },
                   {
                     autoheight: true,
                     view: "datatable",
@@ -298,13 +313,16 @@ class CourseContent extends Component {
                     //  { id: "groupID", header: "Review Group", width: 200 },
                       //{ header: "Change Group", width: 100, template: "{common.checkbox()}" /*{view:"select", value:1, options:[{"id": 1, "value": 1}]} */ }
                       {
-                        id: "groupID", header: "Review Group",
-                        subview:"select", 
-                        label:"Branch", 
-                        options:[
-                          { "id":1, "value":"Master" },
-                          { "id":2, "value":"Release" }
-                        ]
+                        id: "groupID", header: "Review Group", width: 400,
+                        subview: function (obj, target){
+                          return this.webix.ui({ 
+                            id: "groupSelectBox", template: "select", options: [
+                              {"id": 1, "value": "group 1"},
+                              {"id": 2, "value": "group 2"},
+                              {"id": 3, "value": "group 3"}
+                            ]
+                          });
+                        }
                       }
                     ],
                     onChange : {
@@ -314,7 +332,6 @@ class CourseContent extends Component {
                              let confirmCheck = confirm("Are you sure you want to change this student's group?");
                              if(confirmCheck){
                                 console.log("I want to change " + ev.row + "'s group");
-                                this.removeStudent(ev.row);
                              }
                           }.bind(this)
                     },

@@ -256,6 +256,13 @@ class CourseContent extends Component {
   }
   render() {
     console.log("render course content");
+    let reviewGroupOptions = function() {
+      let optionString = ""
+      for (let i = 1; i <= 20; i ++) {
+        optionString += "<option id='" + i + "'>Group " + i + "</option>";
+      }
+      return optionString;
+    }
     let ui = {
       rows: [
         {
@@ -306,25 +313,15 @@ class CourseContent extends Component {
                   {
                     autoheight: true,
                     view: "datatable",
-                    subview:{ 
-                      id: "reviewGroupForm", view: "form", 
-                      elements:
-                        { view: "select", id: "reviewGroupSelect",
-                          options: [
-                            {"id": 1, "value": "group 1"},
-                            {"id": 2, "value": "group 2"},
-                            {"id": 3, "value": "group 3"}
-                          ]
-                        }
-                    },
                     columns: [
-                      { id: "rank", header: "", width: 50 },
+                      { id: "id", header: "", width: 50 },
                       { id: "firstName", header: "First Name", width: 200 },
                       { id: "lastName", header: "Last Name", width: 200 },
                     //  { id: "groupID", header: "Review Group", width: 200 },
                       //{ header: "Change Group", width: 100, template: "{common.checkbox()}" /*{view:"select", value:1, options:[{"id": 1, "value": 1}]} */ }
                       {
                         id: "groupID", header: "Review Group", width: 400,
+                        template: "<select id='" + "' value='1'>" + reviewGroupOptions() + "</select>"
                       }
                     ],
                     onChange : {

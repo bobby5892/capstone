@@ -455,6 +455,7 @@ class Portal extends Component {
       </div>
     );
   }
+  
 }
 export default Portal;
 

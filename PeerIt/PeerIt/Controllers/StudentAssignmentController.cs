@@ -9,6 +9,10 @@ using PeerIt.Interfaces;
 using PeerIt.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace PeerIt.Controllers
 {
@@ -19,11 +23,14 @@ namespace PeerIt.Controllers
     {
         #region Private Variables
 
-        private CourseRepository courseRepository;
-        private StudentAssignmentRepository sAssignmentRepository;
-        private CourseAssignmentRepository cAssignmentRepository;
-        private CourseGroupRepository cGroupRepository;
-        private ActiveReviewerRepository aReviewerRepository;
+        private readonly IFileProvider fileProvider;
+        private IHostingEnvironment hostingEnvironment;
+        private IGenericRepository<Course, int> courseRepo;
+        private IGenericRepository<StudentAssignment, int> studentAssignmentRepo;
+        private IGenericRepository<CourseAssignment, int> courseAssignmentRepo;
+        private IGenericRepository<CourseGroup, int> courseGroupRepo;
+        private IGenericRepository<Review, int> reviewRepo;
+        private IGenericRepository<PFile, string> pFileRepo;
         private UserManager<AppUser> userManager;
 
         private bool isAdmin;
@@ -33,28 +40,35 @@ namespace PeerIt.Controllers
         #endregion Private Variables
 
         #region Constructors
-
         /// <summary>
-        /// Overloaded Constructor
+        /// 
         /// </summary>
-        /// <param name="sAssignRepo"></param>
-        /// <param name="courseRepo"></param>
-        /// <param name="cAssignRepo"></param>
-        /// <param name="cGroupRepo"></param>
-        /// <param name="aReviewerRepo"></param>
+        /// <param name="fProvider"></param>
+        /// <param name="hEvironment"></param>
+        /// <param name="cRepo"></param>
+        /// <param name="saRepo"></param>
+        /// <param name="caRepo"></param>
+        /// <param name="cgRepo"></param>
+        /// <param name="arRepo"></param>
         /// <param name="userMgr"></param>
-        public StudentAssignmentController(StudentAssignmentRepository sAssignRepo,
-                                           CourseRepository courseRepo,
-                                           CourseAssignmentRepository cAssignRepo,
-                                           CourseGroupRepository cGroupRepo,
-                                           ActiveReviewerRepository aReviewerRepo,
+        public StudentAssignmentController(IFileProvider fProvider,
+                                           IHostingEnvironment hEvironment,
+                                           IGenericRepository<Course, int> cRepo,
+                                           IGenericRepository<StudentAssignment, int> saRepo,
+                                           IGenericRepository<CourseAssignment, int> caRepo,
+                                           IGenericRepository<CourseGroup, int> cgRepo,
+                                           IGenericRepository<Review, int> rRepo,
+                                           IGenericRepository<PFile, string> pRepo,
                                            UserManager<AppUser> userMgr)
         {
-            sAssignmentRepository = sAssignRepo;
-            courseRepository = courseRepo;
-            cAssignmentRepository = cAssignRepo;
-            cGroupRepository = cGroupRepo;
-            aReviewerRepository = aReviewerRepo;
+            fileProvider = fProvider;
+            hostingEnvironment = hEvironment;
+            courseRepo = cRepo;
+            studentAssignmentRepo = saRepo;
+            courseAssignmentRepo = caRepo;
+            courseGroupRepo = cgRepo;
+            reviewRepo = rRepo;
+            pFileRepo = pRepo;
             userManager = userMgr;
 
             this.isAdmin = HttpContext.User.IsInRole("Administrator");
@@ -67,23 +81,30 @@ namespace PeerIt.Controllers
         #region Methods that return Json
 
         /// <summary>
-        /// Returns a list of StudentAssignments by Course ID.
+        /// 
         /// </summary>
         /// <param name="courseID"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<JsonResult> GetAssignmentsByCourse(int courseID)
+        public async Task<JsonResult> GetAssignmentsByCourseId(int courseID)
         {
-            JsonResponse<List<StudentAssignment>> response = new JsonResponse<List<StudentAssignment>>();
-            Course course = courseRepository.FindByID(courseID);
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
+            List<StudentAssignment> studentAssignments = studentAssignmentRepo.GetAll();
+            Course course = courseRepo.FindByID(courseID);
+            CourseGroup courseGroup = await GetCourseGroup(courseID);
 
             if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == user)
             {
                 if (course != null)
                 {
-                    List<StudentAssignment> sAssignments = sAssignmentRepository.GetByCourseID(courseID);
-                    response.Data.Add(sAssignments);
+                    foreach(StudentAssignment sa in studentAssignments)
+                    {
+                        if (sa.CourseAssignment.FK_COURSE == course)
+                            response.Data.Add(sa);
+                    }
+                    if (response.Data.Count == 0)
+                        response.Error.Add(new Error("No Assignments", "No Assignments"));
                 }
                 else
                 {
@@ -94,11 +115,15 @@ namespace PeerIt.Controllers
             {
                 if (course != null)
                 {
-                    CourseGroup sCourse = cGroupRepository.GetByUserAndCourseID(user.Id, courseID);
-                    if (sCourse != null)
+                    if (courseGroup != null)
                     {
-                        List<StudentAssignment> sAssignments = sAssignmentRepository.GetByStudentAndCourseID(user.Id, courseID);
-                        response.Data.Add(sAssignments);
+                        foreach(StudentAssignment sa in studentAssignments)
+                        {
+                            if (sa.CourseAssignment.FK_COURSE == course && sa.AppUser == user)
+                                response.Data.Add(sa);
+                        }
+                        if (response.Data.Count == 0)
+                            response.Error.Add(new Error("No Assignments", "No Assignments"));
                     }
                     else
                     {
@@ -116,145 +141,30 @@ namespace PeerIt.Controllers
             }
             return Json(response);
         }
-
-        /// <summary>
-        /// Returns a list of StudentAssignments that are ungraded by Course ID.
-        /// </summary>
-        /// <param name="courseID"></param>
-        /// <returns></returns>
         [HttpGet]
-        public async Task<JsonResult> GetAssignmentsByCourseUngraded(int courseID)
-        {
-            JsonResponse<List<StudentAssignment>> response = new JsonResponse<List<StudentAssignment>>();
-            Course course = courseRepository.FindByID(courseID);
-            AppUser user = await userManager.GetUserAsync(HttpContext.User);
-
-            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == user)
-            {
-                if (course != null)
-                {
-                    List<StudentAssignment> sAssignments = sAssignmentRepository.GetByCourseIDUngraded(courseID);
-                    response.Data.Add(sAssignments);
-                }
-                else
-                {
-                    response.Error.Add(new Error("NotFound", "Course was not Found."));
-                }
-                return Json(response);
-            }
-            else if (this.isStudent)
-            {
-                CourseGroup sCourse = cGroupRepository.GetByUserAndCourseID(user.Id, courseID);
-                if (sCourse != null)
-                {
-                    List<StudentAssignment> sAssignments = sAssignmentRepository.GetByStudentAndCourseIDUngraded(user.Id, courseID);
-                    response.Data.Add(sAssignments);
-                }
-                else
-                {
-                    response.Error.Add(new Error("NotFound", "You aren't or weren't enrolled in this course."));
-                }
-            }
-            else
-            {
-                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-            }
-            return Json(response);
-        }
-
-        /// <summary>
-        /// Returns a list of StudentAssignments by a student's ID and a
-        /// student's course ID
-        /// </summary>
-        /// <param name="userID"></param>
-        /// <param name="courseID"></param>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<JsonResult> GetAssignmentsByUser(string userID, int courseID)
-        {
-            JsonResponse<List<StudentAssignment>> response = new JsonResponse<List<StudentAssignment>>();
-            Course course = courseRepository.FindByID(courseID);
-            AppUser user = await userManager.FindByIdAsync(userID);
-
-            if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR.Id == user.Id)
-            {
-                if (course != null)
-                {
-                    if (user != null)
-                    {
-                        response.Data.Add(sAssignmentRepository.GetByStudentAndCourseID(userID, courseID));
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("NotFound", "User was not Found."));
-                    }
-                }
-                else
-                {
-                    response.Error.Add(new Error("NotFound", "Course was not Found."));
-                }
-            }
-            else if (this.isStudent)
-            {
-                if (course != null)
-                {
-                    if (user != null)
-                    {
-                        if (user.Id == userID)
-                        {
-                            response.Data.Add(sAssignmentRepository.GetByStudentAndCourseID(userID, courseID));
-                        }
-                        else
-                        {
-                            response.Error.Add(new Error("Forbidden", "Not your Assignments"));
-                        }
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("NotFound", "User was not Found."));
-                    }
-                }
-                else
-                {
-                    response.Error.Add(new Error("NotFound", "Course was not Found."));
-                }
-            }
-            else
-            {
-                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-            }
-            return Json(response);
-        }
-
-        /// <summary>
-        /// Returns a StudentAssignment by it's ID.
-        /// </summary>
-        /// <param name="assignmentID"></param>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<JsonResult> GetAssignment(int assignmentID)
+        public async Task<JsonResult> GetAssignmentById(int assignmentID)
         {
             JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
-            StudentAssignment sAssign = sAssignmentRepository.FindByID(assignmentID);
+            StudentAssignment studentAssignment = studentAssignmentRepo.FindByID(assignmentID);
+            CourseGroup courseGroup = await GetCourseGroup(studentAssignment.CourseAssignment.FK_COURSE.ID);
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-            if (this.isAdmin || this.isInstructor && sAssign.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
+            if (this.isAdmin || this.isInstructor && studentAssignment.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
             {
-                if (sAssign != null)
+                if (studentAssignment != null)
                 {
-                    response.Data.Add(sAssign);
+                    response.Data.Add(studentAssignment);
                 }
             }
             else if (this.isStudent)
             {
-                CourseGroup sCourse = cGroupRepository.GetByUserAndCourseID(user.Id, sAssign.CourseAssignment.FK_COURSE.ID);
-                if (sCourse != null)
+                if (courseGroup != null)
                 {
-                    if (sAssign != null)
+                    if (studentAssignment != null)
                     {
-                        if (sAssign.AppUser.Id == user.Id)
+                        if (studentAssignment.AppUser.Id == user.Id)
                         {
-                            response.Data.Add(sAssign);
+                            response.Data.Add(studentAssignment);
                         }
                         else
                         {
@@ -278,50 +188,83 @@ namespace PeerIt.Controllers
             return Json(response); 
         }
 
-        /// <summary>
-        /// Returns a List of StudentAssignments by the Review Group ID.
-        /// </summary>
-        /// <returns></returns>
-        // Need to Add ReviewGroups so we can retrieve a list of assignments by a group allowed to review each other.
         [HttpGet]
-        public async Task<JsonResult> GetAssignmentsByGroup(int groupID)
+        public async Task<JsonResult> GetAssignmentsByCourseAndReviewGroup(int courseId, string reviewGroupId)
         {
             JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
-            response.Error.Add(new Error("NotImplemented", "Feature has not been implemented yet."));
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            List<StudentAssignment> studentAssignments = studentAssignmentRepo.GetAll();
+            Course course = courseRepo.FindByID(courseId);
+            CourseGroup courseGroup = await GetCourseGroup(courseId);
+
+            if(this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == user)
+            {
+                foreach (StudentAssignment sa in studentAssignments)
+                {
+                    if (sa.CourseAssignment.FK_COURSE == course && courseGroup.ReviewGroup == reviewGroupId)
+                    {
+                        response.Data.Add(sa);
+                    }
+                }
+                if (response.Data.Count == 0)
+                    response.Error.Add(new Error("No Assignments", "No Assignments"));
+            }
+            else if(this.isStudent)
+            {
+                foreach (StudentAssignment sa in studentAssignments)
+                {
+                    if (sa.CourseAssignment.FK_COURSE == course && courseGroup.ReviewGroup == reviewGroupId)
+                    {
+                        response.Data.Add(sa);
+                    }
+                }
+                if (response.Data.Count == 0)
+                    response.Error.Add(new Error("No Assignments", "No Assignments"));
+            }
             return Json(response);
         }
 
-        /// <summary>
-        /// Returns the ActiveReviewers of a StudentAssignment by the Assignment ID.
-        /// </summary>
-        /// <param name="assignmentID"></param>
-        /// <returns></returns>
         [HttpGet]
         public async Task<JsonResult> GetAssignmentReviewers(int assignmentID)
         {
-            JsonResponse<List<ActiveReviewer>> response = new JsonResponse<List<ActiveReviewer>>();
-            StudentAssignment sAssign = sAssignmentRepository.FindByID(assignmentID);
+            JsonResponse<AppUser>response = new JsonResponse<AppUser>();
+            StudentAssignment studentAssignment = studentAssignmentRepo.FindByID(assignmentID);
+            List<Review> reviews = reviewRepo.GetAll();
+            List<AppUser> reviewers = new List<AppUser>();
+            CourseGroup course = await GetCourseGroup(studentAssignment.CourseAssignment.FK_COURSE.ID);
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-            if (sAssign != null)
+            if (studentAssignment != null)
             {
-                if (this.isAdmin || this.isInstructor && sAssign.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
+                if (this.isAdmin || this.isInstructor && studentAssignment.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
                 {
-                    response.Data.Add(aReviewerRepository.GetByStudentAssignmentID(assignmentID));
+                    AppUser reviewer = null;
+                    foreach(Review r in reviews)
+                    {
+                        if(r.FK_STUDENT_ASSIGNMENT == studentAssignment)
+                        {
+                            reviewer = await userManager.FindByIdAsync(studentAssignment.AppUser.Id);
+                            response.Data.Add(reviewer);
+                        }
+                    }
+                    if (response.Data.Count == 0)
+                        response.Error.Add(new Error("No Assignments", "No Assignments"));
                 }
                 else if (this.isStudent)
                 {
-                    CourseGroup sCourse = cGroupRepository.GetByUserAndCourseID(user.Id, sAssign.CourseAssignment.FK_COURSE.ID);
-                    if (sCourse != null)
+                    if (course != null)
                     {
-                        if (sAssign.AppUser.Id == user.Id)
+                        AppUser reviewer = null;
+                        foreach (Review r in reviews)
                         {
-                            response.Data.Add(aReviewerRepository.GetByStudentAssignmentID(assignmentID));
+                            if (r.FK_STUDENT_ASSIGNMENT == studentAssignment)
+                            {
+                                reviewer = await userManager.FindByIdAsync(studentAssignment.AppUser.Id);
+                                response.Data.Add(reviewer);
+                            }
                         }
-                        else
-                        {
-                            response.Error.Add(new Error("Forbidden", "This is not your Assignment."));
-                        }
+                        if (response.Data.Count == 0)
+                            response.Error.Add(new Error("No Assignments", "No Assignments"));
                     }
                     else
                     {
@@ -339,230 +282,83 @@ namespace PeerIt.Controllers
             }
             return Json(response);
         }
-
-        /// <summary>
-        /// Sets the Content Property of a StudentAssignment.
-        /// </summary>
-        /// <param name="assignmentID"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
-        [HttpPatch]
-        public async Task<JsonResult> SetContent(int assignmentID, string content)
+        public async Task<JsonResult> CreateStudentAssignment(PFile pFile, CourseAssignment courseAssignment)
         {
-            JsonResponse<bool> response = new JsonResponse<bool>();
-            StudentAssignment sAssign = sAssignmentRepository.FindByID(assignmentID);
+            JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
-
-            if (sAssign != null)
+            if(courseAssignment != null)
             {
-                if (this.isAdmin || this.isInstructor && sAssign.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
+                StudentAssignment newAssignment = new StudentAssignment()
                 {
-                    sAssign.Content = content;
-                    if (sAssignmentRepository.Edit(sAssign))
-                    {
-                        return Json(response);
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("NotSuccessful", "The data was not successfully written."));
-                    }
-                }
-                else if (this.isStudent)
+                    AppUser = user,
+                    FK_PFile = pFile,
+                    CourseAssignment = courseAssignment,
+                    TimestampCreated = System.DateTime.Now
+                };
+
+                if (studentAssignmentRepo.Add(newAssignment) != null)
                 {
-                    CourseGroup sCourse = cGroupRepository.GetByUserAndCourseID(user.Id, sAssign.CourseAssignment.FK_COURSE.ID);
-                    if (sCourse != null)
-                    {
-                        if (sAssign.AppUser.Id == user.Id)
-                        {
-                            sAssign.Content = content;
-                            if (sAssignmentRepository.Edit(sAssign))
-                            {
-                                return Json(response);
-                            }
-                            else
-                            {
-                                response.Error.Add(new Error("NotSuccessful", "The data was not successfully written."));
-                            }
-                        }
-                        else
-                        {
-                            response.Error.Add(new Error("Forbidden", "This is not your Assignment."));
-                        }
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("Forbidden", "You aren't or weren't enrolled in this course."));
-                    }
+                    response.Data.Add(newAssignment);
                 }
                 else
-                {
-                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-                }
+                    response.Error.Add(new Error("Error adding assignment", "Error adding assignment"));
             }
             else
-            {
-                response.Error.Add(new Error("NotFound", "StudentAssignment was not Found."));
-            }
+                response.Error.Add(new Error("Invalid CourseId","Ivalid course id"));
+
             return Json(response);
         }
-
-        /// <summary>
-        /// Sets the Score property of a StudentAssignment.
-        /// </summary>
-        /// <param name="assignmentID"></param>
-        /// <param name="score"></param>
-        /// <returns></returns>
-        [HttpPatch]
-        public async Task<JsonResult> SetScore(int assignmentID, int score)
+        [HttpPost]
+        public async void UploadStudentAssignment(List<IFormFile> files, CourseAssignment courseAssignment)
         {
-            JsonResponse<bool> response = new JsonResponse<bool>();
-            StudentAssignment sAssign = sAssignmentRepository.FindByID(assignmentID);
-            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            PFile newPFile;
+            Stream stream;
+            Guid guidFileId;
+            long size = files.Sum(f => f.Length);
+            
+            foreach (var formFile in files)
+            {
+                guidFileId = Guid.NewGuid();
+                string ext = formFile.FileName.Split(".")[1];
+                string name = formFile.FileName.Split(".")[0];
+                AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
-            if (sAssign != null)
-            {
-                if (this.isAdmin || this.isInstructor && sAssign.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
+                string destinationFolder = "Data/" + guidFileId + "." + ext;
+
+
+                if (formFile.Length > 0)
                 {
-                    sAssign.Score = score;
-                    if (sAssignmentRepository.Edit(sAssign))
+                    using (stream = new FileStream(destinationFolder, FileMode.Create))
                     {
-                        return Json(response);
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("NotSuccessful", "The data was not successfully written."));
+                        await formFile.CopyToAsync(stream);
                     }
                 }
-                else
-                {
-                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-                }
+                newPFile = new PFile(guidFileId.ToString(), name, ext, user);
+                pFileRepo.Add(newPFile);
+                if(courseAssignment != null)
+                await CreateStudentAssignment(newPFile,courseAssignment);
             }
-            else
-            {
-                response.Error.Add(new Error("NotFound", "StudentAssignment was not Found."));
-            }
-            return Json(response);
         }
 
-        /// <summary>
-        /// Sets the Status property of a StudentAssignment.
-        /// </summary>
-        /// <param name="assignmentID"></param>
-        /// <param name="status"></param>
-        /// <returns></returns>
-        [HttpPatch]
-        public async Task<JsonResult> SetStatus(int assignmentID, string status)
+            #endregion Methods that return Json
+
+            #region StudentAssignmentController Helper Methods
+
+            public async Task<CourseGroup> GetCourseGroup(int courseId)
         {
-            JsonResponse<bool> response = new JsonResponse<bool>();
-            StudentAssignment sAssign = sAssignmentRepository.FindByID(assignmentID);
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            List<CourseGroup> courseGroups = courseGroupRepo.GetAll();
+            CourseGroup studentCourseGroup = null;
 
-            if (sAssign != null)
+            foreach (CourseGroup cg in courseGroups)
             {
-                if (this.isAdmin || this.isInstructor && sAssign.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
+                if (cg.FK_Course.ID == courseId && cg.FK_AppUser == user)
                 {
-                    sAssign.Status = status;
-                    if (sAssignmentRepository.Edit(sAssign))
-                    {
-                        return Json(response);
-                    }
-                }
-                // Need to add ReviewGroups so students who review other student's assignments can set the status property.
-                else if (this.isStudent)
-                {
-                    CourseGroup sCourse = cGroupRepository.GetByUserAndCourseID(user.Id, sAssign.CourseAssignment.FK_COURSE.ID);
-                    if (sCourse != null)
-                    {
-                        if (sAssign.AppUser.Id == user.Id)
-                        {
-                            sAssign.Status = status;
-                            if (sAssignmentRepository.Edit(sAssign))
-                            {
-                                return Json(response);
-                            }
-                            else
-                            {
-                                response.Error.Add(new Error("NotSuccessful", "The data was not successfully written."));
-                            }
-                        }
-                        else
-                        {
-                            response.Error.Add(new Error("Forbidden", "This is not your assignment."));
-                        }
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("Forbidden", "You aren't or weren't enrolled in this course."));
-                    }
-                }
-                else
-                {
-                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+                    studentCourseGroup = cg;
                 }
             }
-            else
-            {
-                response.Error.Add(new Error("NotFound", "StudentAssignment was not Found."));
-            }
-            return Json(response);
+            return studentCourseGroup;
         }
-
-        /// <summary>
-        /// Deletes an Assignment by it's ID.
-        /// </summary>
-        /// <param name="assignmentID"></param>
-        /// <returns></returns>
-        [HttpDelete]
-        public async Task<JsonResult> DeleteAssignment(int assignmentID)
-        {
-            JsonResponse<bool> response = new JsonResponse<bool>();
-            StudentAssignment sAssign = sAssignmentRepository.FindByID(assignmentID);
-            AppUser user = await userManager.GetUserAsync(HttpContext.User);
-
-            if (sAssign != null)
-            {
-                if (this.isAdmin || this.isInstructor && sAssign.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
-                {
-                    if (sAssignmentRepository.Delete(sAssign))
-                    {
-                        return Json(response);
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("NotSuccessful", "The data was not successfully written."));
-                    }
-                }
-                else if (this.isStudent)
-                {
-                    if (sAssign.AppUser.Id == user.Id)
-                    {
-                        if (sAssignmentRepository.Delete(sAssign))
-                        {
-                            return Json(response);
-                        }
-                        else
-                        {
-                            response.Error.Add(new Error("NotSuccessful", "The data was not successfully written."));
-                        }
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("Forbidden", "This is not your Assignment"));
-                    }
-                }
-                else
-                {
-                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-                }
-            }
-            else
-            {
-                response.Error.Add(new Error("NotFound", "StudentAssignment was not Found."));
-            }
-            return Json(response);
-        }
-        
-        #endregion Methods that return Json
+        #endregion
     }
 }

@@ -555,19 +555,34 @@ namespace PeerIt.Controllers
             CourseGroup courseGroup = null;
             courseGroupRepository.GetAll().ForEach(cG => 
             {
-                if (cG.FK_Course.ID == courseID)
+                if (cG.FK_Course.ID == courseID && cG.FK_AppUser.Id == studentID)
                 {
                     courseGroup = cG;
                 }
             });
             SetRoles();
-            if (this.isAdmin || this.isInstructor && courseGroup.FK_Course.FK_INSTRUCTOR.Id == currentUser.Id)
+            if (courseGroup != null)
             {
-
+                if (this.isAdmin || this.isInstructor && courseGroup.FK_Course.FK_INSTRUCTOR.Id == currentUser.Id)
+                {
+                    courseGroup.ReviewGroup = reviewGroupID;
+                    if (courseGroupRepository.Edit(courseGroup))
+                    {
+                        response.Data.Add(courseGroup);
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("NotSuccessful", "The data was not successfully writen."));
+                    }
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here."));
+                }
             }
             else
             {
-
+                response.Error.Add(new Error("NotFound", "The Course Group was not found."));
             }
             return Json(response);
         }

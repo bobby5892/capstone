@@ -117,7 +117,6 @@ class CourseContent extends Component {
           }
         })
         .catch(error => console.error('Error:', error));
-
   }
   componentWillReceiveProps(props) {
     this.setState(props);
@@ -138,6 +137,22 @@ class CourseContent extends Component {
           }
         })
         .catch(error => console.error('Error:', error));
+  }
+  getStudentGroup(studentID, courseID) {
+    fetch("/Course/GetStudentGroup?studentID=" + studentID + "&courseID=" + courseID, 
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: "include"
+    })
+    .then(response => {
+      if (response.success) {
+        return response;
+      }
+    })
+    .catch(error => console.error('Error:', error));
   }
   changeStudentGroup(studentID, courseID, groupValue) {
     fetch("/Course/ChangeStudentGroup?studentID=" + studentID + "&courseID=" + courseID + "&groupValue=" + groupValue,
@@ -263,6 +278,9 @@ class CourseContent extends Component {
       }
       return optionString;
     }
+    let putGroupID = function() {
+      fetch()
+    }
     let ui = {
       rows: [
         {
@@ -321,7 +339,7 @@ class CourseContent extends Component {
                       //{ header: "Change Group", width: 100, template: "{common.checkbox()}" /*{view:"select", value:1, options:[{"id": 1, "value": 1}]} */ }
                       {
                         id: "groupID", header: "Review Group", width: 400,
-                        template: "<select id='" + "' value='1'>" + reviewGroupOptions() + "</select>"
+                        template: "<select id='" + "' value='" + data +"'>" + reviewGroupOptions() + "</select>"
                       }
                     ],
                     onChange : {
@@ -360,7 +378,6 @@ class CourseContent extends Component {
                           this.setState({ addingStudent: true });
                           this.addStudentWindow();
                         }
-
                       }.bind(this)
                     }
                   },

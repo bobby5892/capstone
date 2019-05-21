@@ -44,7 +44,6 @@ namespace PeerIt.Controllers
         {
             SetRoles();
             JsonResponse<CourseDataOut> response = new JsonResponse<CourseDataOut>();
-            
             if (this.isAdmin)
             {
                 // Show all courses

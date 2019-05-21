@@ -37,7 +37,7 @@ namespace PeerIt.Repositories
         /// <returns></returns>
         public CourseAssignment FindByID(int ID)
         {
-            foreach (CourseAssignment courseAssignment in this.CourseAssignments)
+            foreach (CourseAssignment courseAssignment in CourseAssignments)
             {
                 if (courseAssignment.ID == ID)
                     return courseAssignment;

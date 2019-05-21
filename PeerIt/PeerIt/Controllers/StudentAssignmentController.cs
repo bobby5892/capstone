@@ -13,6 +13,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace PeerIt.Controllers
 {
@@ -71,9 +72,7 @@ namespace PeerIt.Controllers
             pFileRepo = pRepo;
             userManager = userMgr;
 
-            this.isAdmin = HttpContext.User.IsInRole("Administrator");
-            this.isInstructor = HttpContext.User.IsInRole("Instructor");
-            this.isStudent = HttpContext.User.IsInRole("Student");
+
         }
 
         #endregion Constructors
@@ -282,46 +281,36 @@ namespace PeerIt.Controllers
             }
             return Json(response);
         }
-        public async Task<JsonResult> CreateStudentAssignment(PFile pFile, CourseAssignment courseAssignment)
+        public async Task<JsonResult> CreateStudentAssignment(StudentAssignment studentAssignment)
         {
             JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
-            AppUser user = await userManager.GetUserAsync(HttpContext.User);
-            if(courseAssignment != null)
-            {
-                StudentAssignment newAssignment = new StudentAssignment()
-                {
-                    AppUser = user,
-                    FK_PFile = pFile,
-                    CourseAssignment = courseAssignment,
-                    TimestampCreated = System.DateTime.Now
-                };
 
-                if (studentAssignmentRepo.Add(newAssignment) != null)
-                {
-                    response.Data.Add(newAssignment);
-                }
-                else
-                    response.Error.Add(new Error("Error adding assignment", "Error adding assignment"));
+            if (studentAssignment != null)
+            {
+                studentAssignmentRepo.Add(studentAssignment);
+                response.Data.Add(studentAssignment);
             }
             else
-                response.Error.Add(new Error("Invalid CourseId","Ivalid course id"));
-
+                response.Error.Add(new Error("Assignment Null", "Student Assignment was null"));
             return Json(response);
         }
         [HttpPost]
-        public async void UploadStudentAssignment(List<IFormFile> files, CourseAssignment courseAssignment)
+        public async Task<JsonResult> UploadStudentAssignment(List<IFormFile> files, int courseAssignmentId)
         {
             PFile newPFile;
+            CourseAssignment courseAssignment;
+            StudentAssignment studentAssignment;
+            JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
             Stream stream;
             Guid guidFileId;
             long size = files.Sum(f => f.Length);
-            
             foreach (var formFile in files)
             {
                 guidFileId = Guid.NewGuid();
                 string ext = formFile.FileName.Split(".")[1];
                 string name = formFile.FileName.Split(".")[0];
                 AppUser user = await userManager.GetUserAsync(HttpContext.User);
+                courseAssignment = courseAssignmentRepo.FindByID(courseAssignmentId);
 
                 string destinationFolder = "Data/" + guidFileId + "." + ext;
 
@@ -332,19 +321,31 @@ namespace PeerIt.Controllers
                     {
                         await formFile.CopyToAsync(stream);
                     }
+
+                    //Create the PFile and add it to the student assignment
+                    newPFile = new PFile(guidFileId.ToString(), name, ext, user);
+                    pFileRepo.Add(newPFile);
+                    studentAssignment = new StudentAssignment() { CourseAssignment = courseAssignment, AppUser = user, FK_PFile = newPFile, TimestampCreated = System.DateTime.Now};
+
+                    //Create the assignment and add it to the response
+                    string jsonStudentAssignment = JsonConvert.SerializeObject(await CreateStudentAssignment(studentAssignment));
+                    studentAssignment = JsonConvert.DeserializeObject<StudentAssignment>(jsonStudentAssignment);
+                    response.Data.Add(studentAssignment);
                 }
-                newPFile = new PFile(guidFileId.ToString(), name, ext, user);
-                pFileRepo.Add(newPFile);
-                if(courseAssignment != null)
-                await CreateStudentAssignment(newPFile,courseAssignment);
+                else
+                {
+                    response.Error.Add(new Error("No File", "No file to upload"));
+                    return Json(response);
+                }
             }
+            return Json(response);
         }
 
-            #endregion Methods that return Json
+        #endregion Methods that return Json
 
-            #region StudentAssignmentController Helper Methods
+        #region StudentAssignmentController Helper Methods
 
-            public async Task<CourseGroup> GetCourseGroup(int courseId)
+        public async Task<CourseGroup> GetCourseGroup(int courseId)
         {
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
             List<CourseGroup> courseGroups = courseGroupRepo.GetAll();
@@ -358,6 +359,12 @@ namespace PeerIt.Controllers
                 }
             }
             return studentCourseGroup;
+        }
+        public void SetRoles()
+        {
+            this.isAdmin = HttpContext.User.IsInRole("Administrator");
+            this.isInstructor = HttpContext.User.IsInRole("Instructor");
+            this.isStudent = HttpContext.User.IsInRole("Student");
         }
         #endregion
     }

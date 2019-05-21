@@ -100,12 +100,13 @@ class StudentToolbar extends Component {
       head: {
         type: "space",
         cols: [
-          { view: "label", label: "Upload an Assignment" },
+          { view: "label", label: "Upload a student Assignment" },
           {
             view: "button", label: "Close", 
             width: 70, 
             left: 250,
             click: function () {
+              //scope.setState({"editUser" : null });
               window.webix.$$("uploadStudentAssignmentWindow").close();
             }
           }
@@ -118,28 +119,28 @@ class StudentToolbar extends Component {
             view: "form",
             id: "uploadStudentAssignmentForm",
             elements: [
-              { view: "label", label: "Upload your Assignment form here: ", name: "", labelWidth: "auto", value: "" },
-              {
-                view: "uploader", inputName: "files", upload: "/StudentAssignment/UploadStudentAssignment",urlData:{courseAssignment:null}, 
-                id: "AssignmentFile", link: "mylist", value: "Upload File", autosend: false
+              { view: "label", label: "Upload your student assignment here: ", name: "", labelWidth: "auto", value: "" },
+              {  
+                view: "uploader", inputName: "files", upload: "/StudentAssignment/UploadStudentAssignment", 
+                id: "studentAssignmentFile", link: "mylist", value: "Upload File", autosend: false
               },
               {
                 view: "list", id: "mylist", type: "uploader",
                 autoheight: true, borderless: true
-              },
-              
-              { view: "text", label: "Assignment Name", name: "Assignment_Name",labelWidth: 200,invalidMessage:"Please enter Assignment Name" },
+              },  
+              //{ view: "text", label: "Assignment Name", name: "Assignment_Name",labelWidth: 200,invalidMessage:"Please enter Assignment Name" },
               {
                 view: "button",value:"Upload", type:"form", 
                 click: function () {
                   let validResponse = window.webix.$$("uploadStudentAssignmentForm").validate();
                   let FormVal = window.webix.$$("uploadStudentAssignmentForm").getValues();
-                  window.webix.$$("AssignmentFile").send(function(response) {
-                    console.log("upload send: " + JSON.stringify(response));
+                  window.webix.$$("studentAssignmentFile").define({
+                    urlData:{courseAssignmentId:33}
+                  });
+                  window.webix.$$("studentAssignmentFile").send(function(response) {
                     if (response != null){
-                      console.log(Date("07/08/2019"));
                       window.webix.message("Succsess");
-                        window.webix.$$("uploadStudentAssignmentWindow").close();
+                        window.webix.$$("uploadAssignmentWindow").close();
                     }
                     else {
                     alert("Nothing to Submit");
@@ -148,9 +149,7 @@ class StudentToolbar extends Component {
               }
             ],
             rules: {
-              "Course": window.webix.rules.isNotEmpty,
-              "Due_Date": window.webix.rules.isNotEmpty,
-              "Assignment_Name":window.webix.rules.isNotEmpty
+              //No rules defined yet!!!
             }
           }
         ]

@@ -336,7 +336,7 @@ namespace PeerIt.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Administrator")]
-        async Task<JsonResult> SetInstructor(int courseID, string userId) {
+        public async Task<JsonResult> SetInstructor(int courseID, string userId) {
             SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
             Course lookupCourse = this.courseRepository.FindByID(courseID);
@@ -409,7 +409,7 @@ namespace PeerIt.Controllers
         /// <returns></returns>
         [Authorize(Roles = "Administrator,Instructor")]
         [HttpPost]
-        async Task<JsonResult>  DeleteCourse(int courseID, string courseName)
+        public async Task<JsonResult>  DeleteCourse(int courseID, string courseName)
         {
             SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
@@ -545,6 +545,39 @@ namespace PeerIt.Controllers
             response.Error.Add(new Error() { Name = "RemoveStudentToCourse", Description = "failed to remove student to course" });
             return Json(response);
         }
+        
+        [HttpGet]
+        public async Task<JsonResult> GetStudentGroup(string studentID, int courseID)
+        {
+            JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
+            AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
+            CourseGroup courseGroup = null;
+            courseGroupRepository.GetAll().ForEach(cG =>
+            {
+                if (cG.FK_Course.ID == courseID && cG.FK_AppUser.Id == studentID)
+                {
+                    courseGroup = cG;
+                }
+            });
+            SetRoles();
+            if (courseGroup != null)
+            {
+                if (this.isAdmin || this.isInstructor && courseGroup.FK_Course.FK_INSTRUCTOR.Id == currentUser.Id)
+                {
+                    response.Data.Add(courseGroup);
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here."));
+                }
+            }
+            else
+            {
+                response.Error.Add(new Error("NotFound", "The course group was not found."));
+            }
+            return Json(response);
+        }
+
         [Authorize(Roles = "Administrator,Instructor")]
         [HttpPatch]
         public async Task<JsonResult> ChangeStudentGroup(string studentID, int courseID, string reviewGroupID)

@@ -11,7 +11,8 @@ namespace PeerIt.Repositories
     {
         AppDBContext context;
 
-        public List<CourseGroup> CourseGroups { get {
+        public List<CourseGroup> CourseGroups {
+            get {
                 return this.context.CourseGroups.Include(courses => courses.FK_Course).Include(courses => courses.FK_AppUser).ToList();
             }
         }

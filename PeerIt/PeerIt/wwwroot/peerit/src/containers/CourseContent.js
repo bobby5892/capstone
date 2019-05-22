@@ -339,18 +339,29 @@ class CourseContent extends Component {
                       //{ header: "Change Group", width: 100, template: "{common.checkbox()}" /*{view:"select", value:1, options:[{"id": 1, "value": 1}]} */ }
                       {
                         id: "groupID", header: "Review Group", width: 400,
-                        template: "<select id='" + "' value='" + data +"'>" + reviewGroupOptions() + "</select>"
-                      }
+                        template:function(obj){ 
+                           console.log(obj);
+                           return "<select id='" + obj.id +"' class='webixtype_base'>" + reviewGroupOptions() + "</select>";
+                        },
+                        /*
+                        onClick:{'webixtype_base': function(i){
+                          console.log(i);
+                          alert("you have selected item " + i);
+                          }
+                        }
+                        */
+                    }
                     ],
-                    onChange : {
-                      group_change:function (i,ev){
-                             // Don't remove the comment below - its actually functional.
-                             //eslint-disable-next-line
-                             let confirmCheck = confirm("Are you sure you want to change this student's group?");
-                             if(confirmCheck){
-                                console.log("I want to change " + ev.row + "'s group");
-                             }
-                          }.bind(this)
+                    /*
+                    on:{'onBlur': function(i){
+                      console.log(i);
+                      alert("you have selected item " + i.data.order[0]);
+                      }
+                    },*/
+                    onAfterUnSelect:{
+                      'webixtype_base':function(ev, id, html){
+                        window.webix.alert("Clicked row "+id);
+                      }
                     },
                     url: "/Course/GetStudents?courseID=" + this.state.viewingCourse
 

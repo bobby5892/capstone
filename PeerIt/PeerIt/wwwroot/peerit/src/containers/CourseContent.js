@@ -338,12 +338,12 @@ class CourseContent extends Component {
                     //  { id: "groupID", header: "Review Group", width: 200 },
                       //{ header: "Change Group", width: 100, template: "{common.checkbox()}" /*{view:"select", value:1, options:[{"id": 1, "value": 1}]} */ }
                       {
-                        id: "groupID", header: "Review Group", width: 400,
+                        id: "fK_AppUser", header: "Review Group", width: 400/*,
                         template:function(obj){ 
                            console.log(obj);
                            return "<select id='" + obj.id +"' class='webixtype_base'>" + reviewGroupOptions() + "</select>";
                         },
-                        /*
+                        
                         onClick:{'webixtype_base': function(i){
                           console.log(i);
                           alert("you have selected item " + i);
@@ -358,12 +358,12 @@ class CourseContent extends Component {
                       alert("you have selected item " + i.data.order[0]);
                       }
                     },*/
-                    onAfterUnSelect:{
+                    onItemChange:{
                       'webixtype_base':function(ev, id, html){
                         window.webix.alert("Clicked row "+id);
                       }
                     },
-                    url: "/Course/GetStudents?courseID=" + this.state.viewingCourse
+                    url: "/Course/GetStudentGroups?courseID=" + this.state.viewingCourse
 
                     /* data: [
                          { id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rank:1},

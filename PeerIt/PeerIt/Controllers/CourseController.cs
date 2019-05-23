@@ -545,7 +545,29 @@ namespace PeerIt.Controllers
             response.Error.Add(new Error() { Name = "RemoveStudentToCourse", Description = "failed to remove student to course" });
             return Json(response);
         }
-        
+        public async Task<JsonResult> getStudentGroups(int courseID)
+        {
+            JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
+            AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
+            List<CourseGroup> courseGroups = courseGroupRepository.GetAll();
+            SetRoles();
+            if (courseGroups != null)
+            {
+                if (this.isAdmin || this.isInstructor && courseGroups[0].FK_Course.FK_INSTRUCTOR.Id == currentUser.Id)
+                {
+                    response.Data = courseGroups;
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here."));
+                }
+            }
+            else
+            {
+                response.Error.Add(new Error("NotFound", "The course was not found."));
+            }
+            return Json(response);
+        }
         [HttpGet]
         public async Task<JsonResult> GetStudentGroup(string studentID, int courseID)
         {

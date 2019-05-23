@@ -202,8 +202,7 @@ namespace PeerIt.Controllers
             }
             return Json(response);
         }
-       
-
+      
         ///// <summary>
         ///// Returns a CourseAssignment by Assignment ID, using a Course ID to
         ///// validate.

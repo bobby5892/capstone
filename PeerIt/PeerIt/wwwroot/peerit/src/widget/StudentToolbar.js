@@ -10,6 +10,7 @@ class StudentToolbar extends Component {
 	      this.state = {
           currentUser: props.currentUser,
           role: props.role,
+          viewingAssignment:props.viewingAssignment,
 	        data : null,
           seed : props.seed
 	      };
@@ -35,6 +36,7 @@ class StudentToolbar extends Component {
       handleMenuClick={this.handleMenuClick}
       accountClick={this.accountClick.bind(this)}
       redrawAll={this.redrawAll} seed={this.state.seed}
+       viewingAssignment={this.state.viewingAssignment}
     />
   }
   render() {

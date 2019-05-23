@@ -11,6 +11,7 @@ class App extends Component {
       currentUser: null,
       role: null,
       viewingCourse: null,
+      viewingAssignment: null,
       seed : (new Date).getTime()
     };
     // Bind handle Login
@@ -70,6 +71,7 @@ class App extends Component {
         handleCourseViewer={this.handleCourseViewer.bind(this)}
         redrawAll={this.redrawAll.bind(this)}
         seed={this.state.seed}
+        viewingAssignment={this.state.viewingAssignment}
 
       />
     }

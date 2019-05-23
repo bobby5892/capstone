@@ -269,6 +269,63 @@ class CourseContent extends Component {
          { Course:this.state.viewingCourse}
      );
   }
+  renderChangeStudentGroupWindow(studentName, studentID) {
+    let scope = this;
+
+    var newWindow = window.webix.ui({
+      view: "window",
+      id: "changeStudentGroupWindow",
+      width:600,
+      //height: 600,
+      move: true,
+      position: "center",
+      head: {
+        type: "space",
+        cols: [
+          { view: "label", label: "Change Student Group" },
+          {
+            view: "button", label: "Close", 
+            width: 70, 
+            left: 250,
+            click: function () {
+              //scope.setState({"editUser" : null });
+              window.webix.$$("changeStudentGroupWindow").close();
+            }
+          }
+        ]
+      },
+      body: {
+        type: "space",
+        rows: [
+          {
+            view: "form",
+            id: "changeStudentGroupForm",
+            //width: "auto",
+            elements: [
+              { id: studentID, view: "text", label: "Student Name: " + studentName, name: "studentGroup",labelWidth: 200,
+               invalidMessage:"Please Enter a Valid Student Group ID" },
+              
+              //{ view: "text", label: "Due Date", name: "Due_Date", labelWidth: 200,invalidMessage:"Please enter Valid Date" }, 
+              {
+                view: "button",value:"Change", type:"form", 
+                click: function () {
+                  let validResponse = window.webix.$$("changeStudentGroupForm").validate();
+                  let FormVal = window.webix.$$("changeStudentGroupForm").getValues();
+                  this.changeStudentGroup(studentID, this.state.viewingCourse, FormVal.studentGroup);
+                }
+              }
+            ],
+            rules: {
+              "studentGroup": window.webix.rules.isNotEmpty
+            }
+          }
+        ]
+      }
+    }).show();
+    window.webix.$$("uploadAssignmentForm").setValues(
+         { Course:this.state.viewingCourse}
+     );
+  }
   render() {
     console.log("render course content");
     let reviewGroupOptions = function() {
@@ -350,7 +407,7 @@ class CourseContent extends Component {
                           }
                         }
                         */
-                    }
+                      }
                     ],
                     /*
                     on:{'onBlur': function(i){
@@ -358,12 +415,13 @@ class CourseContent extends Component {
                       alert("you have selected item " + i.data.order[0]);
                       }
                     },*/
-                    onItemChange:{
-                      'webixtype_base':function(ev, id, html){
-                        window.webix.alert("Clicked row "+id);
+                      on:{
+                        onItemClick:function(id, ev, html){
+                          console.log(html);
+                          //this.renderChangeStudentGroupWindow(id);
                       }
                     },
-                    url: "/Course/GetStudentGroups?courseID=" + this.state.viewingCourse
+                    url: "/Course/GetStudents?courseID=" + this.state.viewingCourse
 
                     /* data: [
                          { id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rank:1},

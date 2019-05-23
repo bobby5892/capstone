@@ -38,6 +38,7 @@ class Portal extends Component {
 
       //Upload a review
       this.uploadReview.bind(this);
+      this.uploadReview = props.uploadReview;
     // Handle Menu Users Click
     this.handleMenuClick.bind(this);
    
@@ -327,7 +328,6 @@ class Portal extends Component {
                         {
                           view:"button", label:"Close", width:70,left:250,
                           click:function(){
-                            //scope.setState({"editUser" : null });
                             window.webix.$$("uploadReviewWindow").close();
                           } 
                         }
@@ -455,6 +455,7 @@ class Portal extends Component {
       </div>
     );
   }
+  
 }
 export default Portal;
 

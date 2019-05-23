@@ -22,11 +22,11 @@ namespace PeerIt.Models
         [StringLength(100000, ErrorMessage = "Must be less than 100,000 characters")] 
         public string Content { get; set; }
 
-        [Required(ErrorMessage ="Status is a required field"),StringLength(100, ErrorMessage = "Must be less than 100 characters")]  
+        //[Required(ErrorMessage ="Status is a required field"),StringLength(100, ErrorMessage = "Must be less than 100 characters")]  
         public string Status { get; set; }
-         
+
         [Required]
-        public int Score { get; set; }
+        public PFile FK_PFile { get; set; }
 
         #endregion Variables and Properties
     }

@@ -418,7 +418,8 @@ class CourseContent extends Component {
                       on:{
                         onItemClick:function(id, ev, html){
                           console.log(html);
-                          //this.renderChangeStudentGroupWindow(id);
+                          // Not currently working - throws that this is not a function.
+                          this.renderChangeStudentGroupWindow(html.innerHtml,id);
                       }
                     },
                     url: "/Course/GetStudents?courseID=" + this.state.viewingCourse

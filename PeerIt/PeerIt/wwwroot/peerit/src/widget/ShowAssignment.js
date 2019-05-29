@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Webix from '../webix';
-
+import ShowStudentAssignment from '../widget/ShowStudentAssignment';
 class ShowAssignment extends Component {
  constructor(props) {
 
@@ -53,7 +53,7 @@ class ShowAssignment extends Component {
       <div id="ShowAssignment">
       	
      {this.renderAdminInstructorList()}
-
+     <ShowStudentAssignment currentUser={this.state.currentUser} role={this.state.role}></ShowStudentAssignment>
       </div>
     );
   }

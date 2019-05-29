@@ -13,6 +13,7 @@ import AdminSettings from '../widget/AdminSettings';
 import LiveFeed from '../widget/LiveFeed';
 import CourseContent from '../containers/CourseContent';
 import ShowAssignment  from '../widget/ShowAssignment';
+import ShowStudentAssignment  from '../widget/ShowStudentAssignment';
 class Portal extends Component {
 
   constructor(props) {
@@ -150,6 +151,12 @@ class Portal extends Component {
   renderShowAssignment () {
     if (this.state.currentContentWidgets.includes("ShowAssignment")) {
       return <ShowAssignment currentUser={this.state.currentUser} role={this.state.role}  viewingCourse={this.state.viewingCourse}
+        viewingAssignment={this.state.viewingAssignment}/>
+    }
+  }
+  renderShowStudentAssignment () {
+    if (this.state.currentContentWidgets.includes("ShowStudentAssignment")) {
+      return <ShowStudentAssignment currentUser={this.state.currentUser} role={this.state.role}  viewingCourse={this.state.viewingCourse}
         viewingAssignment={this.state.viewingAssignment}/>
     }
   }
@@ -461,6 +468,7 @@ class Portal extends Component {
           {this.renderAdminSettings()}
           {this.renderCourseContent()}
           {this.renderShowAssignment()}
+          {this.renderShowStudentAssignment()}
         </div>
 
       </div>

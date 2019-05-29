@@ -10,18 +10,37 @@ class ShowAssignment extends Component {
       currentUser: props.currentUser,
       role: props.role,
       viewingCourse: props.viewingCourse,
-      viewingAssignment: props.viewingAssignment
+      viewingAssignment: props.viewingAssignment,
+      downloadLink : this.buildAssignmentLink(props),
+      courseName : props.viewingAssignment.fK_COURSE.name,
+      assignmentName : props.viewingAssignment.name
     };
+  
   }
   componentWillReceiveProps(props) {
     this.setState(props);
   }
+  buildAssignmentLink(props){
+  		try{
+  			return  <div><a href={'/PFile/Download?pFileId='+props.viewingAssignment.pFile.id }   target='new'>Download Instructions</a><b></b></div>
+  		}
+  		catch(e){
+  			console.log("Failed: " + e);
+			return  `No Assignment Instructions Available`;
+  		}
+  		return null;
+  }
+
   renderAdminInstructorList(){
   		return (
   			<div>
-  			<h2>Test2</h2>
-  			<div>{this.state.viewingCourse}</div>
-  					<div>{JSON.stringify(this.state.viewingAssignment)}</div>
+  			<h2>{this.state.courseName}</h2>
+  			<h3>{this.state.assignmentName}</h3>
+  			
+  			<div id="downloadLink">{this.state.downloadLink}</div>
+  					
+  					
+
   			</div>
   			);
   		

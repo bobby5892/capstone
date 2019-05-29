@@ -207,7 +207,8 @@ class Courses extends Component {
 	                    	console.log("test" + i);	
 	                    	console.log("Data:" + JSON.stringify(window.webix.$$("Assignments" + courseID).getItem(i)));
 	                    	this.handleCourseViewer({viewingAssignment:window.webix.$$("Assignments" + courseID).getItem(i)});
-	                    	this.handleMenuClick("ShowAssignment");
+                        //this.handleMenuClick("ShowAssignment");
+                        this.handleMenuClick("ShowStudentAssignment");
 	                    }.bind(this) 
 	                }
                   },

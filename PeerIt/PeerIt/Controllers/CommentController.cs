@@ -19,7 +19,7 @@ namespace PeerIt.Controllers
     {
 
         private IGenericRepository<Comment,int> commentRepo;
-        private StudentAssignmentRepository studentAssignmentRepo;
+        private IGenericRepository<StudentAssignment,int> studentAssignmentRepo;
         private JsonResponse<Comment> response;
         private UserManager<AppUser> userManager;
         private AppUser user;
@@ -32,10 +32,12 @@ namespace PeerIt.Controllers
         /// </summary>
         /// <param name="userMgr"></param>
         /// <param name="repo"></param>
-        public CommentController(UserManager<AppUser> userMgr, IGenericRepository<Comment, int> repo)
+        public CommentController(UserManager<AppUser> userMgr, IGenericRepository<Comment, int> repo,
+            IGenericRepository<StudentAssignment,int> studentRepo)
         {
             userManager = userMgr;
             commentRepo = repo;
+            studentAssignmentRepo = studentRepo;
         }
 
         /// <summary>
@@ -156,7 +158,7 @@ namespace PeerIt.Controllers
         public async Task<JsonResult> CreateComment(int studentAssignmentId, string commentContent)
         {
             user = await userManager.GetUserAsync(HttpContext.User);
-            studentAssignmentRepo.FindByID(studentAssignmentId);
+            studentAssignment = studentAssignmentRepo.FindByID(studentAssignmentId);
             response = new JsonResponse<Comment>();
             if(user == null)
             {

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Portal from './containers/portal.js';
 import Login from './containers/Login.js';
+import CommentForm from './widget/CommentForm.js';
 //https://facebook.github.io/create-react-app/docs/proxying-api-requests-in-development
 class App extends Component {
   constructor(props) {
@@ -17,7 +18,7 @@ class App extends Component {
     this.handleLogin = this.updateLogin.bind(this);
     this.checkIfLoggedIn();
     // Remember to use this.setState({currentUser : something}); 
-    this.renderCommentWindow();
+    //this.renderCommentWindow();
   }
   // / <Login  currentUser={this.state.currentUser}/>
   checkIfLoggedIn() {//https://stackoverflow.com/questions/38742379/cors-why-my-browser-doesnt-send-options-preflight-request/38746674#38746674
@@ -81,7 +82,7 @@ class App extends Component {
       return <Login handleLogin={this.handleLogin} />
     }
   }
-  renderCommentWindow() {
+   /*renderCommentWindow() {
 
     window.webix.ui({
       view: "window",
@@ -153,15 +154,26 @@ class App extends Component {
       })
       .catch(error => console.error('Error:', error));
 
-  }
+  } */
   updateLogin(user, role) {
     this.setState({ 'currentUser': user, 'role': role });
   }
+
+  /* rendercommentform(){
+     if(this.state.currentUser != null) 
+      return <CommentForm role={this.state.role} currentUser={this.state.currentUser} assignmentId={4}/> ;}
+      */
+
+  
   render() {
     return (
       <div className="appContainer">
+
+        {/* this.rendercommentform()*/}
+      
         {this.renderLogin()}
         {this.renderPortal()}
+        
 
       </div>
     );

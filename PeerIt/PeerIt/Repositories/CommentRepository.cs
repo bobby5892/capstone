@@ -95,7 +95,7 @@ namespace PeerIt.Repositories
         {
             try
             {
-                Comments.Add(model);
+                context.Comments.Add(model);
                 context.SaveChanges();
                 return Comments[Comments.Count - 1];
             }

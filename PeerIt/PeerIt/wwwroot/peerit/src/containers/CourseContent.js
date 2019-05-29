@@ -154,10 +154,10 @@ class CourseContent extends Component {
     })
     .catch(error => console.error('Error:', error));
   }
-  changeStudentGroup(studentID, courseID, groupValue) {
-    fetch("/Course/ChangeStudentGroup?studentID=" + studentID + "&courseID=" + courseID + "&groupValue=" + groupValue,
+  changeStudentGroup(courseGroupID, groupValue) {
+    fetch("/Course/ChangeStudentGroup?&courseGroupID=" + courseGroupID + "&reviewGroupID=" + groupValue,
     {
-      method: 'PUT',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -269,7 +269,7 @@ class CourseContent extends Component {
          { Course:this.state.viewingCourse}
      );
   }
-  renderChangeStudentGroupWindow(studentName, studentID) {
+  renderChangeStudentGroupWindow(courseGroupID) {
     let scope = this;
 
     var newWindow = window.webix.ui({
@@ -302,17 +302,16 @@ class CourseContent extends Component {
             id: "changeStudentGroupForm",
             //width: "auto",
             elements: [
-              { id: studentID, view: "text", label: "Student Name: " + studentName, name: "studentGroup",labelWidth: 200,
+              { id: courseGroupID, view: "text", label: "CourseGroup Record ID: " + courseGroupID, name: "studentGroup",labelWidth: 200,
                invalidMessage:"Please Enter a Valid Student Group ID" },
-              
-              //{ view: "text", label: "Due Date", name: "Due_Date", labelWidth: 200,invalidMessage:"Please enter Valid Date" }, 
               {
                 view: "button",value:"Change", type:"form", 
                 click: function () {
+                  console.log("I was clicked");
                   let validResponse = window.webix.$$("changeStudentGroupForm").validate();
                   let FormVal = window.webix.$$("changeStudentGroupForm").getValues();
-                  this.changeStudentGroup(studentID, this.state.viewingCourse, FormVal.studentGroup);
-                }
+                  this.changeStudentGroup(courseGroupID, FormVal.studentGroup);
+                }.bind(this)
               }
             ],
             rules: {
@@ -322,9 +321,10 @@ class CourseContent extends Component {
         ]
       }
     }).show();
-    window.webix.$$("uploadAssignmentForm").setValues(
+ /*   window.webix.$$("uploadAssignmentForm").setValues(
          { Course:this.state.viewingCourse}
      );
+     */
   }
   render() {
     console.log("render course content");
@@ -389,13 +389,13 @@ class CourseContent extends Component {
                     autoheight: true,
                     view: "datatable",
                     columns: [
-                      { id: "id", header: "", width: 50 },
-                      { id: "firstName", header: "First Name", width: 200 },
-                      { id: "lastName", header: "Last Name", width: 200 },
+                      { id: "id", map: "#fK_AppUser.id#", header: "", width: 50 },
+                      { id: "firstName", map: "#fK_AppUser.firstName#", header: "First Name", width: 200 },
+                      { id: "lastName", map: "#fK_AppUser.lastName#", header: "Last Name", width: 200 },
                     //  { id: "groupID", header: "Review Group", width: 200 },
                       //{ header: "Change Group", width: 100, template: "{common.checkbox()}" /*{view:"select", value:1, options:[{"id": 1, "value": 1}]} */ }
                       {
-                        id: "fK_AppUser", header: "Review Group", width: 400/*,
+                        id: "reviewGroup", header: "Review Group", width: 400/*,
                         template:function(obj){ 
                            console.log(obj);
                            return "<select id='" + obj.id +"' class='webixtype_base'>" + reviewGroupOptions() + "</select>";
@@ -415,14 +415,14 @@ class CourseContent extends Component {
                       alert("you have selected item " + i.data.order[0]);
                       }
                     },*/
-                      on:{
-                        onItemClick:function(id, ev, html){
-                          console.log(html);
-                          // Not currently working - throws that this is not a function.
-                          this.renderChangeStudentGroupWindow(html.innerHtml,id);
-                      }
+                    on:{
+                      onItemClick:function(id, ev, html){
+                        console.log(id["row"]);
+                        // Not currently working - throws that this is not a function.
+                        this.renderChangeStudentGroupWindow(id["row"]);
+                      }.bind(this)
                     },
-                    url: "/Course/GetStudents?courseID=" + this.state.viewingCourse
+                    url: "/Course/GetStudentGroups?courseID=" + this.state.viewingCourse
 
                     /* data: [
                          { id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rank:1},

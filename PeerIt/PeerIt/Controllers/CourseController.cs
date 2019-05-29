@@ -602,18 +602,11 @@ namespace PeerIt.Controllers
 
         [Authorize(Roles = "Administrator,Instructor")]
         [HttpPatch]
-        public async Task<JsonResult> ChangeStudentGroup(string studentID, int courseID, string reviewGroupID)
+        public async Task<JsonResult> ChangeStudentGroup(int courseGroupID, string reviewGroupID)
         {
             JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
             AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
-            CourseGroup courseGroup = null;
-            courseGroupRepository.GetAll().ForEach(cG => 
-            {
-                if (cG.FK_Course.ID == courseID && cG.FK_AppUser.Id == studentID)
-                {
-                    courseGroup = cG;
-                }
-            });
+            CourseGroup courseGroup = courseGroupRepository.FindByID(courseGroupID);
             SetRoles();
             if (courseGroup != null)
             {

@@ -11,6 +11,7 @@ class AdminToolbar extends Component {
 			currentUser: props.currentUser,
 			role: props.role,
 			viewingCourse: props.viewingCourse,
+			viewingAssignment:props.viewingAssignment,
 			data: null,
 			seed : props.seed
 			
@@ -35,6 +36,7 @@ class AdminToolbar extends Component {
        handleMenuClick={this.handleMenuClick}
        accountClick={this.accountClick.bind(this)}
        redrawAll={this.redrawAll} seed={this.state.seed}
+       viewingAssignment={this.state.viewingAssignment}
        />
 	}
 	renderCreateCourseButton() {

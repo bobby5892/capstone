@@ -11,6 +11,7 @@ class InstructorToolbar extends Component {
     this.state = {
       viewingCourse: props.viewingCourse,
       currentUser: props.currentUser,
+      viewingAssignment:props.viewingAssignment,
       role: props.role,
       data: null,
       seed : props.seed
@@ -35,6 +36,7 @@ class InstructorToolbar extends Component {
       handleMenuClick={this.handleMenuClick}
       accountClick={this.accountClick.bind(this)}
       redrawAll={this.redrawAll} seed={this.state.seed}
+      viewingAssignment={this.state.viewingAssignment}
     />
   }
   renderCreateCourseButton() {

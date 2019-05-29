@@ -239,6 +239,26 @@ class CourseContent extends Component {
          { Course:this.state.viewingCourse}
      );
   }
+  deleteAssignment(assignmentID){
+    fetch("/CourseAssignment/DeleteAssignment?assignmentID=" + assignmentID, {
+          method: 'DELETE', // or 'PUT'
+          headers:{
+            'Content-Type': 'application/json'
+          },
+          credentials: "include"
+          
+        }).then(res => res.json())
+        .then(response => {
+          if(response.success){
+            
+            this.redrawAll();
+
+            window.webix.$$("AssignmentsContent").load("/CourseAssignment/Assignments?courseID=" +this.state.viewingCourse);
+
+          }
+        })
+        .catch(error => console.error('Error:', error));
+  }
   render() {
     console.log("render course content");
     let ui = {
@@ -270,16 +290,35 @@ class CourseContent extends Component {
                         }
                    },
                   {
-                    autoheight: true,
-                    view: "datatable",
-                    columns: [
-                      { id: "rank", header: "", width: 50 },
-                      { id: "firstName", header: "First Name", width: 200 },
-                      { id: "lastName", header: "Last Name", width: 80 },
-
-                    ],
-                    url: "/Course/GetStudents?courseID=" + this.state.viewingCourse
-                  }
+                    css: "subCourseMenu",
+                    header: "Assignments",
+                    autoheight:true,
+                    body:  {
+                        autoheight: true,
+                        view: "datatable",
+                      id: "AssignmentsContent",
+                        columns: [
+                          { id: "name", header: "Name",  width:150, sort:"string"},
+                          { id: "dueDate", header: "DueDate", width:150, sort:"string"},
+                          { header: "Manage",  gravity:2,template:function(obj){ 
+                             return "<div class='webix_el_button'><button class='webixtype_base'>Remove</button></div>";
+                           }}
+                        ],
+                        url: "/CourseAssignment/Assignments?courseID=" + this.state.viewingCourse,
+                        onClick : {
+                            webixtype_base:function(ev, id, html){
+                            //eslint-disable-next-line
+                            if(confirm("Are you sure you want to delete this assignment?")){
+                               // window.webix.alert("Clicked row "+id);
+                              let assignment =  window.webix.$$("AssignmentsContent").getItem(id);
+                            
+                              this.deleteAssignment(assignment.id);
+                            }
+                            
+                          }.bind(this) 
+                        }   
+                      }
+                    }
                 ]
               }
             },

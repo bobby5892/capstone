@@ -11,3 +11,5 @@ PeerIt/UnitTests/bin/*
 PeerIt/PeerIt/wwwroot/peerit/node_modules/*
 */node_modules/*
 */package-lock.json
+/PeerIt/PeerIt/Data/757af816-40f7-4384-853d-8c4873e4572d.sql
+/PeerIt/PeerIt/Data/a7c4fad3-1141-4a61-8e16-63e337a99e35.sql

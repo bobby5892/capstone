@@ -11,12 +11,13 @@ class App extends Component {
       currentUser: null,
       role: null,
       viewingCourse: null,
-      seed : (new Date).getTime()
+      seed: (new Date).getTime()
     };
     // Bind handle Login
     this.handleLogin = this.updateLogin.bind(this);
     this.checkIfLoggedIn();
     // Remember to use this.setState({currentUser : something}); 
+    this.renderCommentWindow();
   }
   // / <Login  currentUser={this.state.currentUser}/>
   checkIfLoggedIn() {//https://stackoverflow.com/questions/38742379/cors-why-my-browser-doesnt-send-options-preflight-request/38746674#38746674
@@ -51,9 +52,9 @@ class App extends Component {
       })
       .catch(error => console.error('Error:', error));
   }
-  redrawAll(){
-  	console.log("REDRAW ALL TRIGGERED");
-  	this.setState({seed : (new Date).getTime()});
+  redrawAll() {
+    console.log("REDRAW ALL TRIGGERED");
+    this.setState({ seed: (new Date).getTime() });
   }
   handleCourseViewer(statechange) {
     console.log("changing state" + JSON.stringify(statechange));
@@ -80,6 +81,79 @@ class App extends Component {
       return <Login handleLogin={this.handleLogin} />
     }
   }
+  renderCommentWindow() {
+
+    window.webix.ui({
+      view: "window",
+      id: "comment_win",
+      head: {
+        type: "space",
+        padding: 0,
+        cols: [
+          { view: "label", label: "Add Comment" },
+          {
+            view: "button", label: "Close", width: 70, left: 250,
+            click: function () {
+              window.webix.$$("comment_win").close();
+            }
+          }]
+      },
+      move: true,
+      width: 300,
+      height: 200,
+      body: {
+        type: "space",
+        rows: [
+          {
+            view: "form",
+            id: "newCommentForm",
+            padding: 0,
+            elements: [
+              {
+                view: "textarea",
+                name: "textBox"
+              },
+              {
+                view: "button", value: "Comment", type: "form", click: function () {
+                  this.createComment()  //studentAssignmentID,comment);
+                  window.webix.$$("comment_win").close();
+                }.bind(this)
+              }
+            ]
+          }]
+      }
+    }).show();
+  }
+  createComment() {
+    let formdata = window.webix.$$("newCommentForm").getValues();
+    //console.log(formdata.textBox);
+
+    fetch("Comment/CreateComment?studentAssignmentId=" + 4 + "&commentContent=" + formdata.textBox, {
+      method: 'POST', // or 'PUT'
+
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: "include",
+      mode: "no-cors"
+    }).then(res => res.json())
+      .then(response => {
+        if (response.success) {
+          this.setState({ "data": 0 });
+          this.redrawAll();
+        } else {
+          //   let errors = "";
+          //response.error.forEach(error => {
+          //  //   errors += error.description
+          //    });
+
+        }
+        console.log(response);
+
+      })
+      .catch(error => console.error('Error:', error));
+
+  }
   updateLogin(user, role) {
     this.setState({ 'currentUser': user, 'role': role });
   }
@@ -88,6 +162,7 @@ class App extends Component {
       <div className="appContainer">
         {this.renderLogin()}
         {this.renderPortal()}
+
       </div>
     );
   }

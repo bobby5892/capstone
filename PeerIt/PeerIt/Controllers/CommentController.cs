@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PeerIt.Models;
 using PeerIt.Repositories;
+
 using PeerIt.ViewModels;
+using PeerIt.Interfaces;
 
 namespace PeerIt.Controllers
 {
@@ -16,7 +18,7 @@ namespace PeerIt.Controllers
     public class CommentController : Controller
     {
 
-        private CommentRepository commentRepo;
+        private IGenericRepository<Comment,int> commentRepo;
         private StudentAssignmentRepository studentAssignmentRepo;
         private JsonResponse<Comment> response;
         private UserManager<AppUser> userManager;
@@ -30,7 +32,7 @@ namespace PeerIt.Controllers
         /// </summary>
         /// <param name="userMgr"></param>
         /// <param name="repo"></param>
-        public CommentController(UserManager<AppUser> userMgr, CommentRepository repo)
+        public CommentController(UserManager<AppUser> userMgr, IGenericRepository<Comment, int> repo)
         {
             userManager = userMgr;
             commentRepo = repo;
@@ -150,6 +152,7 @@ namespace PeerIt.Controllers
         /// <param name="studentAssignmentId"></param>
         /// <param name="commentContent"></param>
         /// <returns></returns>
+        [HttpPost]
         public async Task<JsonResult> CreateComment(int studentAssignmentId, string commentContent)
         {
             user = await userManager.GetUserAsync(HttpContext.User);

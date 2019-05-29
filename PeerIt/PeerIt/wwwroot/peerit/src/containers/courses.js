@@ -192,10 +192,25 @@ class Courses extends Component {
               {
                 css: "subCourseMenu",
                 header: "Assignments",
-                body: {
-                  view: "template",
-                  template: "Assignments"
-                },
+                autoheight:true,
+                body:  {
+                    autoheight: true,
+                    view: "datatable",
+               		id: "Assignments"+courseID,
+                    columns: [
+                      { id: "name", header: "Name", width:150 },
+                      { id: "dueDate", header: "DueDate", width:150 },
+
+                    ],
+                    url: "/CourseAssignment/Assignments?courseID=" + courseID,
+                    on : { 'onItemClick' : function(i){
+	                    	console.log("test" + i);	
+	                    	console.log("Data:" + JSON.stringify(window.webix.$$("Assignments" + courseID).getItem(i)));
+	                    	this.handleCourseViewer({viewingAssignment:window.webix.$$("Assignments" + courseID).getItem(i)});
+	                    	this.handleMenuClick("ShowAssignment");
+	                    }.bind(this) 
+	                }
+                  },
                 collapsed: true
               },
               {

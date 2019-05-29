@@ -12,6 +12,7 @@ import ManageCourses from '../widget/ManageCourses';
 import AdminSettings from '../widget/AdminSettings';
 import LiveFeed from '../widget/LiveFeed';
 import CourseContent from '../containers/CourseContent';
+import ShowAssignment  from '../widget/ShowAssignment';
 class Portal extends Component {
 
   constructor(props) {
@@ -22,6 +23,7 @@ class Portal extends Component {
         data : null,
         account : null,
         viewingCourse: props.viewingCourse,
+        viewingAssignment: props.viewingAssignment,
         currentContentWidgets : ["LiveFeed"],
         seed : props.seed
       };
@@ -82,6 +84,7 @@ class Portal extends Component {
         handleCourseViewer={this.handleCourseViewer.bind(this)}
         accountClick={this.accountClick.bind(this)}
         redrawAll={this.redrawAll} seed={this.state.seed}
+        viewingAssignment={this.state.viewingAssignment}
         />
     }
   }
@@ -95,6 +98,7 @@ class Portal extends Component {
         viewingCourse={this.state.viewingCourse}
         accountClick={this.accountClick.bind(this)}
         redrawAll={this.redrawAll} seed={this.state.seed}
+        viewingAssignment={this.state.viewingAssignment}
         />
     }
   }
@@ -108,6 +112,7 @@ class Portal extends Component {
       viewingCourse={this.state.viewingCourse}
       accountClick={this.accountClick.bind(this)}
       redrawAll={this.redrawAll} seed={this.state.seed}
+      viewingAssignment={this.state.viewingAssignment}
       />
     }
   }
@@ -142,7 +147,12 @@ class Portal extends Component {
       return <AdminSettings currentUser={this.state.currentUser} role={this.state.role} />
     }
   }
-
+  renderShowAssignment () {
+    if (this.state.currentContentWidgets.includes("ShowAssignment")) {
+      return <ShowAssignment currentUser={this.state.currentUser} role={this.state.role}  viewingCourse={this.state.viewingCourse}
+        viewingAssignment={this.state.viewingAssignment}/>
+    }
+  }
     handleMenuClick(contentWidget){
       this.setState({'currentContentWidgets' : contentWidget});
     }
@@ -450,6 +460,7 @@ class Portal extends Component {
           {this.renderAdminManageCourses()}
           {this.renderAdminSettings()}
           {this.renderCourseContent()}
+          {this.renderShowAssignment()}
         </div>
 
       </div>

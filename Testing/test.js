@@ -111,3 +111,9 @@ lwat.post("http://localhost:8080/Account/Login",{
 	});
 });
 
+lwat.get("http://localhost:8080/Course/GetStudentGroups",{
+	"courseID":1
+}).then((response) => {
+	console.log(response);
+	lwat.assert(response.success, true, "test get course groups")
+})

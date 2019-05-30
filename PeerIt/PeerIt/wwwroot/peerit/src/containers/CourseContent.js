@@ -44,7 +44,7 @@ class CourseContent extends Component {
         cols: [
           { view: "label", label: "Add Student to Course" },
           {
-            view: "button", id: "addStudtentButton", label: "Close", width: 70, left: 250,
+            view: "button", id: "addStudentButton", label: "Close", width: 70, left: 250,
             click: function () {
               this.setState({ addingStudent: false });
               window.webix.$$("addStudentWindow").close();
@@ -117,7 +117,6 @@ class CourseContent extends Component {
           }
         })
         .catch(error => console.error('Error:', error));
-
   }
   componentWillReceiveProps(props) {
     this.setState(props);
@@ -129,7 +128,6 @@ class CourseContent extends Component {
             'Content-Type': 'application/json'
           },
           credentials: "include"
-          
         }).then(res => res.json())
         .then(response => {
           if(response.success){
@@ -139,6 +137,38 @@ class CourseContent extends Component {
           }
         })
         .catch(error => console.error('Error:', error));
+  }
+  getStudentGroup(studentID, courseID) {
+    fetch("/Course/GetStudentGroup?studentID=" + studentID + "&courseID=" + courseID, 
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: "include"
+    })
+    .then(response => {
+      if (response.success) {
+        return response;
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  }
+  changeStudentGroup(courseGroupID, groupValue) {
+    fetch("/Course/ChangeStudentGroup?&courseGroupID=" + courseGroupID + "&reviewGroupID=" + groupValue,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: "include"
+    })
+    .then(response => {
+      if (response.success) {
+        this.redrawAll();
+      }
+    })
+    .catch(error => console.error('Error:', error));
   }
   renderUploadAssignmentWindow() {
     let scope = this;
@@ -239,6 +269,63 @@ class CourseContent extends Component {
          { Course:this.state.viewingCourse}
      );
   }
+  renderChangeStudentGroupWindow(courseGroupID) {
+    let scope = this;
+
+    var newWindow = window.webix.ui({
+      view: "window",
+      id: "changeStudentGroupWindow",
+      width:600,
+      //height: 600,
+      move: true,
+      position: "center",
+      head: {
+        type: "space",
+        cols: [
+          { view: "label", label: "Change Student Group" },
+          {
+            view: "button", label: "Close", 
+            width: 70, 
+            left: 250,
+            click: function () {
+              //scope.setState({"editUser" : null });
+              window.webix.$$("changeStudentGroupWindow").close();
+            }
+          }
+        ]
+      },
+      body: {
+        type: "space",
+        rows: [
+          {
+            view: "form",
+            id: "changeStudentGroupForm",
+            //width: "auto",
+            elements: [
+              { id: courseGroupID, view: "text", label: "CourseGroup Record ID: " + courseGroupID, name: "studentGroup",labelWidth: 200,
+               invalidMessage:"Please Enter a Valid Student Group ID" },
+              {
+                view: "button",value:"Change", type:"form", 
+                click: function () {
+                  console.log("I was clicked");
+                  let validResponse = window.webix.$$("changeStudentGroupForm").validate();
+                  let FormVal = window.webix.$$("changeStudentGroupForm").getValues();
+                  this.changeStudentGroup(courseGroupID, FormVal.studentGroup);
+                }.bind(this)
+              }
+            ],
+            rules: {
+              "studentGroup": window.webix.rules.isNotEmpty
+            }
+          }
+        ]
+      }
+    }).show();
+ /*   window.webix.$$("uploadAssignmentForm").setValues(
+         { Course:this.state.viewingCourse}
+     );
+     */
+  }
   deleteAssignment(assignmentID){
     fetch("/CourseAssignment/DeleteAssignment?assignmentID=" + assignmentID, {
           method: 'DELETE', // or 'PUT'
@@ -261,6 +348,16 @@ class CourseContent extends Component {
   }
   render() {
     console.log("render course content");
+    let reviewGroupOptions = function() {
+      let optionString = ""
+      for (let i = 1; i <= 20; i ++) {
+        optionString += "<option id='" + i + "'>Group " + i + "</option>";
+      }
+      return optionString;
+    }
+    let putGroupID = function() {
+      fetch()
+    }
     let ui = {
       rows: [
         {
@@ -278,17 +375,17 @@ class CourseContent extends Component {
               body: {
                 autoheight: true,
                 rows: [
-                   {
-                        view: "button",
-                        value: "Add Assignment",
-                        type: "form",
-                        id: "AddAssignmnetButton",
-                        on: {
-                                'onItemClick' : function(i){
-                                    this.renderUploadAssignmentWindow();
-                                 }.bind(this)
-                        }
-                   },
+                  {
+                    view: "button",
+                    value: "Add Assignment",
+                    type: "form",
+                    id: "AddAssignmnetButton",
+                    on: {
+                          'onItemClick' : function(i){
+                              this.renderUploadAssignmentWindow();
+                            }.bind(this)
+                    }
+                  },
                   {
                     css: "subCourseMenu",
                     header: "Assignments",
@@ -331,12 +428,40 @@ class CourseContent extends Component {
                     autoheight: true,
                     view: "datatable",
                     columns: [
-                      { id: "rank", header: "", width: 50 },
-                      { id: "firstName", header: "First Name", width: 200 },
-                      { id: "lastName", header: "Last Name", width: 80 },
-
+                      { id: "id", map: "#fK_AppUser.id#", header: "", width: 50 },
+                      { id: "firstName", map: "#fK_AppUser.firstName#", header: "First Name", width: 200 },
+                      { id: "lastName", map: "#fK_AppUser.lastName#", header: "Last Name", width: 200 },
+                    //  { id: "groupID", header: "Review Group", width: 200 },
+                      //{ header: "Change Group", width: 100, template: "{common.checkbox()}" /*{view:"select", value:1, options:[{"id": 1, "value": 1}]} */ }
+                      {
+                        id: "reviewGroup", header: "Review Group", width: 400/*,
+                        template:function(obj){ 
+                           console.log(obj);
+                           return "<select id='" + obj.id +"' class='webixtype_base'>" + reviewGroupOptions() + "</select>";
+                        },
+                        
+                        onClick:{'webixtype_base': function(i){
+                          console.log(i);
+                          alert("you have selected item " + i);
+                          }
+                        }
+                        */
+                      }
                     ],
-                    url: "/Course/GetStudents?courseID=" + this.state.viewingCourse
+                    /*
+                    on:{'onBlur': function(i){
+                      console.log(i);
+                      alert("you have selected item " + i.data.order[0]);
+                      }
+                    },*/
+                    on:{
+                      onItemClick:function(id, ev, html){
+                        console.log(id["row"]);
+                        // Not currently working - throws that this is not a function.
+                        this.renderChangeStudentGroupWindow(id["row"]);
+                      }.bind(this)
+                    },
+                    url: "/Course/GetStudentGroups?courseID=" + this.state.viewingCourse
 
                     /* data: [
                          { id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rank:1},
@@ -362,7 +487,6 @@ class CourseContent extends Component {
                           this.setState({ addingStudent: true });
                           this.addStudentWindow();
                         }
-
                       }.bind(this)
                     }
                   },

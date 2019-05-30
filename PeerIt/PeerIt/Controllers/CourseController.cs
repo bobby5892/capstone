@@ -44,7 +44,6 @@ namespace PeerIt.Controllers
         {
             SetRoles();
             JsonResponse<CourseDataOut> response = new JsonResponse<CourseDataOut>();
-            
             if (this.isAdmin)
             {
                 // Show all courses
@@ -337,7 +336,7 @@ namespace PeerIt.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Administrator")]
-        async Task<JsonResult> SetInstructor(int courseID, string userId) {
+        public async Task<JsonResult> SetInstructor(int courseID, string userId) {
             SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
             Course lookupCourse = this.courseRepository.FindByID(courseID);
@@ -410,7 +409,7 @@ namespace PeerIt.Controllers
         /// <returns></returns>
         [Authorize(Roles = "Administrator,Instructor")]
         [HttpPost]
-        async Task<JsonResult>  DeleteCourse(int courseID, string courseName)
+        public async Task<JsonResult>  DeleteCourse(int courseID, string courseName)
         {
             SetRoles();
             JsonResponse<Course> response = new JsonResponse<Course>();
@@ -488,7 +487,6 @@ namespace PeerIt.Controllers
                     this.courseGroupRepository.Add(newCourseGroup);
                     response.Data.Add(newCourseGroup);
                     return Json(response);
-
                 }
             }
             response.Error.Add(new Error() { Name = "studentAdd", Description = "failed to add student to course" });
@@ -520,21 +518,16 @@ namespace PeerIt.Controllers
                 }
                 return false;
             });
-               
-           
             if (enrollment.Count == 0)
             {
                 response.Error.Add(new Error() { Name = "RemoveStudentToCourse", Description = "Student is not in the class" });
                 return Json(response);
             }
-           
             if (this.isAdmin)
             {
                 enrollment.ForEach((x) => {
                     this.courseGroupRepository.Delete(x);
                 });
-                
-               
                 return Json(response);
             }
             else if (this.isInstructor)
@@ -547,10 +540,97 @@ namespace PeerIt.Controllers
                         this.courseGroupRepository.Delete(x);
                     });
                     return Json(response);
-
                 }
             }
             response.Error.Add(new Error() { Name = "RemoveStudentToCourse", Description = "failed to remove student to course" });
+            return Json(response);
+        }
+        public async Task<JsonResult> getStudentGroups(int courseID)
+        {
+            JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
+            AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
+            List<CourseGroup> courseGroups = courseGroupRepository.GetAll();
+            SetRoles();
+            if (courseGroups != null)
+            {
+                if (this.isAdmin || this.isInstructor && courseGroups[0].FK_Course.FK_INSTRUCTOR.Id == currentUser.Id)
+                {
+                    response.Data = courseGroups;
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here."));
+                }
+            }
+            else
+            {
+                response.Error.Add(new Error("NotFound", "The course was not found."));
+            }
+            return Json(response);
+        }
+        [HttpGet]
+        public async Task<JsonResult> GetStudentGroup(string studentID, int courseID)
+        {
+            JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
+            AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
+            CourseGroup courseGroup = null;
+            courseGroupRepository.GetAll().ForEach(cG =>
+            {
+                if (cG.FK_Course.ID == courseID && cG.FK_AppUser.Id == studentID)
+                {
+                    courseGroup = cG;
+                }
+            });
+            SetRoles();
+            if (courseGroup != null)
+            {
+                if (this.isAdmin || this.isInstructor && courseGroup.FK_Course.FK_INSTRUCTOR.Id == currentUser.Id)
+                {
+                    response.Data.Add(courseGroup);
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here."));
+                }
+            }
+            else
+            {
+                response.Error.Add(new Error("NotFound", "The course group was not found."));
+            }
+            return Json(response);
+        }
+
+        [Authorize(Roles = "Administrator,Instructor")]
+        [HttpPatch]
+        public async Task<JsonResult> ChangeStudentGroup(int courseGroupID, string reviewGroupID)
+        {
+            JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
+            AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
+            CourseGroup courseGroup = courseGroupRepository.FindByID(courseGroupID);
+            SetRoles();
+            if (courseGroup != null)
+            {
+                if (this.isAdmin || this.isInstructor && courseGroup.FK_Course.FK_INSTRUCTOR.Id == currentUser.Id)
+                {
+                    courseGroup.ReviewGroup = reviewGroupID;
+                    if (courseGroupRepository.Edit(courseGroup))
+                    {
+                        response.Data.Add(courseGroup);
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("NotSuccessful", "The data was not successfully writen."));
+                    }
+                }
+                else
+                {
+                    response.Error.Add(new Error("Forbidden", "You are not allowed here."));
+                }
+            }
+            else
+            {
+                response.Error.Add(new Error("NotFound", "The Course Group was not found."));
+            }
             return Json(response);
         }
     }

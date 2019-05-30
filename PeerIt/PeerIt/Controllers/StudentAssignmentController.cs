@@ -77,6 +77,7 @@ namespace PeerIt.Controllers
 
         #endregion Constructors
 
+
         #region Methods that return Json
 
         /// <summary>
@@ -87,6 +88,7 @@ namespace PeerIt.Controllers
         [HttpGet]
         public async Task<JsonResult> GetAssignmentsByCourseId(int courseID)
         {
+            SetRoles();
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
             JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
             List<StudentAssignment> studentAssignments = studentAssignmentRepo.GetAll();
@@ -141,8 +143,66 @@ namespace PeerIt.Controllers
             return Json(response);
         }
         [HttpGet]
+        public async Task<JsonResult> GetStudentAssignmentsByCourseAssignmentAndUser(int courseAssignmentId)
+        {
+            SetRoles();
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
+            List<StudentAssignment> studentAssignments = studentAssignmentRepo.GetAll();
+            CourseAssignment courseAssignment = courseAssignmentRepo.FindByID(courseAssignmentId);
+            CourseGroup courseGroup = await GetCourseGroup(courseAssignment.FK_COURSE.ID);
+
+            if (this.isAdmin || this.isInstructor && courseAssignment.FK_COURSE.FK_INSTRUCTOR == user)
+            {
+                if (courseAssignment != null)
+                {
+                    foreach (StudentAssignment sa in studentAssignments)
+                    {
+                        if (sa.CourseAssignment == courseAssignment)
+                            response.Data.Add(sa);
+                    }
+                    if (response.Data.Count == 0)
+                        response.Error.Add(new Error("No Student Assignments", "You have not submitted this assignment"));
+                }
+                else
+                {
+                    response.Error.Add(new Error("Course Assignment Not Found", "Course  assignment was not Found."));
+                }
+            }
+            else if (this.isStudent)
+            {
+                if (courseAssignment != null)
+                {
+                    if (courseGroup != null)
+                    {
+                        foreach (StudentAssignment sa in studentAssignments)
+                        {
+                            if (sa.CourseAssignment == courseAssignment && sa.AppUser == user)
+                                response.Data.Add(sa);
+                        }
+                        if (response.Data.Count == 0)
+                            response.Error.Add(new Error("No Student Assignments", "You have not submitted this assignment"));
+                    }
+                    else
+                    {
+                        response.Error.Add(new Error("NotFound", "You aren't or weren't enrolled in this course."));
+                    }
+                }
+                else
+                {
+                    response.Error.Add(new Error("Course Assignment Not Found", "Course  assignment was not Found."));
+                }
+            }
+            else
+            {
+                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+            }
+            return Json(response);
+        }
+        [HttpGet]
         public async Task<JsonResult> GetAssignmentById(int assignmentID)
         {
+            SetRoles();
             JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
             StudentAssignment studentAssignment = studentAssignmentRepo.FindByID(assignmentID);
             CourseGroup courseGroup = await GetCourseGroup(studentAssignment.CourseAssignment.FK_COURSE.ID);
@@ -182,7 +242,7 @@ namespace PeerIt.Controllers
             }
             else
             {
-                response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+                response.Error.Add(new Error("No Role", "No role detected for user."));
             }
             return Json(response); 
         }
@@ -190,6 +250,7 @@ namespace PeerIt.Controllers
         [HttpGet]
         public async Task<JsonResult> GetAssignmentsByCourseAndReviewGroup(int courseId, string reviewGroupId)
         {
+            SetRoles();
             JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
             List<StudentAssignment> studentAssignments = studentAssignmentRepo.GetAll();
@@ -226,6 +287,7 @@ namespace PeerIt.Controllers
         [HttpGet]
         public async Task<JsonResult> GetAssignmentReviewers(int assignmentID)
         {
+            SetRoles();
             JsonResponse<AppUser>response = new JsonResponse<AppUser>();
             StudentAssignment studentAssignment = studentAssignmentRepo.FindByID(assignmentID);
             List<Review> reviews = reviewRepo.GetAll();
@@ -283,6 +345,7 @@ namespace PeerIt.Controllers
         }
         public async Task<JsonResult> CreateStudentAssignment(StudentAssignment studentAssignment)
         {
+            SetRoles();
             JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
 
             if (studentAssignment != null)
@@ -297,6 +360,7 @@ namespace PeerIt.Controllers
         [HttpPost]
         public async Task<JsonResult> UploadStudentAssignment(List<IFormFile> files, int courseAssignmentId)
         {
+            SetRoles();
             PFile newPFile;
             CourseAssignment courseAssignment;
             StudentAssignment studentAssignment;
@@ -347,6 +411,7 @@ namespace PeerIt.Controllers
 
         public async Task<CourseGroup> GetCourseGroup(int courseId)
         {
+            SetRoles();
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
             List<CourseGroup> courseGroups = courseGroupRepo.GetAll();
             CourseGroup studentCourseGroup = null;

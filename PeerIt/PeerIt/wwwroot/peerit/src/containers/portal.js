@@ -13,6 +13,7 @@ import AdminSettings from '../widget/AdminSettings';
 import LiveFeed from '../widget/LiveFeed';
 import CourseContent from '../containers/CourseContent';
 import ShowAssignment  from '../widget/ShowAssignment';
+import ShowStudentAssignment  from '../widget/ShowStudentAssignment';
 class Portal extends Component {
 
   constructor(props) {
@@ -40,7 +41,7 @@ class Portal extends Component {
 
       //Upload a review
       this.uploadReview.bind(this);
-      this.uploadReview = props.uploadReview;
+  
     // Handle Menu Users Click
     this.handleMenuClick.bind(this);
    
@@ -150,6 +151,12 @@ class Portal extends Component {
   renderShowAssignment () {
     if (this.state.currentContentWidgets.includes("ShowAssignment")) {
       return <ShowAssignment currentUser={this.state.currentUser} role={this.state.role}  viewingCourse={this.state.viewingCourse}
+        viewingAssignment={this.state.viewingAssignment} uploadReview={this.uploadReview}/>
+    }
+  }
+  renderShowStudentAssignment () {
+    if (this.state.currentContentWidgets.includes("ShowStudentAssignment")) {
+      return <ShowStudentAssignment currentUser={this.state.currentUser} role={this.state.role}  viewingCourse={this.state.viewingCourse}
         viewingAssignment={this.state.viewingAssignment}/>
     }
   }
@@ -320,60 +327,57 @@ class Portal extends Component {
     }
     // Portal additional methods
     uploadReview(){
-      this.renderUploadReviewWindow();
+          window.webix.ui({
+            view:"window",
+            id:"uploadReviewWindow",
+            width: 900,
+            height: 600,
+            move:true,
+            position:"center",
+            head:{
+                type:"space",
+                cols:[
+                    { view:"label", label: "Upload a Review" },
+                    {
+                      view:"button", label:"Close", width:70,left:250,
+                      click:function(){
+                        window.webix.$$("uploadReviewWindow").close();
+                      } 
+                    }
+                ]   
+            },
+            body:{
+                type:"space",
+                rows:[
+                    { 
+                      view:"form", 
+                      id:"uploadReviewForm",
+                      width:900,
+                      elements:[
+                        { view:"label", label:"Upload your review form here: ", name:"", labelWidth:100,value:"" },
+                        { view:"uploader",inputName:"files",upload:"/Review/UploadReview" ,urlData:{studentAssignmentId:35} ,name:"ReviewFile",value:"Click here to upload your review file"},
+                        { view:"text", label:"Course", name:"Course", labelWidth:100, value:""}, 
+                        { view:"text", label:"Assignment", name:"Assignment", labelWidth:100, value:""},
+                          
+                          // { margin:5, cols:[
+                          //     { view:"button", value:"Upload" , type:"form", click:function(){
+                          //       scope.uploadTheReviewDoc();
+                          //     }}
+                          // ]}
+                      ],
+                      rules:{
+                          "Email": window.webix.rules.isEmail,
+                          "LastName": window.webix.rules.isNotEmpty,
+                          "FirstName": window.webix.rules.isNotEmpty,
+                          "Password" :  window.webix.rules.isNotEmpty
+                      }
+                    }
+                ]
+            }
+    }).show();
     }
  
-    renderUploadReviewWindow(){
-        window.webix.ui({
-                view:"window",
-                id:"uploadReviewWindow",
-                width: 900,
-                height: 600,
-                move:true,
-                position:"center",
-                head:{
-                    type:"space",
-                    cols:[
-                        { view:"label", label: "Upload a Review" },
-                        {
-                          view:"button", label:"Close", width:70,left:250,
-                          click:function(){
-                            window.webix.$$("uploadReviewWindow").close();
-                          } 
-                        }
-                     ]   
-                },
-                body:{
-                    type:"space",
-                    rows:[
-                        { 
-                          view:"form", 
-                          id:"uploadReviewForm",
-                          width:900,
-                          elements:[
-                            { view:"label", label:"Upload your review form here: ", name:"", labelWidth:100,value:"" },
-                            { view:"uploader",inputName:"files",upload:"/Review/UploadReview" ,urlData:{studentAssignmentId:35} ,name:"ReviewFile",value:"Click here to upload your review file"},
-                            { view:"text", label:"Course", name:"Course", labelWidth:100, value:""}, 
-                            { view:"text", label:"Assignment", name:"Assignment", labelWidth:100, value:""},
-                              
-                              // { margin:5, cols:[
-                              //     { view:"button", value:"Upload" , type:"form", click:function(){
-                              //       scope.uploadTheReviewDoc();
-                              //     }}
-                              // ]}
-                          ],
-                          rules:{
-                              "Email": window.webix.rules.isEmail,
-                              "LastName": window.webix.rules.isNotEmpty,
-                              "FirstName": window.webix.rules.isNotEmpty,
-                              "Password" :  window.webix.rules.isNotEmpty
-                          }
-                        }
-                    ]
-                }
-       }).show();
-    }
-
+   
     logout(){
       fetch("/Account/Logout", {
 
@@ -461,6 +465,7 @@ class Portal extends Component {
           {this.renderAdminSettings()}
           {this.renderCourseContent()}
           {this.renderShowAssignment()}
+          {this.renderShowStudentAssignment()}
         </div>
 
       </div>

@@ -10,7 +10,7 @@
     "react-scripts": "^2.1.8",
     "redux": "^3.7.2",
     "webix": "^4.4.0",
-    "webix-jet": "^2.0.6"
+    "webix-jet": "^2.0.7"
   },
   "proxy": "http://localhost:8080",
   "scripts": {

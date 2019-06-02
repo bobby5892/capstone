@@ -56,7 +56,8 @@ namespace PeerIt
         {
             services.AddCors();
             /* Enity Framework */
-            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local"]));
+            // services.AddDbContext<AppDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local"]));
+            services.AddDbContext<AppDBContext>(options => options.UseMySql(Configuration["ConnectionStrings:Remote"]));
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
 
             /* Add Repositories */

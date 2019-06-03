@@ -276,7 +276,6 @@ class CourseContent extends Component {
       view: "window",
       id: "changeStudentGroupWindow",
       width:600,
-      //height: 600,
       move: true,
       position: "center",
       head: {
@@ -288,7 +287,6 @@ class CourseContent extends Component {
             width: 70, 
             left: 250,
             click: function () {
-              //scope.setState({"editUser" : null });
               window.webix.$$("changeStudentGroupWindow").close();
             }
           }
@@ -300,17 +298,17 @@ class CourseContent extends Component {
           {
             view: "form",
             id: "changeStudentGroupForm",
-            //width: "auto",
             elements: [
               { id: courseGroupID, view: "text", label: "CourseGroup Record ID: " + courseGroupID, name: "studentGroup",labelWidth: 200,
                invalidMessage:"Please Enter a Valid Student Group ID" },
               {
                 view: "button",value:"Change", type:"form", 
                 click: function () {
-                  console.log("I was clicked");
                   let validResponse = window.webix.$$("changeStudentGroupForm").validate();
                   let FormVal = window.webix.$$("changeStudentGroupForm").getValues();
                   this.changeStudentGroup(courseGroupID, FormVal.studentGroup);
+                  window.webix.$$("changeStudentGroupWindow").close();
+                  this.redrawAll();
                 }.bind(this)
               }
             ],
@@ -337,11 +335,8 @@ class CourseContent extends Component {
         }).then(res => res.json())
         .then(response => {
           if(response.success){
-            
             this.redrawAll();
-
             window.webix.$$("AssignmentsContent").load("/CourseAssignment/Assignments?courseID=" +this.state.viewingCourse);
-
           }
         })
         .catch(error => console.error('Error:', error));
@@ -408,7 +403,6 @@ class CourseContent extends Component {
                             if(confirm("Are you sure you want to delete this assignment?")){
                                // window.webix.alert("Clicked row "+id);
                               let assignment =  window.webix.$$("AssignmentsContent").getItem(id);
-                            
                               this.deleteAssignment(assignment.id);
                             }
                             
@@ -431,42 +425,17 @@ class CourseContent extends Component {
                       { id: "id", map: "#fK_AppUser.id#", header: "", width: 50 },
                       { id: "firstName", map: "#fK_AppUser.firstName#", header: "First Name", width: 200 },
                       { id: "lastName", map: "#fK_AppUser.lastName#", header: "Last Name", width: 200 },
-                    //  { id: "groupID", header: "Review Group", width: 200 },
-                      //{ header: "Change Group", width: 100, template: "{common.checkbox()}" /*{view:"select", value:1, options:[{"id": 1, "value": 1}]} */ }
-                      {
-                        id: "reviewGroup", header: "Review Group", width: 400/*,
-                        template:function(obj){ 
-                           console.log(obj);
-                           return "<select id='" + obj.id +"' class='webixtype_base'>" + reviewGroupOptions() + "</select>";
-                        },
-                        
-                        onClick:{'webixtype_base': function(i){
-                          console.log(i);
-                          alert("you have selected item " + i);
-                          }
-                        }
-                        */
-                      }
+                      { id: "reviewGroup", header: "Review Group", width: 400 }
                     ],
-                    /*
-                    on:{'onBlur': function(i){
-                      console.log(i);
-                      alert("you have selected item " + i.data.order[0]);
-                      }
-                    },*/
                     on:{
                       onItemClick:function(id, ev, html){
                         console.log(id["row"]);
-                        // Not currently working - throws that this is not a function.
-                        this.renderChangeStudentGroupWindow(id["row"]);
+                        if (window.webix.$$("changeStudentGroupWindow") == null) {
+                          this.renderChangeStudentGroupWindow(id["row"]);
+                        }
                       }.bind(this)
                     },
                     url: "/Course/GetStudentGroups?courseID=" + this.state.viewingCourse
-
-                    /* data: [
-                         { id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rank:1},
-                         { id:2, title:"The Godfather", year:1972, votes:511495, rank:2}
-                     ]*/
                   }
                 ]
               }

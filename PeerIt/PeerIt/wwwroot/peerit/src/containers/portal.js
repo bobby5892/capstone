@@ -61,7 +61,6 @@ class Portal extends Component {
         });
       }
     }, window.webix.ui.view)
-
   }
 
  componentWillReceiveProps(props){
@@ -176,7 +175,6 @@ class Portal extends Component {
           this.setState({"account":account});
             return true;
         }else{
-    
           return false;
         }
       }).then(shouldRender => {
@@ -424,8 +422,8 @@ class Portal extends Component {
             scroll: "auto",
             padding: 0,
             responsive: "a1",
-            height: window.innerHeight,
-            width: window.innerWidth,
+            //height: window.height,
+            //width: window.width,
             cols:
               [
                 {
@@ -462,11 +460,9 @@ class Portal extends Component {
           {this.renderCourseContent()}
           {this.renderShowAssignment()}
         </div>
-
       </div>
     );
   }
-  
 }
 export default Portal;
 

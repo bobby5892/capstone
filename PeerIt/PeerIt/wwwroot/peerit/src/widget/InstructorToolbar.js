@@ -69,7 +69,9 @@ class InstructorToolbar extends Component {
             },
             click: function (a) {
               if(a == "My Account"){
-                this.accountClick();
+                if (window.webix.$$("accountWindow") == null) {
+                  this.accountClick();
+                }
               }
               else if (a === "Logout") {
                 //Attempt to call the logout chain
@@ -81,21 +83,22 @@ class InstructorToolbar extends Component {
             //width: 350,
             height: 150
           },
-          // This is where we would render courses        
-          {
-
-            view: "template",
-            scroll: true,
-            template: "right",
-            content: "Courses",
-            align: "right"
-          },
           {
             gravity: 1,
             view: "template",
             scroll: true,
             template: "right",
             content: "CreateCourse",
+            autoheight: true,
+            align: "right"
+          },
+          // This is where we would render courses        
+          {
+            view: "template",
+            scroll: true,
+            template: "right",
+            content: "Courses",
+            autoheight:true,
             align: "right"
           }
         ]
@@ -109,4 +112,3 @@ class InstructorToolbar extends Component {
   }
 }
 export default InstructorToolbar;
-

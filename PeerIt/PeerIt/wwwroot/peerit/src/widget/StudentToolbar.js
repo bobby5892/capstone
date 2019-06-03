@@ -37,7 +37,7 @@ class StudentToolbar extends Component {
       handleMenuClick={this.handleMenuClick}
       accountClick={this.accountClick.bind(this)}
       redrawAll={this.redrawAll} seed={this.state.seed}
-       viewingAssignment={this.state.viewingAssignment}
+      viewingAssignment={this.state.viewingAssignment}
     />
   }
   render() {
@@ -59,7 +59,9 @@ class StudentToolbar extends Component {
           },
           click: function (a) {
             if( a === "My Account"){
-              this.accountClick();
+              if (window.webix.$$("accountWindow") == null) {
+                this.accountClick();
+              }
             }
             else if( a === "Upload an Assignment"){
               this.renderUploadStudentAssignmentWindow();
@@ -78,7 +80,8 @@ class StudentToolbar extends Component {
           scroll: true,
           template: "right",
           content: "Courses",
-          align: "right"
+          align: "right",
+          autoheight: true
         }
       ]
     }
@@ -163,4 +166,3 @@ class StudentToolbar extends Component {
   }
 }
 export default StudentToolbar;
-

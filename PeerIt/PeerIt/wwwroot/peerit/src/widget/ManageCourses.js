@@ -12,7 +12,6 @@ class ManageCourses extends Component {
       this.state = {
         currentUser : props.currentUser,
         role : props.role,
-     
       };
 
     window.webix.protoUI({

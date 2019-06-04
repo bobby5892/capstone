@@ -243,7 +243,7 @@ class CourseContent extends Component {
                     console.log("upload send: " + JSON.stringify(response));
                     if (response != null){
                       console.log(Date("07/08/2019"));
-                      window.webix.message("Succsess");
+                      window.webix.message("Success");
                       //window.webix.$$("uploadAssignmentWindow").attachEvent("onUploadComplete", function(response){
                         window.webix.$$("uploadAssignmentWindow").close();
                         //window.webix.message("done");

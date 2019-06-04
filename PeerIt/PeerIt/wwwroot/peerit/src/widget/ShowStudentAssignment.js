@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Webix from '../webix';
 import { format } from 'url';
+import CommentForm from './CommentForm.js';
 
 class ShowStudentAssignment extends Component {
  constructor(props) {
@@ -158,6 +159,13 @@ class ShowStudentAssignment extends Component {
     }
     console.log("no render");
   }
+  renderCommentForm(){
+  return(<p>
+    this is render comment form
+  </p>)
+  }
+
+
   render() {
     return (
       <div id="ShowStudentAssignment" className="showStudentAss">
@@ -168,6 +176,7 @@ class ShowStudentAssignment extends Component {
         {this.renderUploadStudentAssignmentButton()}
         {this.renderAssignmentReviewButton()}
         {this.renderLink()}
+        {this.renderCommentForm}
 
 
       </div>

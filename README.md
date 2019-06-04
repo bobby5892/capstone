@@ -1,4 +1,4 @@
-# capstone
+# PeerIt
 LCC Programming Capstone - Team 42
 
 Frameworks and Libraries being used:

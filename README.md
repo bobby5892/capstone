@@ -16,9 +16,7 @@ There are 4 roles that a user can have: "Admin", "Instructor", "Student" and "In
   They can:
   
     -Manage user accounts
-    
     -Set up an email server for automated messaging
-    
     -Perform all of the tasks that an instructor or student can perform.
     
   They have access to all of the information for the server they administrate.
@@ -28,13 +26,9 @@ There are 4 roles that a user can have: "Admin", "Instructor", "Student" and "In
   They can:
   
     -Create courses
-    
     -Create course assignments
-    
     -Create rubrics
-    
     -Send email invitations to join a course
-    
     -Write and view peer reviews
     
   They have access to all of the data regarding the courses they teach.
@@ -44,15 +38,10 @@ There are 4 roles that a user can have: "Admin", "Instructor", "Student" and "In
   They can:
   
     -View course materials
-    
     -Upload Assignments
-    
     -View another student's assignment
-    
     -Upload reviews
-    
     -View reviews
-    
     -Comment on an assignment submission
     
   They have access to all of the data regarding their work, and work from other students that they are allowed to view.

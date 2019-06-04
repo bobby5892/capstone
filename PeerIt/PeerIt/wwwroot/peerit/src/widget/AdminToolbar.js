@@ -51,7 +51,7 @@ class AdminToolbar extends Component {
 			type: "space",
             scroll: "false",
             height: window.innerHeight,
-            
+            autowidth:true,
             padding: 0,
             responsive: "a1",
 			rows: [
@@ -79,34 +79,38 @@ class AdminToolbar extends Component {
 								this.handleMenuClick("ManageCourses");
 							}
 							else if (a === "Settings") {
-								this.handleMenuClick("AdminSettings");
+								if (window.webix.$$("AdminSettings") == null) {
+									this.handleMenuClick("AdminSettings");	
+								}
 							}
 							else if (a === "Admin") {
 								this.handleMenuClick("LiveFeed");
 							}
 				            else if( a === "My Account"){
-								this.accountClick();
-				            
+				            	if (window.webix.$$("accountWindow") == null) {
+									this.accountClick();
+				            	}
 				            }    
 
 						}.bind(this),
 						select: true,
 					},
-				    {
-					 	view: "template",
-	             		template: "right",
-	             		content: "Courses",
-	             		align:"right"
-                	},
                 	{
 						gravity: 1,
 					 	view: "template",
                  		scroll: false,
                  		template: "right",
                  		content: "CreateCourse",
+                 		autoheight:true,
                  		align:"right"
                 	},
-				
+				    {
+					 	view: "template",
+	             		template: "right",
+	             		content: "Courses",
+	             		autoheight: true,
+	             		align:"right"
+                	}
 			]
 		}
 
@@ -115,8 +119,6 @@ class AdminToolbar extends Component {
 				{this.renderCreateCourseButton()}
 				{this.renderCourses()}
 				<Webix ui={ui} data={data} />
-				
-
 			</div>
 		);
 	}

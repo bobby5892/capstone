@@ -16,7 +16,6 @@ class AdminSettings extends Component {
         SMTP_USERNAME :null,
         SMTP_Port : null,
         SMTP_HOST : null
-     
       };
       this.renderWindow = false;
     window.webix.protoUI({
@@ -125,6 +124,7 @@ class AdminSettings extends Component {
                             { margin:5, cols:[
                                 { view:"button", value:"Save Settings" , type:"form", click:function(){
                                   this.saveEditWindow();
+                                  window.webix.$$("settingsWindow").close();
                                 }.bind(this)
                               }
                             ]}

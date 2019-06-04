@@ -12,7 +12,6 @@ class ManageCourses extends Component {
       this.state = {
         currentUser : props.currentUser,
         role : props.role,
-     
       };
 
     window.webix.protoUI({
@@ -46,7 +45,7 @@ class ManageCourses extends Component {
         }).then(res => res.json())
         .then(response => {
           if(response.success){
-            //console.log("Attempted to Create UseR: " + JSON.stringify(response));
+            //console.log("Attempted to Create User: " + JSON.stringify(response));
             // If the new user window is open close it
             if(window.webix.$$("newCourseWindow") != null){
               window.webix.$$("newCourseWindow").close()
@@ -64,8 +63,6 @@ class ManageCourses extends Component {
     })
     .catch(error => console.error('Error:', error));
       }
-
-      
   }
   render(){
 
@@ -73,9 +70,7 @@ class ManageCourses extends Component {
 
      return(
       <div id="ManageCourses">
-   manage courses 
-   
-      
+        manage courses
       </div>
                
              
@@ -84,4 +79,3 @@ class ManageCourses extends Component {
 }
 
 export default ManageCourses;
-

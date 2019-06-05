@@ -98,7 +98,8 @@ class InstructorToolbar extends Component {
             scroll: true,
             template: "right",
             content: "Courses",
-            autoheight:true,
+            //autoheight:true,
+            height: 300,
             align: "right"
           }
         ]

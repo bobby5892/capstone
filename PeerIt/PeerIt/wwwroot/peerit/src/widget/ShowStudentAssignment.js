@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import Webix from '../webix';
 import { format } from 'url';
 import CommentForm from './CommentForm.js';
+import CommentView from './CommentView.js';
 
 class ShowStudentAssignment extends Component {
   constructor(props) {
@@ -176,31 +177,40 @@ class ShowStudentAssignment extends Component {
       css: "webix_primary",
       inputWidth: 175,
       click: function () {
-       this.setState({showCommentForm : true});
+        this.setState({ showCommentForm: true });
       }.bind(this)
     };
     return <Webix ui={ui} data={null} />
   }
+  renderComments() {
+    console.log('rendercomments called this.state.studentassignmentid = '+ this.state.studentAssignmentID)
+    if (this.state.studentAssignmentID != null) {
+      return <CommentView currentUser={this.state.currentUser} role={this.state.role} assignmentId={this.state.studentAssignmentID} />
+    }
+  }
 
-render() {
-  console.log('this is student id :'+this.state.studentAssignmentID);
-  return (
-    <div id="ShowStudentAssignment" className="showStudentAss">
-      <h1>Your Submission Information for {this.state.viewingAssignment.name}</h1>
-      this is assignment name
+  render() {
+    console.log('this is student id :' + this.state.studentAssignmentID);
+    return (
+      <div id="ShowStudentAssignment" className="showStudentAss">
+        <h1>Your Submission Information for {this.state.viewingAssignment.name}</h1>
+        this is assignment name
       <h3>{this.state.assignment}</h3>
-      this is pfile id
+        this is student assignment id
+      <h3>{this.state.studentAssignmentID}</h3>
+        this is pfile id
       <h3>{this.state.assignmentID}</h3>
-      <h3>{this.state.errorMsg}</h3>
-      {this.renderUploadStudentAssignmentButton()}
-      {this.renderAssignmentReviewButton()}
-      {this.renderLink()}
-      {this.renderAddCommentButton()}
-      {this.renderCommentForm()}
+        <h3>{this.state.errorMsg}</h3>
+        {this.renderUploadStudentAssignmentButton()}
+        {this.renderAssignmentReviewButton()}
+        {this.renderLink()}
+        {this.renderAddCommentButton()}
+        {this.renderCommentForm()}
+        {this.renderComments()}
 
 
-    </div>
-  );
-}
+      </div>
+    );
+  }
 }
 export default ShowStudentAssignment;

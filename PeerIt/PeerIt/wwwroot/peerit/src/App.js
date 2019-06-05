@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import './App.css';
 import Portal from './containers/portal.js';
 import Login from './containers/Login.js';
-import CommentForm from './widget/CommentForm.js';
 //https://facebook.github.io/create-react-app/docs/proxying-api-requests-in-development
 class App extends Component {
   constructor(props) {
@@ -84,98 +83,17 @@ class App extends Component {
       return <Login handleLogin={this.handleLogin} />
     }
   }
-   /*renderCommentWindow() {
-
-    window.webix.ui({
-      view: "window",
-      id: "comment_win",
-      head: {
-        type: "space",
-        padding: 0,
-        cols: [
-          { view: "label", label: "Add Comment" },
-          {
-            view: "button", label: "Close", width: 70, left: 250,
-            click: function () {
-              window.webix.$$("comment_win").close();
-            }
-          }]
-      },
-      move: true,
-      width: 300,
-      height: 200,
-      body: {
-        type: "space",
-        rows: [
-          {
-            view: "form",
-            id: "newCommentForm",
-            padding: 0,
-            elements: [
-              {
-                view: "textarea",
-                name: "textBox"
-              },
-              {
-                view: "button", value: "Comment", type: "form", click: function () {
-                  this.createComment()  //studentAssignmentID,comment);
-                  window.webix.$$("comment_win").close();
-                }.bind(this)
-              }
-            ]
-          }]
-      }
-    }).show();
-  }
-  createComment() {
-    let formdata = window.webix.$$("newCommentForm").getValues();
-    //console.log(formdata.textBox);
-
-    fetch("Comment/CreateComment?studentAssignmentId=" + 4 + "&commentContent=" + formdata.textBox, {
-      method: 'POST', // or 'PUT'
-
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: "include",
-      mode: "no-cors"
-    }).then(res => res.json())
-      .then(response => {
-        if (response.success) {
-          this.setState({ "data": 0 });
-          this.redrawAll();
-        } else {
-          //   let errors = "";
-          //response.error.forEach(error => {
-          //  //   errors += error.description
-          //    });
-
-        }
-        console.log(response);
-
-      })
-      .catch(error => console.error('Error:', error));
-
-  } */
+  
   updateLogin(user, role) {
     this.setState({ 'currentUser': user, 'role': role });
   }
-
-  /* rendercommentform(){
-     if(this.state.currentUser != null) 
-      return <CommentForm role={this.state.role} currentUser={this.state.currentUser} assignmentId={4}/> ;}
-      */
-
   
   render() {
     return (
       <div className="appContainer">
-
-        {/* this.rendercommentform()*/}
       
         {this.renderLogin()}
         {this.renderPortal()}
-        
 
       </div>
     );

@@ -11,7 +11,7 @@ class CommentForm extends Component {
 
     renderCommentForm() {
 
-        window.webix.ui({
+       window.webix.ui({
             view: "window",
             id: "comment_win",
             head: {
@@ -51,6 +51,7 @@ class CommentForm extends Component {
                     }]
             }
         }).show();
+        
     }
     createComment() {
         let formdata = window.webix.$$("newCommentForm").getValues();
@@ -87,7 +88,7 @@ class CommentForm extends Component {
     render() {
 
         return (<div id="CommentForm">
-            load comment form
+            
     {this.renderCommentForm()}
         </div>)
     }

@@ -5,10 +5,10 @@ import { format } from 'url';
 import CommentForm from './CommentForm.js';
 
 class ShowStudentAssignment extends Component {
- constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {
-      errorMsg : null,
+      errorMsg: null,
       assignment: null,
       assignmentID: null,
       currentUser: props.currentUser,
@@ -16,6 +16,8 @@ class ShowStudentAssignment extends Component {
       viewingCourse: props.viewingCourse,
       viewingAssignment: props.viewingAssignment,
       downloadLink: props.buildAssignmentLink,
+      showCommentForm: false,
+      studentAssignmentID: null
     };
     this.uploadReview = props.uploadReview;
     this.fetchStudentAssignmentByCourseAssignmentAndUser.bind(this);
@@ -27,66 +29,67 @@ class ShowStudentAssignment extends Component {
     console.log("Received Props");
     this.setState(props);
   }
-  fetchStudentAssignmentByCourseAssignmentAndUser(props){
-    console.log("VIEWING ASSIGNMENT "+JSON.stringify(props));
-    fetch("/StudentAssignment/GetStudentAssignmentsByCourseAssignmentAndUser?courseAssignmentId="+this.state.viewingAssignment.id,{
+  fetchStudentAssignmentByCourseAssignmentAndUser(props) {
+    console.log("VIEWING ASSIGNMENT " + JSON.stringify(props));
+    fetch("/StudentAssignment/GetStudentAssignmentsByCourseAssignmentAndUser?courseAssignmentId=" + this.state.viewingAssignment.id, {
       method: 'GET',
-      headers:{'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       credentials: "include",
-      mode:"no-cors"
+      mode: "no-cors"
     }).then(response => response.json())
       .then(response => {
-        console.log("THE RESPONSE = "+JSON.stringify(response));
-        if(response.success){
-          if(response.data.length > 0) {
+        console.log("THE RESPONSE = " + JSON.stringify(response));
+        if (response.success) {
+          if (response.data.length > 0) {
             this.setState({
-              assignment : response.data[0].fK_PFile.name,
-              assignmentID : response.data[0].fK_PFile.id
+              assignment: response.data[0].fK_PFile.name,
+              assignmentID: response.data[0].fK_PFile.id,
+              studentAssignmentID: response.data[0].id
             });
             console.log("NAME OF ASSIGNMENT:" + response.data[0].fK_PFile.name);
             console.log("ID OF ASSIGNMENT:" + response.data[0].fK_PFile.id);
           }
-        }else {
-          this.setState({errorMsg : response.error[0].description});
+        } else {
+          this.setState({ errorMsg: response.error[0].description });
         }
       })
   }
-  getStudentAssignmentSubmissionDetails(props){
+  getStudentAssignmentSubmissionDetails(props) {
     this.fetchStudentAssignmentByCourseAssignmentAndUser(props);
   }
-  renderAssignmentReviewButton(){
-  let ui = {
-        view:"button", 
-        id:"uploadReviewButton", 
-        value:"Upload Review", 
-        css:"webix_primary", 
-        inputWidth:175,
-        click:function(){
-            this.uploadReview();
-        }.bind(this)
-      };
-      return  <Webix ui={ui} data={null} />
-  }
-  renderUploadStudentAssignmentButton(){
+  renderAssignmentReviewButton() {
     let ui = {
-          view:"button", 
-          id:"uploadStudentAssignmentButton", 
-          value:"Upload Assignment", 
-          css:"webix_primary", 
-          inputWidth:175,
-          click:function(){
-              this.renderUploadStudentAssignmentWindow();
-          }.bind(this)
-        };
-        return  <Webix ui={ui} data={null} />
-    }
+      view: "button",
+      id: "uploadReviewButton",
+      value: "Upload Review",
+      css: "webix_primary",
+      inputWidth: 175,
+      click: function () {
+        this.uploadReview();
+      }.bind(this)
+    };
+    return <Webix ui={ui} data={null} />
+  }
+  renderUploadStudentAssignmentButton() {
+    let ui = {
+      view: "button",
+      id: "uploadStudentAssignmentButton",
+      value: "Upload Assignment",
+      css: "webix_primary",
+      inputWidth: 175,
+      click: function () {
+        this.renderUploadStudentAssignmentWindow();
+      }.bind(this)
+    };
+    return <Webix ui={ui} data={null} />
+  }
   renderUploadStudentAssignmentWindow(props) {
     let scope = this;
-    console.log("VIEWING ASSIGNMENT ID = "+this.state.viewingAssignment.id);
+    console.log("VIEWING ASSIGNMENT ID = " + this.state.viewingAssignment.id);
     var newWindow = window.webix.ui({
       view: "window",
       id: "uploadStudentAssignmentWindow",
-      width:600,
+      width: 600,
       //height: 600,
       move: true,
       position: "center",
@@ -95,8 +98,8 @@ class ShowStudentAssignment extends Component {
         cols: [
           { view: "label", label: "Upload a student Assignment" },
           {
-            view: "button", label: "Close", 
-            width: 70, 
+            view: "button", label: "Close",
+            width: 70,
             left: 250,
             click: function () {
               window.webix.$$("uploadStudentAssignmentWindow").close();
@@ -112,32 +115,33 @@ class ShowStudentAssignment extends Component {
             id: "uploadStudentAssignmentForm",
             elements: [
               { view: "label", label: "Upload your student assignment here: ", name: "", labelWidth: "auto", value: "" },
-              {  
-                view: "uploader", inputName: "files", upload: "/StudentAssignment/UploadStudentAssignment", 
+              {
+                view: "uploader", inputName: "files", upload: "/StudentAssignment/UploadStudentAssignment",
                 id: "studentAssignmentFile", link: "mylist", value: "Upload File", autosend: false
               },
               {
                 view: "list", id: "mylist", type: "uploader",
                 autoheight: true, borderless: true
-              },  
+              },
               //{ view: "text", label: "Assignment Name", name: "Assignment_Name",labelWidth: 200,invalidMessage:"Please enter Assignment Name" },
               {
-                view: "button",value:"Upload", type:"form", 
+                view: "button", value: "Upload", type: "form",
                 click: function (props) {
-                  console.log("VIEWING ASSIGNMENT ID = "+this.state.viewingAssignment.id);
+                  console.log("VIEWING ASSIGNMENT ID = " + this.state.viewingAssignment.id);
                   let validResponse = window.webix.$$("uploadStudentAssignmentForm").validate();
                   let FormVal = window.webix.$$("uploadStudentAssignmentForm").getValues();
                   window.webix.$$("studentAssignmentFile").define({
-                    urlData:{courseAssignmentId: this.state.viewingAssignment.id}
+                    urlData: { courseAssignmentId: this.state.viewingAssignment.id }
                   });
-                  window.webix.$$("studentAssignmentFile").send(function(response) {
-                    if (response != null){
+                  window.webix.$$("studentAssignmentFile").send(function (response) {
+                    if (response != null) {
                       window.webix.message("Succsess");
-                        window.webix.$$("uploadAssignmentWindow").close();
+                      window.webix.$$("uploadAssignmentWindow").close();
                     }
                     else {
-                    alert("Nothing to Submit");
-                  }})
+                      alert("Nothing to Submit");
+                    }
+                  })
                 }.bind(this)
               }
             ],
@@ -149,38 +153,54 @@ class ShowStudentAssignment extends Component {
       }
     }).show();
     window.webix.$$("uploadStudentAssignmentForm").setValues(
-         { Course:this.state.viewingCourse}
-     );
+      { Course: this.state.viewingCourse }
+    );
   }
-  renderLink(){
-    if(this.state.assignmentID != null){
+  renderLink() {
+    if (this.state.assignmentID != null) {
       console.log("render the link");
-      return  (<div><a href={'/PFile/Download?pFileId='+ this.state.assignmentID}>Download Student Assignment </a></div>);
+      return (<div><a href={'/PFile/Download?pFileId=' + this.state.assignmentID}>Download Student Assignment </a></div>);
     }
     console.log("no render");
   }
-  renderCommentForm(){
-  return(<p>
-    this is render comment form
-  </p>)
+  renderCommentForm() {
+    if (this.state.showCommentForm) {
+      return <CommentForm currentUser={this.state.currentUser} role={this.state.role} assignmentId={this.state.studentAssignmentID} />
+    }
+  }
+  renderAddCommentButton() {
+    let ui = {
+      view: "button",
+      id: "addComment",
+      value: "Add Comment",
+      css: "webix_primary",
+      inputWidth: 175,
+      click: function () {
+       this.setState({showCommentForm : true});
+      }.bind(this)
+    };
+    return <Webix ui={ui} data={null} />
   }
 
+render() {
+  console.log('this is student id :'+this.state.studentAssignmentID);
+  return (
+    <div id="ShowStudentAssignment" className="showStudentAss">
+      <h1>Your Submission Information for {this.state.viewingAssignment.name}</h1>
+      this is assignment name
+      <h3>{this.state.assignment}</h3>
+      this is pfile id
+      <h3>{this.state.assignmentID}</h3>
+      <h3>{this.state.errorMsg}</h3>
+      {this.renderUploadStudentAssignmentButton()}
+      {this.renderAssignmentReviewButton()}
+      {this.renderLink()}
+      {this.renderAddCommentButton()}
+      {this.renderCommentForm()}
 
-  render() {
-    return (
-      <div id="ShowStudentAssignment" className="showStudentAss">
-      	<h1>Your Submission Information for {this.state.viewingAssignment.name}</h1>
-        <h3>{this.state.assignment}</h3>
-        <h3>{this.state.assignmentID}</h3>
-        <h3>{this.state.errorMsg}</h3>
-        {this.renderUploadStudentAssignmentButton()}
-        {this.renderAssignmentReviewButton()}
-        {this.renderLink()}
-        {this.renderCommentForm}
 
-
-      </div>
-    );
-  }
+    </div>
+  );
+}
 }
 export default ShowStudentAssignment;

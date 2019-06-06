@@ -1,21 +1,23 @@
 import React, { Component } from 'react';
+import Webix from '../webix';
 class CommentView extends Component {
     constructor(props) {
         super(props);
-        this.state ={
+        this.state = {
             currentUser: props.currentUser,
             role: props.role,
-            assignmentId : props.assignmentId
+            assignmentId: props.assignmentId,
+            comments:null
         };
-       if(this.state.assignmentId != null){
-           this.GetComments();
-       } 
+        if (this.state.assignmentId != null) {
+            //this.GetComments();
+        }
     }
-    componentWillReceiveProps(props){
+    componentWillReceiveProps(props) {
         this.setState(props);
-        this.GetComments();
+        //this.GetComments();
     }
-    GetComments(){
+    GetComments() {
 
         fetch("Comment/GetCommentsByAssignmentId?studentAssignmentId=" + this.state.assignmentId, {
             method: 'Get', // or 'PUT'
@@ -28,8 +30,9 @@ class CommentView extends Component {
         }).then(res => res.json())
             .then(response => {
                 if (response.success) {
-                    this.setState({ "data": 0 });
-                   // this.redrawAll();
+                    this.setState({ "comments": response.data });
+                    console.log(this.state)
+                    // this.redrawAll();
                 } else {
                     //   let errors = "";
                     //response.error.forEach(error => {
@@ -37,23 +40,40 @@ class CommentView extends Component {
                     //    });
 
                 }
-                console.log('this is the comments responce: '+JSON.stringify(response));
+                console.log('this is the comments responce: ' + JSON.stringify(response));
 
             })
             .catch(error => console.error('Error:', error));
 
     }
 
-    renderComments(){
-        //this.GetComments();
+    renderComments() {
+
+        let ui = ({
+				view:"datatable",
+				columns:[
+                    { id:"firstName",map:"#fK_APP_USER.firstName#",	header:"Name", css:"",width:100},
+                    { id:"content",	header:"", css:"",width:550},
+                    
+                    
+					
+				],
+				autoheight:true,
+				autowidth:true,
+                //data: JSON.stringify(this.state.comments)
+                url:"Comment/GetCommentsByAssignmentId?studentAssignmentId=" + this.state.assignmentId
+			});	
+
+        return <Webix ui={ui} />
+
     }
     render() {
 
         return (<div id="CommentView">
-            Comment views go here
+      
             {this.renderComments()}
         </div>)
     }
 
 }
-    export default CommentView;
+export default CommentView;

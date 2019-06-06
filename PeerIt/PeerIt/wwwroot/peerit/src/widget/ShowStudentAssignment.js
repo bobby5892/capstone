@@ -194,12 +194,8 @@ class ShowStudentAssignment extends Component {
     return (
       <div id="ShowStudentAssignment" className="showStudentAss">
         <h1>Your Submission Information for {this.state.viewingAssignment.name}</h1>
-        this is assignment name
-      <h3>{this.state.assignment}</h3>
-        this is student assignment id
-      <h3>{this.state.studentAssignmentID}</h3>
-        this is pfile id
-      <h3>{this.state.assignmentID}</h3>
+  
+
         <h3>{this.state.errorMsg}</h3>
         {this.renderUploadStudentAssignmentButton()}
         {this.renderAssignmentReviewButton()}

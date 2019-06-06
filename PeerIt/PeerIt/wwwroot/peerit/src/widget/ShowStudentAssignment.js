@@ -290,6 +290,7 @@ class ShowStudentAssignment extends Component {
   }
   renderCommentForm() {
     if (this.state.showCommentForm) {
+      //this.setState({showCommentFormForm: false});
       return <CommentForm currentUser={this.state.currentUser} role={this.state.role} assignmentId={this.state.studentAssignmentId} />
     }
   }
@@ -308,8 +309,8 @@ class ShowStudentAssignment extends Component {
   }
   renderComments() {
     console.log('rendercomments called this.state.studentassignmentid = '+ this.state.studentAssignmentId)
-    if (this.state.studentAssignmentID != null) {
-      return <CommentView currentUser={this.state.currentUser} role={this.state.role} assignmentId={this.state.studentAssignmentID} />
+    if (this.state.studentAssignmentId != null) {
+      return <CommentView currentUser={this.state.currentUser} role={this.state.role} assignmentId={this.state.studentAssignmentId} />
     }
   }
 

@@ -273,7 +273,7 @@ namespace PeerIt.Controllers
             {
                 foreach (StudentAssignment sa in studentAssignments)
                 {
-                    if (sa.CourseAssignment.FK_COURSE == course && courseGroup.ReviewGroup == reviewGroupId)
+                    if (sa.CourseAssignment.FK_COURSE == course && courseGroup.ReviewGroup == reviewGroupId && sa.AppUser != user)
                     {
                         response.Data.Add(sa);
                     }

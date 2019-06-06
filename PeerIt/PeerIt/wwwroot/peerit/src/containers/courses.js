@@ -39,12 +39,15 @@ class Courses extends Component {
     }, window.webix.ui.view);
     this.loadCourses();
     if (this.state.role === "Student") {
+      console.log("At Constructor CourseViewing: " + this.state.viewingCourse);
       this.getCourseGroup();
     }
   }
-  getCourseGroup(){
-     console.log("trying to get course group:"  + "State" + JSON.stringify(this.state));
-     fetch("/StudentAssignment/GetCourseGroup?courseId=" + this.state.viewingCourse, {
+  getCourseGroup(props){
+     //console.log("trying to get course group:"  + "State" + JSON.stringify(this.state));
+     let CourseID = this.state.viewingCourse;
+     if(CourseID == null && typeof(props) != "undefined"){ CourseID = props.viewingCourse; }
+     fetch("/StudentAssignment/GetCourseGroup?courseId=" + CourseID, {
         method: 'GET', // or 'PUT'
         headers: {
           'Content-Type': 'application/json'
@@ -54,10 +57,14 @@ class Courses extends Component {
       }).then(res => res.json()).then(response => {
           if (response.success) {
             console.log("GROUP:" + JSON.stringify(response.data[0].reviewGroup));
-            this.setState({courseGroup:response.data[0].reviewGroup});
+
+            if(this.state.courseGroup != response.data[0].reviewGroup){
+              this.setState({courseGroup:response.data[0].reviewGroup});
+              window.webix.$$("GroupAssignments"+CourseID).load("/StudentAssignment/GetAssignmentsByCourseAndReviewGroup?courseId=" + CourseID + "&reviewGroupId=" +response.data[0].reviewGroup);
+            }
           }
           else{
-           // console.log("GROUP2:" + JSON.stringify(response));
+         
           }
         })
         .catch(error => console.error('Error:', error));
@@ -65,8 +72,10 @@ class Courses extends Component {
   }
   componentWillReceiveProps(props) {
     this.setState(props);
+    console.log("At Receive Props CourseViewing: " + this.state.viewingCourse + props.viewingCourse);
+    this.getCourseGroup(props);
     this.loadCourses();
-   
+    
     //console.log("reload courses");
     // Trigger Webix to Redraw the component
     //window.webix.$$().setHTML("<h1>YEP</h1>");
@@ -296,14 +305,17 @@ class Courses extends Component {
                 view: "datatable",
                 id: "GroupAssignments"+courseID,
                 columns: [
-                  { id: "name", header: "Name", width:150 },
-                  { id: "dueDate", header: "DueDate", width:150 },
+                 
+                  
+                  { id: "firstName", map:"#appUser.firstName#", header: "First Name", width:100 },
+                  { id: "lastName", map:"#appUser.lastName#", header: "Last Name", width:100 },
+
+                  { id: "name", map: " #courseAssignment.name#", header: "Assignment", width:150 },
                 ],
                 url: "/StudentAssignment/GetAssignmentsByCourseAndReviewGroup?courseID=" + courseID + "&reviewGroupId=",
                 on : { 'onItemClick' : function(i){
-                    this.handleCourseViewer({viewingAssignment:window.webix.$$("GroupAssignments" + courseID).getItem(i)});
-                    
-                      
+                    //console.log("Load This assignent: " + window.webix.$$("GroupAssignments" + courseID).getItem(i).courseAssignment);
+                    this.handleCourseViewer({viewingAssignment:window.webix.$$("GroupAssignments" + courseID).getItem(i).courseAssignment});                      
                     this.handleMenuClick("ShowAssignment");
                   }.bind(this) 
               }
@@ -314,6 +326,7 @@ class Courses extends Component {
 
     }
   }
+
   render() {
     let ui = {
 

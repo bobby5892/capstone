@@ -15,6 +15,7 @@ class ShowStudentAssignment extends Component {
       viewingCourse: props.viewingCourse,
       viewingAssignment: props.viewingAssignment,
       downloadLink: props.buildAssignmentLink,
+      viewOtherStudent: props.viewOtherStudent
     };
     this.uploadReview = props.uploadReview;
     this.fetchStudentAssignmentByCourseAssignmentAndUser.bind(this);
@@ -132,7 +133,7 @@ class ShowStudentAssignment extends Component {
                   window.webix.$$("studentAssignmentFile").send(function(response) {
                     if (response != null){
                       window.webix.message("Succsess");
-                        window.webix.$$("uploadAssignmentWindow").close();
+                       // window.webix.$$("uploadAssignmentWindow").close();
                     }
                     else {
                     alert("Nothing to Submit");

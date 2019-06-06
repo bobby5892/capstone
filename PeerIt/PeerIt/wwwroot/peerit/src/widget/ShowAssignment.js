@@ -13,7 +13,8 @@ class ShowAssignment extends Component {
       viewingAssignment: props.viewingAssignment,
       downloadLink : this.buildAssignmentLink(props),
       courseName : props.viewingAssignment.fK_COURSE.name,
-      assignmentName : props.viewingAssignment.name
+      assignmentName : props.viewingAssignment.name,
+      viewOtherStudent: props.viewOtherStudent
      
     };
     this.uploadReview = props.uploadReview;
@@ -54,7 +55,7 @@ class ShowAssignment extends Component {
       <div id="ShowAssignment">
       	
      {this.renderAdminInstructorList()}
-     <ShowStudentAssignment currentUser={this.state.currentUser} role={this.state.role} viewingAssignment={this.state.viewingAssignment} viewingCourse={this.state.viewingCourse} uploadReview={this.uploadReview}></ShowStudentAssignment>
+     <ShowStudentAssignment currentUser={this.state.currentUser} role={this.state.role} viewingAssignment={this.state.viewingAssignment} viewingCourse={this.state.viewingCourse} uploadReview={this.uploadReview} viewOtherStudent={this.state.viewOtherStudent}></ShowStudentAssignment>
       </div>
     );
   }

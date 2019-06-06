@@ -51,11 +51,12 @@
   width: 659px;
   float: right;
   padding-top: 55px;
-  margin-right: 36%;
+  /* margin-right: 36%; */
 }
 .theLogo{
-  margin-top: 45px;
-  margin-left: 236px;
+  margin-left: 53px;
+  width: 705px;
+  padding-left: 10%;
 }
 /* .images img{
   width:350px;

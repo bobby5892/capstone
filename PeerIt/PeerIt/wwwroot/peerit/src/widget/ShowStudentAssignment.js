@@ -24,9 +24,9 @@ class ShowStudentAssignment extends Component {
       viewingCourse: props.viewingCourse,
       viewingAssignment: props.viewingAssignment,
       downloadLink: props.buildAssignmentLink,
-      viewOtherStudent: props.viewOtherStudent
-      showCommentForm: false,
-      studentAssignmentID: null
+      viewOtherStudent: props.viewOtherStudent,
+      showCommentForm: false
+     
     };
     this.uploadReview.bind(this);
     this.renderStudentAssignmentReviewsDataTable.bind(this);
@@ -55,9 +55,9 @@ class ShowStudentAssignment extends Component {
             this.setState({
               assignment: response.data[0].fK_PFile.name,
               assignmentID: response.data[0].fK_PFile.id,
-              studentAssignmentID: response.data[0].id
-              studentAssignmentPfileId: response.data[0].fK_PFile.id,
               studentAssignmentId: response.data[0].id,
+              studentAssignmentPfileId: response.data[0].fK_PFile.id,
+              
             });
             this.fetchAllReviewsForTheStudenAssignmentSubmission();
           }
@@ -290,7 +290,7 @@ class ShowStudentAssignment extends Component {
   }
   renderCommentForm() {
     if (this.state.showCommentForm) {
-      return <CommentForm currentUser={this.state.currentUser} role={this.state.role} assignmentId={this.state.studentAssignmentID} />
+      return <CommentForm currentUser={this.state.currentUser} role={this.state.role} assignmentId={this.state.studentAssignmentId} />
     }
   }
   renderAddCommentButton() {
@@ -307,14 +307,14 @@ class ShowStudentAssignment extends Component {
     return <Webix ui={ui} data={null} />
   }
   renderComments() {
-    console.log('rendercomments called this.state.studentassignmentid = '+ this.state.studentAssignmentID)
+    console.log('rendercomments called this.state.studentassignmentid = '+ this.state.studentAssignmentId)
     if (this.state.studentAssignmentID != null) {
       return <CommentView currentUser={this.state.currentUser} role={this.state.role} assignmentId={this.state.studentAssignmentID} />
     }
   }
 
   render() {
-    console.log('this is student id :' + this.state.studentAssignmentID);
+    console.log('this is student id :' + this.state.studentAssignmentId);
     return (
       <div id="ShowStudentAssignment" className="showStudentAss">
         <h1>Your Submission Information for {this.state.viewingAssignment.name}</h1>

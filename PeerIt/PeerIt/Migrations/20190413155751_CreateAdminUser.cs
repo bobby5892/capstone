@@ -2,11 +2,19 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using PeerIt.Models;
 using System;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using PeerIt.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace PeerIt.Migrations
 {
     public partial class CreateAdminUser : Migration
     {
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             /* Initial Seed */
@@ -41,24 +49,42 @@ namespace PeerIt.Migrations
                  values: new object[] { InvitedGuestRoleId.ToString(), "InvitedGuest", "InvitedGuest" }
              );
             string AdminUserId = "8820ee66-681f-45b3-92ed-7d8dee5d4beb";
-            string AdminPassHash = "ZWFyZ0ZSZXJnaWpkZm9haWozNGczNA==";
-            string SecurityStamp = "AQAAAAEAACcQAAAAECOsH8Nrr4kIt+J+quzqMSXx6fYN55IHg2QPdBFpa+diUvw5lwNpBD/1SvBkQMfZnA==";
-
-            // Add Admin User
-            // Note - Security stamp (although the model says nullable - is not nullable)
-            // it requires a Base64 random string
-            DateTime dt = new DateTime(2019, 4, 13, 9, 56, 2);
             
+            DateTime dt = DateTime.Now;
+
+
+            AppUser newAdmin = new AppUser()
+            {
+                Id = AdminUserId,
+                UserName = "admin",
+                NormalizedUserName = "admin@example.com",
+                Email = "admin@example.com",
+                NormalizedEmail = "admin@example.com",
+                EmailConfirmed = true,
+                TwoFactorEnabled = false,
+                LockoutEnabled = false,
+                TimestampCreated = dt,
+                FirstName = "Admin",
+                LastName = "Admin",
+                IsEnabled = true,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+
+            var password = new PasswordHasher<AppUser>();
+            newAdmin.PasswordHash = password.HashPassword(newAdmin, "password"); ;
+
             migrationBuilder.InsertData(
             table: "AspNetUsers",
                 columns: new[] {
-                    "Id","UserName","NormalizedUserName","Email","NormalizedEmail","EmailConfirmed","PasswordHash","SecurityStamp","PhoneNumberConfirmed",
-                    "TwoFactorEnabled","LockoutEnabled","AccessFailedcount","TimestampCreated","FirstName","LastName","IsEnabled"},
+                    "Id","UserName","Email","EmailConfirmed","PasswordHash",
+                    "TwoFactorEnabled","LockoutEnabled","AccessFailedcount","TimestampCreated","FirstName","LastName","IsEnabled","PhoneNumberConfirmed","SecurityStamp","NormalizedEmail","NormalizedUserName"},
                 values: new object[] {
-                    AdminUserId,"admin","admin","admin@example.com","admin@example.com",true,
-                    SecurityStamp,AdminPassHash,true,false,false,0
-                    ,dt,"Admin","Admin",true}
+                   newAdmin.Id.ToString(),newAdmin.UserName.ToString(),newAdmin.Email.ToString(),newAdmin.EmailConfirmed,newAdmin.PasswordHash,newAdmin.TwoFactorEnabled,
+                   newAdmin.LockoutEnabled,newAdmin.AccessFailedCount.ToString(),newAdmin.TimestampCreated.ToString(),newAdmin.FirstName,
+                   newAdmin.LastName.ToString(),newAdmin.IsEnabled,newAdmin.PhoneNumberConfirmed,newAdmin.SecurityStamp,newAdmin.NormalizedEmail,newAdmin.NormalizedUserName
+                }   
             );
+
             //Add Admin into Admin Role
             migrationBuilder.InsertData(
                  table: "AspNetUserRoles",

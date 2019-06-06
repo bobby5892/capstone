@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting.Internal;
 
 /*
  *  Requires .net core 2.2  - https://dotnet.microsoft.com/download/thank-you/dotnet-sdk-2.2.105-windows-x64-installer
@@ -32,12 +33,13 @@ namespace PeerIt
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
-            
-        }
+            HostingEnvironment = env;
 
+        }
+        public IHostingEnvironment HostingEnvironment { get; }
         public IConfiguration Configuration { get; }
         protected virtual void AddCorsPolicy(IServiceCollection services)
         {
@@ -55,8 +57,17 @@ namespace PeerIt
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            /* Enity Framework */
-            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local"]));
+           
+           
+            if (HostingEnvironment.IsDevelopment())
+            {
+                /* Enity Framework */
+                services.AddDbContext<AppDBContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local"]));
+            }
+            else { 
+                /* Mysql - Production */
+                services.AddDbContext<AppDBContext>(options => options.UseMySql(Configuration["ConnectionStrings:Remote"]));
+            }
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
 
             /* Add Repositories */

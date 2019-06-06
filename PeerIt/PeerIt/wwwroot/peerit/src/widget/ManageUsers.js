@@ -208,8 +208,9 @@ class ManageUsers extends Component {
     let validResponse = window.webix.$$("newUserForm").validate();
     if (validResponse) {
       let newUser = window.webix.$$("newUserForm").getValues();
+  
       fetch("/Admin/Create?FirstName=" + newUser.FirstName
-        + "&LastName= " + newUser.LastName + "&Email=" + newUser.Email + "&Password=" + newUser.password, {
+        + "&LastName= " + newUser.LastName + "&Email=" + newUser.Email + "&Password=" + newUser.Password, {
           method: 'POST', // or 'PUT'
           //body: JSON.stringify({"FirstName":newUser.FirstName,"LastName":newUser.LastName,"Email":newUser.Email,"Password":newUser.password}), // data can be `string` or {object}!
           headers: {
@@ -225,7 +226,7 @@ class ManageUsers extends Component {
             if (window.webix.$$("newUserWindow") != null) {
               window.webix.$$("newUserWindow").close()
             }
-            console.log("open new window to:  " + response.data[0].id);
+           // console.log("open new window to:  " + response.data[0].id);
             scope.newEditWindow(response.data[0].id);
           } else {
             let errors = "";

@@ -32,7 +32,10 @@ class CreateCourse extends Component {
       .then(response => {
         if (response.success) {
           this.setState({"data" : 0});
+
           this.redrawAll();
+// eslint-disable-next-line          
+          location.reload();
         } else {
        //   let errors = "";
           //response.error.forEach(error => {

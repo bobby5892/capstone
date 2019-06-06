@@ -10,9 +10,11 @@ class StudentToolbar extends Component {
 	      this.state = {
           currentUser: props.currentUser,
           role: props.role,
+          viewingCourse: props.viewingCourse,
           viewingAssignment:props.viewingAssignment,
 	        data : null,
           seed : props.seed
+         // courseGroup : null
 	      };
     this.logout = props.logout;
     this.handleMenuClick = props.handleMenuClick;
@@ -20,13 +22,19 @@ class StudentToolbar extends Component {
     this.uploadReview = props.uploadReview;
     this.accountClick = props.accountClick;
     this.redrawAll = props.redrawAll;
+    this.handleCourseViewer = props.handleCourseViewer;
+    // Load course group
+   // console.log("COnstruct Student: " + props.viewingCourse);
+    
   }
   componentWillReceiveProps(props) {
+
       this.setState(props);
+
+    //  this.getCourseGroup(props);
+   
   }
-  handleCourseViewer(statechange) {
-    this.setState(statechange);
-  }
+
   renderCourses() {
     return <Courses
       currentUser={this.state.currentUser}
@@ -52,7 +60,7 @@ class StudentToolbar extends Component {
       rows: [
         {
           view: "list",
-          data: ["Student", "My Account","Upload an Assignment", "Logout"],
+          data: ["Student", "My Account", "Logout"],
           ready: function () {
             this.select(this.getFirstId());
           },

@@ -113,6 +113,8 @@ class CourseContent extends Component {
             window.webix.$$("addStudentWindow").close();
             //this.handleMenuClick("LiveFeed");
              this.redrawAll();
+             // eslint-disable-next-line          
+              location.reload()
 
           }
         })
@@ -134,6 +136,8 @@ class CourseContent extends Component {
             // Should reload student list
             // this.handleMenuClick("LiveFeed");
              this.redrawAll();
+             // eslint-disable-next-line          
+          location.reload()
           }
         })
         .catch(error => console.error('Error:', error));
@@ -242,8 +246,10 @@ class CourseContent extends Component {
                   window.webix.$$("AssignmentFile").send(function(response) {
                     console.log("upload send: " + JSON.stringify(response));
                     if (response != null){
-                      console.log(Date("07/08/2019"));
+                     // console.log(Date("07/08/2019"));
                       window.webix.message("Success");
+                      // eslint-disable-next-line          
+                       location.reload();
                       //window.webix.$$("uploadAssignmentWindow").attachEvent("onUploadComplete", function(response){
                         window.webix.$$("uploadAssignmentWindow").close();
                         //window.webix.message("done");

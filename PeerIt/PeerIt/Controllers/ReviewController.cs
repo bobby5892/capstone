@@ -59,19 +59,16 @@ namespace PeerIt.Controllers
             pFileRepo = pRepo;
             studentAssignmentRepo = sRepo;
             courseGroupRepo = cgRepo;
-
-            this.isAdmin = HttpContext.User.IsInRole("Administrator");
-            this.isInstructor = HttpContext.User.IsInRole("Instructor");
-            this.isStudent = HttpContext.User.IsInRole("Student");
         }
 
         #endregion Constructors
 
         #region Methods That Return Json
-        public async Task<JsonResult> GetReviewsByAssignmentId(int assignmentId)
+        public async Task<JsonResult> GetReviewsByStudentAssignmentId(int studentAssignmentId)
         {
+            SetRoles();
             response = new JsonResponse<Review>();
-            studentAssignment = studentAssignmentRepo.FindByID(assignmentId);
+            studentAssignment = studentAssignmentRepo.FindByID(studentAssignmentId);
             List<Review> reviews = reviewRepo.GetAll();
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
@@ -101,18 +98,19 @@ namespace PeerIt.Controllers
                 }
                 else
                 {
-                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
+                    response.Error.Add(new Error("No user detected", "Something went wrong when detecting the current user."));
                 }
             }
             else
             {
-                response.Error.Add(new Error("No assignment ", "The student assignment was not found"));
+                response.Error.Add(new Error("No assignment ", "No student assignment was found"));
             }
             return Json(response);
         }
 
         public async Task<JsonResult> GetReviewById(int id)
         {
+            SetRoles();
             JsonResponse<Review> response = new JsonResponse<Review>();
             Review review = reviewRepo.FindByID(id);
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
@@ -153,59 +151,19 @@ namespace PeerIt.Controllers
             return Json(response);
         }
 
-        public async Task<JsonResult> CreateReview(Review review)
+        public async Task<Review> CreateReview(Review review)
         {
+            SetRoles();
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
             studentAssignment = studentAssignmentRepo.FindByID(review.FK_STUDENT_ASSIGNMENT.ID);
             Review newReview = new Review();
 
-            if (studentAssignment != null)
+            if(review != null)
             {
-                if (this.isAdmin || this.isInstructor && studentAssignment.CourseAssignment.FK_COURSE.FK_INSTRUCTOR == user)
-                {
-                    newReview = reviewRepo.Add(review);
-                    if (newReview != null)
-                    {
-                        response.Data.Add(newReview);
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("Not Successful", "the review was not successfully added to the database."));
-                    }
-                }
-                else if (this.isStudent)
-                {
-                    CourseGroup courseGroupForAssignmentBeingReviewed = courseGroupRepo.FindByID(review.FK_STUDENT_ASSIGNMENT.CourseAssignment.FK_COURSE.ID);
-
-                    if (await CurrentUserIsInSameReviewGroup(courseGroupForAssignmentBeingReviewed))
-                    {
-                        newReview = reviewRepo.Add(review);
-                        if (newReview != null)
-                        {
-                            response.Data.Add(newReview);
-                        }
-                        else
-                        {
-                            response.Error.Add(new Error("NotSuccessful", "the data was not successfully written."));
-                        }
-                    }
-                    else
-                    {
-                        response.Error.Add(new Error("Forbidden", "you are not in this review group."));
-                    }
-                }
-                else
-                {
-                    response.Error.Add(new Error("Forbidden", "You are not allowed here naive."));
-                }
+                newReview = reviewRepo.Add(review);
             }
-            else
-            {
-                response.Error.Add(new Error("NotFound", "The assignment was not found."));
-            }
-            return Json(response);
+            return newReview;
         }
-
 
         [HttpPost]
         public async Task<JsonResult> UploadReview(List<IFormFile> files, int studentAssignmentId)
@@ -238,8 +196,8 @@ namespace PeerIt.Controllers
                     pFileRepo.Add(newPFile);
                     newReview = new Review() { FK_STUDENT_ASSIGNMENT = studentAssignment, FK_APP_USER = user, FK_PFile = newPFile, TimestampCreated = System.DateTime.Now };
 
-                    string jsonReview = JsonConvert.SerializeObject(await CreateReview(newReview));
-                    newReview = JsonConvert.DeserializeObject<Review>(jsonReview);
+                    newReview = await CreateReview(newReview);
+
                     response.Data.Add(newReview);
                 }
                 else
@@ -338,5 +296,12 @@ namespace PeerIt.Controllers
             return false;
         }
         #endregion Methods That Return Json
+
+        public void SetRoles()
+        {
+            this.isAdmin = HttpContext.User.IsInRole("Administrator");
+            this.isInstructor = HttpContext.User.IsInRole("Instructor");
+            this.isStudent = HttpContext.User.IsInRole("Student");
+        }
     }
 }

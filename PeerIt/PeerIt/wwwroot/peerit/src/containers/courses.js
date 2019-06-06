@@ -38,7 +38,6 @@ class Courses extends Component {
     }, window.webix.ui.view);
     this.loadCourses();
   }
-
   componentWillReceiveProps(props) {
     this.setState(props);
     this.loadCourses();
@@ -147,13 +146,10 @@ class Courses extends Component {
 	        };
 	    	 window.webix.$$("courses").addView(ui);
 	    }
-    	
-    	
     }
   }
 
   renderSubMenu(courseID) {
-
     if (this.state.role === "Administrator" || this.state.role === "Instructor") {
       return (
         [
@@ -161,6 +157,7 @@ class Courses extends Component {
             id: "coursesTabView" + courseID,
             view: "tabview",
             css: "subCourseTabMenu",
+            autowidth:true,
             multiview: {
               animate: true
             },
@@ -170,22 +167,18 @@ class Courses extends Component {
                 header: "Students",
                 id: "AdminInstructorSubListItem",
                 autoheight:true,
+                autowidth:true,
                 body:  {
                     autoheight: true,
                     view: "datatable",
                     columns: [
-                      { id: "firstName", header: "First Name", width: 100 },
-                      { id: "lastName", header: "Last Name", width: 80 },
-
+                      { id: "firstName", header: "First Name", autowidth: true },
+                      { id: "lastName", header: "Last Name", autowidth: true }
                     ],
                     url: "/Course/GetStudents?courseID=" + courseID
-
-                    /* data: [
-                         { id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rank:1},
-                         { id:2, title:"The Godfather", year:1972, votes:511495, rank:2}
-                     ]*/
                   },
                 autoheight: true,
+                autowidth:true,
                 collapsed: true,
                 gravity: 1
               },
@@ -200,7 +193,6 @@ class Courses extends Component {
                     columns: [
                       { id: "name", header: "Name", width:150 },
                       { id: "dueDate", header: "DueDate", width:150 },
-
                     ],
                     url: "/CourseAssignment/Assignments?courseID=" + courseID,
                     on : { 'onItemClick' : function(i){
@@ -240,7 +232,6 @@ class Courses extends Component {
           }
         ]
       );
-      //}
     }
     else if (this.state.role === "Student") {
       return ([{
@@ -267,37 +258,31 @@ class Courses extends Component {
   render() {
     let ui = {
 
-      view: "scrollview",
+      view: "accordion",
       id: "verses",
       scroll: "y", // vertical scrolling
-      height:500,
+      //height:500,
+      autoheight: true,
       width: 320,
-      body: {
+      //body: {
         rows: [
           {
           	autoheight:true,
-            "view": "accordion",
-            "gravity": 3,
-            "scroll": "y",
-            "multi": false,
-            "css": "webix_dark",
-            "id": "courses",
-            "rows": []
+            view: "accordion",
+            gravity: 3,
+            scroll: true,
+            multi: false,
+            css: "webix_dark",
+            id: "courses",
+            rows: []
           }
         ]
-      }
-
-
+      //}
     };
     let data = null;
     return (
       <div id="Courses">
-
         <Webix ui={ui} data={data} />
-
-
-
-
       </div>
     );
   }

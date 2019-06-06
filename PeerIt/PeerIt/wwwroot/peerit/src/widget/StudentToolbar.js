@@ -20,13 +20,14 @@ class StudentToolbar extends Component {
     this.uploadReview = props.uploadReview;
     this.accountClick = props.accountClick;
     this.redrawAll = props.redrawAll;
+    this.handleCourseViewer = props.handleCourseViewer;
   }
   componentWillReceiveProps(props) {
       this.setState(props);
   }
-  handleCourseViewer(statechange) {
+/*  handleCourseViewer(statechange) {
     this.setState(statechange);
-  }
+  }*/
   renderCourses() {
     return <Courses
       currentUser={this.state.currentUser}
@@ -52,7 +53,7 @@ class StudentToolbar extends Component {
       rows: [
         {
           view: "list",
-          data: ["Student", "My Account","Upload an Assignment", "Logout"],
+          data: ["Student", "My Account", "Logout"],
           ready: function () {
             this.select(this.getFirstId());
           },

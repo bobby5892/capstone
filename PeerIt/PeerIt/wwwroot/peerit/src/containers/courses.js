@@ -206,7 +206,7 @@ class Courses extends Component {
                     on : { 'onItemClick' : function(i){
 	                    	console.log("test" + i);	
 	                    	console.log("Data:" + JSON.stringify(window.webix.$$("Assignments" + courseID).getItem(i)));
-	                    	this.handleCourseViewer({viewingAssignment:window.webix.$$("Assignments" + courseID).getItem(i)});
+                       	this.handleCourseViewer({viewingAssignment:window.webix.$$("Assignments" + courseID).getItem(i)});
                         this.handleMenuClick("ShowAssignment");
                         
 	                    }.bind(this) 
@@ -243,14 +243,29 @@ class Courses extends Component {
       //}
     }
     else if (this.state.role === "Student") {
+      console.log("StudentView: " + JSON.stringify(this.state));
+      console.log("StudentCourseID" + courseID);
       return ([{
         view: "tabview",
         cells: [
           {
             header: "Your Assignments",
-            body: {
-              id: "menuItemStudentYourAssignments",
-              body: "temp"
+            body:  {
+                autoheight: true,
+                view: "datatable",
+              id: "Assignments"+courseID,
+                columns: [
+                  { id: "name", header: "Name", width:150 },
+                  { id: "dueDate", header: "DueDate", width:150 },
+                ],
+                url: "/CourseAssignment/Assignments?courseID=" + courseID,
+                on : { 'onItemClick' : function(i){
+                    this.handleCourseViewer({viewingAssignment:window.webix.$$("Assignments" + courseID).getItem(i)});
+                    // console.log("AsSIGNMENT: " + JSON.stringify(window.webix.$$("Assignments" + courseID).getItem(i)));
+                      
+                    this.handleMenuClick("ShowAssignment");
+                  }.bind(this) 
+              }
             }
           },
           {

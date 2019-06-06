@@ -109,6 +109,7 @@ class Portal extends Component {
       currentUser={this.state.currentUser} 
       role={this.state.role} 
       logout={this.logout.bind(this)}  
+      handleCourseViewer={this.handleCourseViewer.bind(this)}
       handleMenuClick={this.handleMenuClick.bind(this)} 
       viewingCourse={this.state.viewingCourse}
       accountClick={this.accountClick.bind(this)}

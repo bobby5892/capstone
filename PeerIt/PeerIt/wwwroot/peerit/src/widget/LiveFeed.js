@@ -13,7 +13,12 @@ class LiveFeed extends Component {
 
 	render(){
 		 return(<div  id="LiveFeed">
-        LiveFeed
+			 <div className="images">
+			 <img className="arrow" src="../../../images/arrow2.png"></img>
+			 <img src="../../../images/logo.png"></img>
+			 </div>
+			 <h1>Click here if thats what you want to do.</h1>
+			 <h1>Completely up to you though.</h1>
       </div>
       );
 	}

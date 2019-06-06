@@ -41,3 +41,10 @@
 .showStudentAss h1{
   text-decoration: underline;
 }
+.images img{
+  width:350px;
+}
+.images .arrow{
+  width: 137px;
+    padding-bottom: 107px;
+}

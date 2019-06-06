@@ -25,6 +25,7 @@ namespace PeerIt.Repositories
                     .Include(reviews => reviews.FK_STUDENT_ASSIGNMENT.CourseAssignment.FK_COURSE.FK_INSTRUCTOR)
                     .Include(reviews => reviews.FK_STUDENT_ASSIGNMENT.AppUser)
                     .Include(reviews => reviews.FK_APP_USER)
+                    .Include(revews => revews.FK_PFile)
                     .ToList();
             }
         }

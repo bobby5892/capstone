@@ -44,7 +44,7 @@ class StudentToolbar extends Component {
       handleMenuClick={this.handleMenuClick}
       accountClick={this.accountClick.bind(this)}
       redrawAll={this.redrawAll} seed={this.state.seed}
-       viewingAssignment={this.state.viewingAssignment}
+      viewingAssignment={this.state.viewingAssignment}
     />
   }
   render() {
@@ -66,7 +66,9 @@ class StudentToolbar extends Component {
           },
           click: function (a) {
             if( a === "My Account"){
-              this.accountClick();
+              if (window.webix.$$("accountWindow") == null) {
+                this.accountClick();
+              }
             }
             else if (a === "Logout") {
               //Attempt to call the logout chain
@@ -82,7 +84,9 @@ class StudentToolbar extends Component {
           scroll: true,
           template: "right",
           content: "Courses",
-          align: "right"
+          align: "right",
+          height: 300
+          //autoheight: true
         }
       ]
     }
@@ -95,4 +99,3 @@ class StudentToolbar extends Component {
   }
 }
 export default StudentToolbar;
-

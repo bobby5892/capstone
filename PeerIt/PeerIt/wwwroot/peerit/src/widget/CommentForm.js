@@ -11,7 +11,7 @@ class CommentForm extends Component {
 
     renderCommentForm() {
 
-        window.webix.ui({
+       window.webix.ui({
             view: "window",
             id: "comment_win",
             head: {
@@ -51,6 +51,7 @@ class CommentForm extends Component {
                     }]
             }
         }).show();
+        
     }
     createComment() {
         let formdata = window.webix.$$("newCommentForm").getValues();
@@ -68,7 +69,8 @@ class CommentForm extends Component {
             .then(response => {
                 if (response.success) {
                     this.setState({ "data": 0 });
-                    this.redrawAll();
+                  //  this.redrawAll();
+                  
                 } else {
                     //   let errors = "";
                     //response.error.forEach(error => {
@@ -76,7 +78,9 @@ class CommentForm extends Component {
                     //    });
 
                 }
-                console.log(response);
+                console.log("attempt reload");
+                 //eslint-disable-next-line
+                 location.reload();
 
             })
             .catch(error => console.error('Error:', error));
@@ -87,7 +91,7 @@ class CommentForm extends Component {
     render() {
 
         return (<div id="CommentForm">
-            load comment form
+            
     {this.renderCommentForm()}
         </div>)
     }

@@ -16,6 +16,7 @@ class Courses extends Component {
       role: props.role,
       data: null,
       viewingCourse: props.viewingCourse,
+      courseGroup : null,
       Courses: []
     };
    
@@ -37,11 +38,35 @@ class Courses extends Component {
       }
     }, window.webix.ui.view);
     this.loadCourses();
+    if (this.state.role === "Student") {
+      this.getCourseGroup();
+    }
   }
-
+  getCourseGroup(){
+     console.log("trying to get course group:"  + "State" + JSON.stringify(this.state));
+     fetch("/StudentAssignment/GetCourseGroup?courseId=" + this.state.viewingCourse, {
+        method: 'GET', // or 'PUT'
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: "include",
+        mode: "no-cors"
+      }).then(res => res.json()).then(response => {
+          if (response.success) {
+            console.log("GROUP:" + JSON.stringify(response.data[0].reviewGroup));
+            this.setState({courseGroup:response.data[0].reviewGroup});
+          }
+          else{
+           // console.log("GROUP2:" + JSON.stringify(response));
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      
+  }
   componentWillReceiveProps(props) {
     this.setState(props);
     this.loadCourses();
+   
     //console.log("reload courses");
     // Trigger Webix to Redraw the component
     //window.webix.$$().setHTML("<h1>YEP</h1>");

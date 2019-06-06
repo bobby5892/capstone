@@ -153,7 +153,7 @@ class Courses extends Component {
   }
 
   renderSubMenu(courseID) {
-
+   // console.log("Submenu - Check State:" + JSON.stringify(this.state));
     if (this.state.role === "Administrator" || this.state.role === "Instructor") {
       return (
         [
@@ -180,10 +180,7 @@ class Courses extends Component {
                     ],
                     url: "/Course/GetStudents?courseID=" + courseID
 
-                    /* data: [
-                         { id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rank:1},
-                         { id:2, title:"The Godfather", year:1972, votes:511495, rank:2}
-                     ]*/
+               
                   },
                 autoheight: true,
                 collapsed: true,
@@ -204,8 +201,8 @@ class Courses extends Component {
                     ],
                     url: "/CourseAssignment/Assignments?courseID=" + courseID,
                     on : { 'onItemClick' : function(i){
-	                    	console.log("test" + i);	
-	                    	console.log("Data:" + JSON.stringify(window.webix.$$("Assignments" + courseID).getItem(i)));
+	                    //	console.log("test" + i);	
+	                    	//console.log("Data:" + JSON.stringify(window.webix.$$("Assignments" + courseID).getItem(i)));
                        	this.handleCourseViewer({viewingAssignment:window.webix.$$("Assignments" + courseID).getItem(i)});
                         this.handleMenuClick("ShowAssignment");
                         
@@ -243,8 +240,7 @@ class Courses extends Component {
       //}
     }
     else if (this.state.role === "Student") {
-      console.log("StudentView: " + JSON.stringify(this.state));
-      console.log("StudentCourseID" + courseID);
+     
       return ([{
         view: "tabview",
         cells: [
@@ -270,13 +266,27 @@ class Courses extends Component {
           },
           {
             header: "Group Assignments",
-            body: {
-              id: "menuItemStudentGroupAssignments",
-              body: "temp"
+            body:  {
+                autoheight: true,
+                view: "datatable",
+                id: "GroupAssignments"+courseID,
+                columns: [
+                  { id: "name", header: "Name", width:150 },
+                  { id: "dueDate", header: "DueDate", width:150 },
+                ],
+                url: "/StudentAssignment/GetAssignmentsByCourseAndReviewGroup?courseID=" + courseID + "&reviewGroupId=",
+                on : { 'onItemClick' : function(i){
+                    this.handleCourseViewer({viewingAssignment:window.webix.$$("GroupAssignments" + courseID).getItem(i)});
+                    
+                      
+                    this.handleMenuClick("ShowAssignment");
+                  }.bind(this) 
+              }
             }
           }
         ]
       }]);
+
     }
   }
   render() {

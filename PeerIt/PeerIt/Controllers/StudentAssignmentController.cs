@@ -93,7 +93,7 @@ namespace PeerIt.Controllers
             JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
             List<StudentAssignment> studentAssignments = studentAssignmentRepo.GetAll();
             Course course = courseRepo.FindByID(courseID);
-            CourseGroup courseGroup = await GetCourseGroup(courseID);
+            CourseGroup courseGroup = await GetCourseGroupInternal(courseID);
 
             if (this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == user)
             {
@@ -150,7 +150,7 @@ namespace PeerIt.Controllers
             JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
             List<StudentAssignment> studentAssignments = studentAssignmentRepo.GetAll();
             CourseAssignment courseAssignment = courseAssignmentRepo.FindByID(courseAssignmentId);
-            CourseGroup courseGroup = await GetCourseGroup(courseAssignment.FK_COURSE.ID);
+            CourseGroup courseGroup = await GetCourseGroupInternal(courseAssignment.FK_COURSE.ID);
 
             if (this.isAdmin || this.isInstructor && courseAssignment.FK_COURSE.FK_INSTRUCTOR == user)
             {
@@ -205,7 +205,7 @@ namespace PeerIt.Controllers
             SetRoles();
             JsonResponse<StudentAssignment> response = new JsonResponse<StudentAssignment>();
             StudentAssignment studentAssignment = studentAssignmentRepo.FindByID(assignmentID);
-            CourseGroup courseGroup = await GetCourseGroup(studentAssignment.CourseAssignment.FK_COURSE.ID);
+            CourseGroup courseGroup = await GetCourseGroupInternal(studentAssignment.CourseAssignment.FK_COURSE.ID);
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
             if (this.isAdmin || this.isInstructor && studentAssignment.CourseAssignment.FK_COURSE.FK_INSTRUCTOR.Id == user.Id)
@@ -255,7 +255,7 @@ namespace PeerIt.Controllers
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
             List<StudentAssignment> studentAssignments = studentAssignmentRepo.GetAll();
             Course course = courseRepo.FindByID(courseId);
-            CourseGroup courseGroup = await GetCourseGroup(courseId);
+            CourseGroup courseGroup = await GetCourseGroupInternal(courseId);
 
             if(this.isAdmin || this.isInstructor && course.FK_INSTRUCTOR == user)
             {
@@ -292,7 +292,7 @@ namespace PeerIt.Controllers
             StudentAssignment studentAssignment = studentAssignmentRepo.FindByID(assignmentID);
             List<Review> reviews = reviewRepo.GetAll();
             List<AppUser> reviewers = new List<AppUser>();
-            CourseGroup course = await GetCourseGroup(studentAssignment.CourseAssignment.FK_COURSE.ID);
+            CourseGroup course = await GetCourseGroupInternal(studentAssignment.CourseAssignment.FK_COURSE.ID);
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
 
             if (studentAssignment != null)
@@ -409,7 +409,34 @@ namespace PeerIt.Controllers
 
         #region StudentAssignmentController Helper Methods
 
-        public async Task<CourseGroup> GetCourseGroup(int courseId)
+        public async Task<JsonResult> GetCourseGroup(int courseId)
+        {
+            SetRoles();
+            AppUser user = await userManager.GetUserAsync(HttpContext.User);
+            List<CourseGroup> courseGroups = courseGroupRepo.GetAll();
+           
+            JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
+
+            foreach (CourseGroup cg in courseGroups)
+            {
+                if (cg.FK_Course.ID == courseId && cg.FK_AppUser == user)
+                {
+                    response.Data.Add(cg);
+                }
+            }
+            if (response.Data.Count == 0)
+            {
+                response.Error.Add(new Error() { Description = "No course group", Name = "StudentAssignmentControler" });
+            }
+            return Json(response);
+        }
+        public void SetRoles()
+        {
+            this.isAdmin = HttpContext.User.IsInRole("Administrator");
+            this.isInstructor = HttpContext.User.IsInRole("Instructor");
+            this.isStudent = HttpContext.User.IsInRole("Student");
+        }
+        public async Task<CourseGroup> GetCourseGroupInternal(int courseId)
         {
             SetRoles();
             AppUser user = await userManager.GetUserAsync(HttpContext.User);
@@ -424,12 +451,6 @@ namespace PeerIt.Controllers
                 }
             }
             return studentCourseGroup;
-        }
-        public void SetRoles()
-        {
-            this.isAdmin = HttpContext.User.IsInRole("Administrator");
-            this.isInstructor = HttpContext.User.IsInRole("Instructor");
-            this.isStudent = HttpContext.User.IsInRole("Student");
         }
         #endregion
     }

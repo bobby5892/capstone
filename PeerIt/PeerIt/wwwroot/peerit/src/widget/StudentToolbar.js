@@ -10,9 +10,11 @@ class StudentToolbar extends Component {
 	      this.state = {
           currentUser: props.currentUser,
           role: props.role,
+          viewingCourse: props.viewingCourse,
           viewingAssignment:props.viewingAssignment,
 	        data : null,
-          seed : props.seed
+          seed : props.seed,
+          courseGroup : null
 	      };
     this.logout = props.logout;
     this.handleMenuClick = props.handleMenuClick;
@@ -21,13 +23,35 @@ class StudentToolbar extends Component {
     this.accountClick = props.accountClick;
     this.redrawAll = props.redrawAll;
     this.handleCourseViewer = props.handleCourseViewer;
+    // Load course group
+    console.log("COnstruct Student: " + props.viewingCourse);
+    
   }
   componentWillReceiveProps(props) {
+
       this.setState(props);
+
+      this.getCourseGroup(props);
+   
   }
-/*  handleCourseViewer(statechange) {
-    this.setState(statechange);
-  }*/
+  getCourseGroup(props){
+   // console.log("trying to get course group:" +JSON.stringify( props));
+     fetch("/StudentAssignment/GetCourseGroup?courseId=" + props.viewingCourse, {
+        method: 'GET', // or 'PUT'
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: "include",
+        mode: "no-cors"
+      }).then(res => res.json()).then(response => {
+          if (response.success) {
+            console.log("GROUP:" + JSON.stringify(response.data[0].reviewGroup));
+            this.setState({courseGroup:response.data[0].reviewGroup});
+          }
+          
+        })
+        .catch(error => console.error('Error:', error));
+  }
   renderCourses() {
     return <Courses
       currentUser={this.state.currentUser}

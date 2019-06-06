@@ -108,7 +108,8 @@ class AdminToolbar extends Component {
 					 	view: "template",
 	             		template: "right",
 	             		content: "Courses",
-	             		autoheight: true,
+	             		height: 300,
+	             		scroll: true,
 	             		align:"right"
                 	}
 			]

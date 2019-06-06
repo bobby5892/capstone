@@ -350,15 +350,11 @@ class CourseContent extends Component {
       }
       return optionString;
     }
-    let putGroupID = function() {
-      fetch()
-    }
     let ui = {
       rows: [
         {
           header: "Course Settings (ID: " + this.state.viewingCourse + ")", body: " "
         },
-       
         {
           view: "tabview",
           autoheight: true,
@@ -405,7 +401,6 @@ class CourseContent extends Component {
                               let assignment =  window.webix.$$("AssignmentsContent").getItem(id);
                               this.deleteAssignment(assignment.id);
                             }
-                            
                           }.bind(this) 
                         }   
                       }
@@ -467,8 +462,6 @@ class CourseContent extends Component {
                       { id: "firstName", header: "First Name", width: 200 },
                       { id: "lastName", header: "Last Name", width: 80 },
                       { header: "Enrollment", width: 100 ,   template:"<input type='button' value='Remove' class='remove_button'>"}
-                        
-                      
                     ],
                     onClick : {
                       remove_button:function (i,ev){

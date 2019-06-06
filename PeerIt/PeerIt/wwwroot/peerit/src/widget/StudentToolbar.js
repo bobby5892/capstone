@@ -77,7 +77,8 @@ class StudentToolbar extends Component {
           template: "right",
           content: "Courses",
           align: "right",
-          autoheight: true
+          height: 300
+          //autoheight: true
         }
       ]
     }

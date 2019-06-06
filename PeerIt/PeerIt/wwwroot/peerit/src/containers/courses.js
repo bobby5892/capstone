@@ -258,37 +258,31 @@ class Courses extends Component {
   render() {
     let ui = {
 
-      view: "scrollview",
+      view: "accordion",
       id: "verses",
       scroll: "y", // vertical scrolling
-      height:500,
+      //height:500,
+      autoheight: true,
       width: 320,
-      body: {
+      //body: {
         rows: [
           {
           	autoheight:true,
-            "view": "accordion",
-            "gravity": 3,
-            "scroll": "y",
-            "multi": false,
-            "css": "webix_dark",
-            "id": "courses",
-            "rows": []
+            view: "accordion",
+            gravity: 3,
+            scroll: true,
+            multi: false,
+            css: "webix_dark",
+            id: "courses",
+            rows: []
           }
         ]
-      }
-
-
+      //}
     };
     let data = null;
     return (
       <div id="Courses">
-
         <Webix ui={ui} data={data} />
-
-
-
-
       </div>
     );
   }

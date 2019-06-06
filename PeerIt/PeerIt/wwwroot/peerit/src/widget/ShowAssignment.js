@@ -40,7 +40,7 @@ class ShowAssignment extends Component {
   			
   			<div id="downloadLink">{this.state.downloadLink}</div>
   					
-  					
+  				
 
   			</div>
   			);

@@ -3,7 +3,10 @@ import renderHTML from 'react-render-html';
 import ReactDOM from 'react-dom';
 import Webix from '../webix';
 import { format } from 'url';
+import CommentForm from './CommentForm.js';
+import CommentView from './CommentView.js';
 import { INSPECT_MAX_BYTES } from 'buffer';
+
 
 class ShowStudentAssignment extends Component {
   constructor(props) {
@@ -21,6 +24,8 @@ class ShowStudentAssignment extends Component {
       viewingCourse: props.viewingCourse,
       viewingAssignment: props.viewingAssignment,
       downloadLink: props.buildAssignmentLink,
+      showCommentForm: false,
+      studentAssignmentID: null
     };
     this.uploadReview.bind(this);
     this.renderStudentAssignmentReviewsDataTable.bind(this);
@@ -33,6 +38,7 @@ class ShowStudentAssignment extends Component {
   componentWillReceiveProps(props) {
     this.setState(props);
   }
+
   //Functions that fetch the data
   fetchStudentAssignmentByCourseAssignmentAndUser(props) {
     fetch("/StudentAssignment/GetStudentAssignmentsByCourseAssignmentAndUser?courseAssignmentId=" + this.state.viewingAssignment.id, {
@@ -47,6 +53,8 @@ class ShowStudentAssignment extends Component {
           if (response.data.length > 0) {
             this.setState({
               assignment: response.data[0].fK_PFile.name,
+              assignmentID: response.data[0].fK_PFile.id,
+              studentAssignmentID: response.data[0].id
               studentAssignmentPfileId: response.data[0].fK_PFile.id,
               studentAssignmentId: response.data[0].id,
             });
@@ -57,6 +65,7 @@ class ShowStudentAssignment extends Component {
         }
       })
   }
+
   fetchAllReviewsForTheStudenAssignmentSubmission() {
     fetch("Review/GetReviewsByStudentAssignmentId?studentAssignmentId=" + this.state.studentAssignmentId, {
       method: 'GET',
@@ -85,7 +94,7 @@ class ShowStudentAssignment extends Component {
     let ui = {
       view: "button",
       id: "uploadReviewButton",
-      value: "Upload a Review",
+      value: "Upload Review",
       css: "webix_primary",
       inputWidth: 175,
       click: function () {
@@ -257,9 +266,6 @@ class ShowStudentAssignment extends Component {
                       window.webix.message("Succsess");
                       window.webix.$$("uploadStudentAssignmentReviewWindow").close();
                     }
-                    else {
-                      alert("Nothing to Submit");
-                    }
                   })
                 }.bind(this)
               }
@@ -282,12 +288,36 @@ class ShowStudentAssignment extends Component {
     }
     console.log("no render");
   }
+  renderCommentForm() {
+    if (this.state.showCommentForm) {
+      return <CommentForm currentUser={this.state.currentUser} role={this.state.role} assignmentId={this.state.studentAssignmentID} />
+    }
+  }
+  renderAddCommentButton() {
+    let ui = {
+      view: "button",
+      id: "addComment",
+      value: "Add Comment",
+      css: "webix_primary",
+      inputWidth: 175,
+      click: function () {
+        this.setState({ showCommentForm: true });
+      }.bind(this)
+    };
+    return <Webix ui={ui} data={null} />
+  }
+  renderComments() {
+    console.log('rendercomments called this.state.studentassignmentid = '+ this.state.studentAssignmentID)
+    if (this.state.studentAssignmentID != null) {
+      return <CommentView currentUser={this.state.currentUser} role={this.state.role} assignmentId={this.state.studentAssignmentID} />
+    }
+  }
+
   render() {
+    console.log('this is student id :' + this.state.studentAssignmentID);
     return (
       <div id="ShowStudentAssignment" className="showStudentAss">
         <h1>Your Submission Information for {this.state.viewingAssignment.name}</h1>
-        <h3>{this.state.assignment}</h3>
-        <h3>{this.state.studentAssignmentPfileId}</h3>
         <h3>{this.state.errorMsg}</h3>
         {this.renderUploadStudentAssignmentButton()}
         {this.renderLink()}
@@ -297,7 +327,9 @@ class ShowStudentAssignment extends Component {
         {this.state.reviewErrorMsg}
         {this.renderAssignmentReviewButton()}
         <h1>Comments for your assignment</h1>
-
+        {this.renderAddCommentButton()}
+        {this.renderCommentForm()}
+        {this.renderComments()}
       </div>
     );
   }

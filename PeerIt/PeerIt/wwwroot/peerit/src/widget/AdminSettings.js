@@ -104,7 +104,8 @@ class AdminSettings extends Component {
                         click:function(){
                           //scope.setState({"editUser" : null });
                           window.webix.$$("settingsWindow").close();
-                        } 
+                          this.renderWindow = false;
+                        }.bind(this)
                       }
                    ]   
               },
@@ -125,6 +126,7 @@ class AdminSettings extends Component {
                                 { view:"button", value:"Save Settings" , type:"form", click:function(){
                                   this.saveEditWindow();
                                   window.webix.$$("settingsWindow").close();
+                                  this.renderWindow = false;
                                 }.bind(this)
                               }
                             ]}

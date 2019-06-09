@@ -549,7 +549,14 @@ namespace PeerIt.Controllers
         {
             JsonResponse<CourseGroup> response = new JsonResponse<CourseGroup>();
             AppUser currentUser = await usrMgr.GetUserAsync(HttpContext.User);
-            List<CourseGroup> courseGroups = courseGroupRepository.GetAll();
+            List<CourseGroup> courseGroups = new List<CourseGroup>();
+            courseGroupRepository.GetAll().ForEach(c=>
+            {
+                if (c.FK_Course.ID == courseID)
+                {
+                    courseGroups.Add(c);
+                }
+            });
             SetRoles();
             if (courseGroups != null)
             {

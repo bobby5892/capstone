@@ -52,7 +52,7 @@ namespace PeerIt.Migrations
             
             DateTime dt = DateTime.Now;
 
-
+            string dateString =  dt.ToString("yyyy-MM-dd HH:mm:ss");
             AppUser newAdmin = new AppUser()
             {
                 Id = AdminUserId,
@@ -80,7 +80,7 @@ namespace PeerIt.Migrations
                     "TwoFactorEnabled","LockoutEnabled","AccessFailedcount","TimestampCreated","FirstName","LastName","IsEnabled","PhoneNumberConfirmed","SecurityStamp","NormalizedEmail","NormalizedUserName"},
                 values: new object[] {
                    newAdmin.Id.ToString(),newAdmin.UserName.ToString(),newAdmin.Email.ToString(),newAdmin.EmailConfirmed,newAdmin.PasswordHash,newAdmin.TwoFactorEnabled,
-                   newAdmin.LockoutEnabled,newAdmin.AccessFailedCount.ToString(),newAdmin.TimestampCreated.ToString(),newAdmin.FirstName,
+                   newAdmin.LockoutEnabled,newAdmin.AccessFailedCount.ToString(),newAdmin.TimestampCreated.ToString("yyyy-MM-dd HH:mm:ss"),newAdmin.FirstName,
                    newAdmin.LastName.ToString(),newAdmin.IsEnabled,newAdmin.PhoneNumberConfirmed,newAdmin.SecurityStamp,newAdmin.NormalizedEmail,newAdmin.NormalizedUserName
                 }   
             );
